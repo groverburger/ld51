@@ -1,3 +1,15 @@
+import Player from "./player.js"
+import Framerate from "./framerate.js"
+import Coin from "./coin.js"
+import Coin3D from "./coin3d.js"
+import Terrain from "./terrain.js"
+import Player3D from "./player3d.js"
+import Ball from "./ball.js"
+import Screenshader from "./screenshader.js"
+import DemoHelper from "./demohelper.js"
+import Goal from "./goal.js"
+import Guy from "./guy.js"
+
 const assets = {
   shaderFileSources: {
     defaultFrag: "default.frag",
@@ -33,22 +45,69 @@ const assets = {
     cylinder: "cylinder.obj",
     plane: "plane.obj",
     sphere: "sphere.obj",
+    //player: "tv.obj",
   },
 
   imageSources: {
+    lad: "lad.png",
+    gunArm: "gunarm.png",
+    Tileset1: "tileset1.png",
+    //Tileset2: "tileset2.png",
+    circle: "circle.png",
+    square: "square.png",
+    grass: "grass.png",
+    grassSide: "grassside.png",
+    stone: "stone.png",
+    sand: "sand.png",
+    water: "water.png",
+    coin: "coin.png",
+    perlin: "perlin.png",
+    skybox: "skybox.png",
+    face1: "face1.png",
+    face2: "face2.png",
+    goal: "mailbox.png",
   },
 
   textureSettings: {
+    perlin: "linear"
   },
 
   soundSources: {
+    playerDash: "p_dash1.wav",
+    playerJump: "jump.wav",
+    playerLand: "land.wav",
+    playerSplash: "splash.wav",
+    footstep1: "bigfootstep3.wav",
+    footstep2: "bigfootstep4.wav",
+    rank: "win.wav",
+    win: "win2.wav",
+    delivery: "win1.wav",
+    boing: "boing.wav",
+    boingFootstep: "boing.wav",
+    music: "music1.mp3",
   },
 
   sceneSources: {
     first: "main.ldtk",
+    first: "3dtest3.ldtk",
+    second: "3dtest2.ldtk",
+    third: "3dtest1.ldtk",
+    //first: "empty.ldtk",
   },
 
-  things: {}
+  things: {
+    Player,
+    Framerate,
+    Coin,
+    Terrain,
+    Player3D,
+    Coin3D,
+    Ball,
+    Guy,
+    Screenshader,
+    DemoHelper,
+    Goal,
+  }
 }
 
 export default assets
