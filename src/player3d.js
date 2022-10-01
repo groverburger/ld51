@@ -20,6 +20,7 @@ import * as vec3 from "./core/vector3.js"
 import * as vec2 from "./core/vector2.js"
 const {angleToVector} = vec2
 import InputHandler from "./core/inputs.js"
+import FadeIn from "./fadein.js"
 
 export default class Player3D extends Thing {
   height = 56
@@ -161,7 +162,7 @@ export default class Player3D extends Thing {
         this.speed[1] *= lastMagnitude/newMagnitude
       }
 
-      scene.camera3D.yaw += dx*0.025
+      //scene.camera3D.yaw += dx*0.025
     }
     this.speed[2] -= this.speed[2] < 0 ? 0.6 : 0.35
 
