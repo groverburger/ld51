@@ -5,6 +5,9 @@ import * as mat from "./core/matrices.js"
 import * as u from "./core/utils.js"
 import * as vec2 from "./core/vector2.js"
 import * as vec3 from "./core/vector3.js"
+import * as proc from "./procgeneral.js"
+import * as terrain from "./procterrain.js"
+import * as caves from "./proccaves.js"
 import assets from "./assets.js"
 import SpatialHash from "./core/spatialhash.js"
 import Player3D from "./player3d.js"
@@ -672,11 +675,15 @@ export default class Terrain extends Thing {
   }
 
   generate() {
-    for (let x=-32; x<32; x++) {
-      for (let y=-32; y<32; y++) {
-        this.map[[x, y]] = u.random(1, 3)|0
+    for (let x=-5; x<5; x++) {
+      for (let y=-5; y<5; y++) {
+        this.map[[x, y]] = Math.floor(u.random(1, 1))
       }
     }
+
+    //proc.mergeTerrain(this.map, terrain.generateTerrain(10, 10, 4, 0.4, 9, 0), [0, 0])
+    proc.mergeTerrain(this.map, caves.generateCaves(80, 80, 1, 20), [0, 0])
+
   }
 
   populate() {
