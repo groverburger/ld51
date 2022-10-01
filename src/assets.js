@@ -53,7 +53,7 @@ const assets = {
     coin: "coin.png",
     perlin: "perlin.png",
     skybox: "skybox.png",
-    goal: "mailbox.png",
+    goal: "flag.png",
   },
 
   textureSettings: {
