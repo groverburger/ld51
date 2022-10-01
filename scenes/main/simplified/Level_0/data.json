@@ -1,0 +1,62 @@
+{
+	"x": 0,
+	"y": 0,
+	"width": 1152,
+	"height": 768,
+	"iid": "4f61c2d0-02f0-11ed-9f5c-7f8cb81f4ff4",
+	"layers": [
+		"Visuals.png"
+	],
+	"entities": {
+		"Player": [
+			{
+				"id": "Player",
+				"iid": "fbe3cb40-02f0-11ed-9f5c-a9dec5dc2d02",
+				"layer": "Things",
+				"x": 224,
+				"y": 608,
+				"width": 64,
+				"height": 64,
+				"color": 542693,
+				"customFields" : {}
+			}
+		],
+		"Coin": [
+			{
+				"id": "Coin",
+				"iid": "a9217c90-02f0-11ed-9f5c-b7ee55b61ee9",
+				"layer": "Things",
+				"x": 480,
+				"y": 544,
+				"width": 64,
+				"height": 64,
+				"color": 13808404,
+				"customFields" : {}
+			},
+			{
+				"id": "Coin",
+				"iid": "a94a3a40-02f0-11ed-9f5c-e786af328e50",
+				"layer": "Things",
+				"x": 544,
+				"y": 544,
+				"width": 64,
+				"height": 64,
+				"color": 13808404,
+				"customFields" : {}
+			}
+		],
+		"DemoHelper": [
+			{
+				"id": "DemoHelper",
+				"iid": "a0cbe0e0-2a00-11ed-9525-93fbbec17ff3",
+				"layer": "Things",
+				"x": 64,
+				"y": 64,
+				"width": 64,
+				"height": 64,
+				"color": 13435826,
+				"customFields" : {}
+			}
+		]
+	}
+}
