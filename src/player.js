@@ -63,6 +63,8 @@ export default class Player extends Thing {
 
     //getScene().addThing(new DemoHelper())
 
+    //this.position[2] = 10000
+    this.position[2] = getThing("terrain").getGroundHeight(this.position[0], this.position[1]) + 64
     getScene().camera3D.position = [...this.position]
     getScene().camera3D.pitch = 0.25
 
@@ -81,7 +83,6 @@ export default class Player extends Thing {
     }
 
     this.collisionSettings.tiles = new Set()
-    this.position[2] = this.height + 128
     this.spawnPosition = [...this.position]
     this.speed[2] = 0
     //this.direction = 0

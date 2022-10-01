@@ -62,6 +62,12 @@ function frame(frameTime) {
   previousFrameTime = frameTime
   accumulator += delta
 
+  delta *= 60
+  if (Math.abs(delta - 0.5) >= 0.49) {
+    delta = 1
+  }
+  delta /= 60
+
   // make sure we update at 60hz
   let times = 0
   while (accumulator >= refreshRate && times < config.catchupFrames) {
@@ -71,8 +77,10 @@ function frame(frameTime) {
   }
   accumulator %= refreshRate
 
-  draw(accumulator / refreshRate)
-  frameCount += 1
+  //if (times) {
+    draw(0)
+    frameCount += 1
+  //}
 
   requestAnimationFrame(frame)
 }

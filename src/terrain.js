@@ -11,6 +11,7 @@ import * as caves from "./proccaves.js"
 import assets from "./assets.js"
 import SpatialHash from "./core/spatialhash.js"
 import Player from "./player.js"
+import Enemy from "./enemy.js"
 const utils = u
 
 let cache = {
@@ -685,12 +686,13 @@ export default class Terrain extends Thing {
   generate() {
     let genParams = new proc.GeneratorParams()
     genParams.width = 70
-    genParams.length = 30
+    genParams.length = 70
     genParams.height = 17
     genParams.caveWallHeight = 40
-    genParams.caveSpaciousness = -1
-    genParams.caveOpenness = -1
-    genParams.terrainVariance = 40
+    genParams.caveSpaciousness = 0.8
+    genParams.caveOpenness = 0.9
+    genParams.terrainVariance = 1
+    genParams.terrainRoughness = 0.1
 
     let generated = caves.generateCaves(genParams)
 
@@ -701,10 +703,21 @@ export default class Terrain extends Thing {
 
   }
 
+  _generate() {
+    for (let x=-32; x<32; x++) {
+      for (let y=-32; y<32; y++) {
+        this.map[[x,y]] = 1
+      }
+    }
+  }
+
   populate() {
-    const p = getScene().addThing(new Player())
-    p.position[0] = this.startPoint[0] * 64
-    p.position[1] = this.startPoint[1] * 64
-    p.position[2] = this.map[this.startPoint] * 64
+    const p = getScene().addThing(new Player({
+      position: [this.startPoint[0]*64, this.startPoint[1]*64, 10000]
+    }))
+
+    for (let i=0; i<10; i++) {
+      getScene().addThing(new Enemy([u.random(0, 70*64), u.random(0, 30*64), 0]))
+    }
   }
 }

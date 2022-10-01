@@ -42,12 +42,9 @@ const assets = {
   },
 
   imageSources: {
-    lad: "lad.png",
-    gunArm: "gunarm.png",
-    Tileset1: "tileset1.png",
-    //Tileset2: "tileset2.png",
     circle: "circle.png",
     square: "square.png",
+    enemy: "star.png",
     grass: "grass.png",
     grassSide: "grassside.png",
     stone: "stone.png",
@@ -56,8 +53,6 @@ const assets = {
     coin: "coin.png",
     perlin: "perlin.png",
     skybox: "skybox.png",
-    face1: "face1.png",
-    face2: "face2.png",
     goal: "mailbox.png",
   },
 
