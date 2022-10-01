@@ -1,0 +1,11 @@
+{
+  "name": "Game",
+  "main": "index.html",
+  "window": {
+    "position": "center",
+    //"resizable": false
+    //"width": 1024,
+    "width": 1280,
+    "height": 768
+  }
+}
