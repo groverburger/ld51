@@ -1,14 +1,7 @@
 import Player from "./player.js"
-import Framerate from "./framerate.js"
-import Coin from "./coin.js"
-import Coin3D from "./coin3d.js"
 import Terrain from "./terrain.js"
-import Player3D from "./player3d.js"
-import Ball from "./ball.js"
-import Screenshader from "./screenshader.js"
 import DemoHelper from "./demohelper.js"
 import Goal from "./goal.js"
-import Guy from "./guy.js"
 
 const assets = {
   shaderFileSources: {
@@ -45,7 +38,7 @@ const assets = {
     cylinder: "cylinder.obj",
     plane: "plane.obj",
     sphere: "sphere.obj",
-    //player: "tv.obj",
+    pistol: "pistol.obj",
   },
 
   imageSources: {
@@ -96,15 +89,8 @@ const assets = {
   },
 
   things: {
-    Player,
-    Framerate,
-    Coin,
     Terrain,
-    Player3D,
-    Coin3D,
-    Ball,
-    Guy,
-    Screenshader,
+    Player,
     DemoHelper,
     Goal,
   }

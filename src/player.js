@@ -1,158 +1,466 @@
-import {getScene, mouse, keysDown, keysPressed, ctx} from "./core/game.js"
+import {
+  ctx,
+  globals,
+  getScene,
+  resetScene,
+  setNextScene,
+  getFramerate,
+  mouse,
+  gamepads,
+  keysDown,
+  keysPressed,
+  getThing
+} from "./core/game.js"
 import {width, height} from "./config.js"
-import {sign, angleTowards, lerp, random, clamp} from "./core/utils.js"
-import * as vec2 from "./core/vector2.js"
-import assets from "./assets.js"
 import Thing from "./core/thing.js"
+import * as gfx from "./core/webgl.js"
+import * as mat from "./core/matrices.js"
+import * as u from "./core/utils.js"
+import assets from "./assets.js"
+import * as vec3 from "./core/vector3.js"
+import * as vec2 from "./core/vector2.js"
+const {angleToVector} = vec2
+import InputHandler from "./core/inputs.js"
+import FadeIn from "./fadein.js"
+import DemoHelper from "./demohelper.js"
 import Bullet from "./bullet.js"
 
 export default class Player extends Thing {
-  sprite = assets.images.lad
-  spriteOffset = [8, 0]
-  aabb = [-8, -16, 8, 32]
+  height = 56
+  onGround = false
+  wasOnGround = false
+  aabb = [-16, -16, 16, 16]
+  cameraTarget = [0, 0, 0]
+  cameraLookAhead = 64
+  color = u.stringToColor("#cbdbfc")
+  legColor = u.stringToColor("#5b6e99")
+  ears = []
   stretch = [1, 1]
-  direction = 1
-  mouseAngle = 0
-  depth = 10
-  isOnGround = false
-  coyoteTime = 0
+  compression = 1
+  width = 16
+  canDash = true
   wannaJump = 0
-  animations = {
-    idle: {frames: [0, 1], speed: 1/12},
-    walk: {frames: [0, 2], speed: 1/8},
-    jump: {frames: [2], speed: 0},
-  }
-  collisionSettings = {
-    solidThings: true,
-    tiles: new Set([1]),
-    levelContained: true
-  }
+  coyoteFrames = 0
+  staircaseOffset = 0
+  inputs = null
+  lastFallSpeed = 0
+  time = 0
+  footstepToggle = false
+  showGui = true // cutscenes set this to false
+  deliveredCount = 0
+  sprite = null
+  framebuffer = gfx.gl.createFramebuffer()
+  depth = -10000
+  lastPosition = [0, 0, 0]
 
-  constructor(data) {
+  constructor(data={}) {
     super(data)
-    this.setName("player")
+
+    assets.sounds.music.loop = true
+    assets.sounds.music.volume = 0.3
+    //assets.sounds.music.play()
     //mouse.setStyle("none")
+
+    //getScene().addThing(new DemoHelper())
+
+    getScene().camera3D.position = [...this.position]
+    getScene().camera3D.pitch = 0.25
+
+    if (globals.showLevelIntro) {
+      getScene().addThing(new FadeIn())
+      globals.showLevelIntro = false
+    }
+
+    if (data.fieldInstances) {
+      for (const {__identifier: id, __value: val} of data.fieldInstances) {
+        if (id == "direction") {
+          this.direction = 2*Math.PI*val/8
+          getScene().camera3D.yaw = Math.PI + this.direction
+        }
+      }
+    }
+
+    this.collisionSettings.tiles = new Set()
+    this.position[2] = this.height + 128
+    this.spawnPosition = [...this.position]
+    this.speed[2] = 0
+    //this.direction = 0
+    //this.lookDirection = 0
+
+    this.setName("player")
+
+    this.inputs = new InputHandler({
+      jump(keys, mouse, gamepad) {
+        return keys.Space || gamepad?.buttons[0].pressed
+      },
+      dash(keys, mouse, gamepad) {
+        return (mouse.isLocked() && mouse.button) || gamepad?.buttons[1].pressed
+      },
+
+      xMove(keys, mouse, gamepad) {
+        const kb = !!keys.KeyD - !!keys.KeyA
+        const gp = Math.abs(gamepad?.axes[0]) > 0.1 && gamepad.axes[0]
+        return kb + gp
+      },
+      yMove(keys, mouse, gamepad) {
+        const kb = !!keys.KeyS - !!keys.KeyW
+        const gp = Math.abs(gamepad?.axes[1]) > 0.1 && gamepad.axes[1]
+        return kb + gp
+      },
+
+      xLook(keys, mouse, gamepad) {
+        const kb = !!keys.ArrowRight - !!keys.ArrowLeft
+        const gp = Math.abs(gamepad?.axes[2]) > 0.1 && gamepad.axes[2]
+        return kb*0.02 + gp*0.04
+      },
+      yLook(keys, mouse, gamepad) {
+        const kb = !!keys.ArrowDown - !!keys.ArrowUp
+        const gp = Math.abs(gamepad?.axes[3]) > 0.1 && gamepad.axes[3]
+        return kb*0.02 + gp*0.04
+      },
+
+      pause(keys, mouse, gamepad) {
+        return keys.Escape
+      },
+
+      reset(keys, mouse, gamepad) {
+        return keys.KeyR
+      },
+    })
+
+    /*
+    const mapColors = []
+    for (let i=1; i<=64; i++) {
+      mapColors.push({
+        value: i,
+        identifier: `height_${i}`,
+        color: u.colorToString(...u.hsvToRgb(0.5 + ((i-1)/128)%0.5, 1, 1))
+      })
+    }
+    console.log(JSON.stringify(mapColors))
+    */
   }
 
   update() {
-    const camera = getScene().camera.position
-    this.mouseAngle = angleTowards(...this.position, mouse.position[0] + camera[0] - width/2, mouse.position[1] + camera[1] - height/2)
-    this.direction = sign(Math.cos(this.mouseAngle)) || this.direction
-
-    const walkSpeed = 2
-    const airSpeed = 0.65
-    const friction = 0.8
-
-    this.coyoteTime = Math.max(this.coyoteTime - 1, 0)
-    this.wannaJump = Math.max(this.wannaJump - 1, 0)
-
-    if (mouse.button && !this.reloading) {
-      this.reloading = true
-      this.after(10, () => this.reloading = false)
-      const mp = vec2.subtract(vec2.add(mouse.position, getScene().camera.position), [width/2, height/2])
-      const angle = angleTowards(...this.position, ...mp) + random(-0.1, 0.1)
-      let speed = vec2.angleToVector(angle, 24)
-      let bullet = new Bullet({position: vec2.add(this.position, speed), speed})
-      this.speed = vec2.add(this.speed, vec2.angleToVector(angle, -2))
-      getScene().addThing(bullet)
-      getScene().shakeScreen()
-    }
+    this.inputs.update()
+    const scene = getScene()
+    this.time += 1
 
     // walking and friction
-    this.speed[0] += (!!keysDown.KeyD - !!keysDown.KeyA) * (this.isOnGround ? walkSpeed : airSpeed)
-    if (this.isOnGround) {
+    let dx = this.inputs.get("xMove")
+    let dy = this.inputs.get("yMove")
+    if (u.distance2d(0, 0, dx, dy) > 1) {
+      [dx, dy] = vec2.normalize([dx, dy])
+    }
+    const yaw = scene.camera3D.yaw - Math.PI/2
+    const friction = 0.94
+    const groundSpeed = 0.725 // 0.6
+    const airSpeed = 0.5 // 0.4
+    const walkSpeed = this.onGround ? groundSpeed : airSpeed
+    const maxSpeed = groundSpeed / (1 - friction)
+    const xAccel = (Math.cos(yaw)*dx - Math.sin(yaw)*dy)*walkSpeed
+    const yAccel = (Math.sin(yaw)*dx + Math.cos(yaw)*dy)*walkSpeed
+
+    // can't move if diving
+    if (this.onGround || !this.timer("disableAirControl")) {
+      const lastMagnitude = vec2.magnitude(this.speed)
+      this.speed[0] += xAccel
+      this.speed[1] += yAccel
+      const newMagnitude = vec2.magnitude(this.speed)
+
+      if (u.distance2d(0, 0, this.speed[0]+xAccel, this.speed[1]+yAccel) >= maxSpeed) {
+        this.speed[0] *= lastMagnitude/newMagnitude
+        this.speed[1] *= lastMagnitude/newMagnitude
+      }
+
+      //scene.camera3D.yaw += dx*0.025
+    }
+    this.speed[2] -= this.speed[2] < 0 ? 0.6 : 0.35
+
+    if (this.onGround) {
       this.speed[0] *= friction
-      this.coyoteTime = 6
+      this.speed[1] *= friction
+      this.canDash = true
+      this.cancelTimer("disableAirControl")
+
+      // land
+      if (!this.wasOnGround && this.lastFallSpeed < -5) {
+        this.stretch = [1.6, 0.5]
+        const sound = assets.sounds.playerLand
+        sound.volume = 0.1
+        sound.playbackRate = u.random(1, 1.2)
+        sound.currentTime = 0
+        sound.play()
+      }
     } else {
-      this.speed[0] = sign(this.speed[0]) * Math.min(walkSpeed / (1 - friction), Math.abs(this.speed[0]))
+      this.lastFallSpeed = this.speed[2]
     }
 
-    // gravity and jumping
-    this.speed[1] += this.speed[1] > 0 ? 0.8 : 0.6
-    if (keysPressed.Space) {
+    // falling and jumping
+    if (this.inputs.pressed("jump")) {
       this.wannaJump = 6
     }
-    if (this.wannaJump && this.coyoteTime) {
-      this.coyoteTime = 0
+    if (this.onGround) {
+      this.coyoteFrames = 10
+    }
+
+    const jump = () => {
+      this.speed[2] = 10
       this.wannaJump = 0
-      this.speed[1] = -14
-      this.stretch = [0.4, 1.5]
+      this.coyoteFrames = 0
+      this.stretch = [0.3, 1.4]
+      const sound = assets.sounds.playerJump
+      sound.volume = 0.2
+      sound.playbackRate = u.random(1, 1.2)
+      sound.currentTime = 0
+      sound.play()
     }
-    if (!keysDown.Space && !this.isOnGround && this.speed[1] < 0) {
-      this.speed[1] /= 2
+
+    if (this.wannaJump && this.coyoteFrames) {
+      jump()
     }
 
-    // animation
-    this.animation = Math.abs(this.speed[0]) > 0.2 ? "walk" : "idle"
-    if (!this.isOnGround) this.animation = "jump"
-
-    // integrate
-    const wasOnGround = this.isOnGround
-    const lastSpeed = [...this.speed]
-    super.update()
-    this.isOnGround = this.contactDirections.down
-    if (this.isOnGround && !wasOnGround && lastSpeed[1] > 10) {
-      this.stretch = [1.5, 0.4]
+    if (this.wannaJump) {
+      const closestWall = this.getClosestWall()
+      if (closestWall) {
+        const kickSpeed = 8
+        this.speed[0] += closestWall.normal[0] * kickSpeed
+        this.speed[1] += closestWall.normal[1] * kickSpeed
+        this.after(20, null, "disableAirControl")
+        jump()
+      }
     }
-    if (this.contactDirections.left || this.contactDirections.right) this.stretch[0] *= 0.9
 
-    // squash and stretch
-    this.stretch[0] = lerp(this.stretch[0], 1, 0.25)
-    this.stretch[1] = lerp(this.stretch[1], 1, 0.25)
+    if (!this.inputs.get("jump") && this.speed[2] >= 0) {
+      this.speed[2] /= 2
+    }
+    if (this.position[2] < 0) {
+      assets.sounds.playerSplash.play()
+      resetScene()
+    }
+    this.wannaJump = Math.max(this.wannaJump - 1, 0)
+    this.coyoteFrames = Math.max(this.coyoteFrames - 1, 0)
+    this.staircaseOffset = Math.max(this.staircaseOffset - 8, 0)
+    this.disableAirControl = Math.max(this.disableAirControl - 1, 0)
 
-    // camera follows player
-    const level = getScene().getLevelAt(...this.position)
-    getScene().camera.position[0] = this.position[0]
-    getScene().camera.position[1] = this.position[1]
-    if (level) {
-      getScene().camera.position[0] = clamp(
-        this.position[0],
-        level.aabb[0] + width/2,
-        level.aabb[2] - width/2
-      )
-      getScene().camera.position[1] = clamp(
-        this.position[1],
-        level.aabb[1] + height/2,
-        level.aabb[3] - height/2
-      )
+    // dashing
+    if (this.canDash && this.inputs.pressed("dash") && !this.timer("dashCooldown")) {
+      const sound = assets.sounds.playerDash
+      sound.playbackRate = u.random(1, 1.2)
+      sound.currentTime = 0
+      sound.play()
+      /*
+      this.canDash = false
+      //this.after(10, null, "dash")
+      const dash = vec3.multiply(vec3.anglesToVector(scene.camera3D.yaw, scene.camera3D.pitch - 0.25), -18)
+      this.speed[0] = dash[0]
+      this.speed[1] = dash[1]
+      this.speed[2] = dash[2]
+      this.cancelTimer("disableAirControl")
+      this.after(20, null, "dashCooldown")
+      */
+
+      const look = getScene().camera3D.lookVector
+      const side = vec3.crossProduct(look, [0, 0, 1])
+      let pos = vec3.add(this.position, vec3.multiply(side, 20))
+      pos = vec3.add(pos, [0, 0, -16])
+      getScene().addThing(new Bullet(pos, look))
+    }
+
+    if (this.time > 5 && this.inputs.pressed("reset")) {
+      resetScene()
+    }
+
+    if (this.time > 5 && keysDown.KeyN) {
+      setNextScene()
+    }
+
+    this.moveAndCollide()
+    this.updateTimers()
+    //super.update()
+    this.cameraUpdate()
+    this.lastPosition[0] = this.position[0]
+    this.lastPosition[1] = this.position[1]
+    this.lastPosition[2] = this.position[2]
+  }
+
+  moveAndCollide() {
+    this.position[0] += this.speed[0]
+    this.position[1] += this.speed[1]
+    this.position[2] += this.speed[2]
+    this.wasOnGround = this.onGround
+    this.onGround = false
+    if (this.position[2] < 128) {
+      this.position[2] = 128
+      this.speed[2] = 0
     }
   }
 
-  draw() {
-    this.scale[0] = this.direction * this.stretch[0]
-    this.scale[1] = this.stretch[1]
-    this.spriteOffset[0] = 8
-    this.spriteOffset[1] = 40 * (1 - this.stretch[1])
-    super.draw()
+  _moveAndCollide() {
+    this.position[0] += this.speed[0]
+    this.position[1] += this.speed[1]
+    this.position[2] += this.speed[2]
+    this.wasOnGround = this.onGround
+    this.onGround = false
 
-    // draw gun
-    ctx.save()
-    ctx.translate(...this.position)
-    ctx.translate(0, 8)
-    ctx.translate(0, (64 - this.height*2) / -2)
-    ctx.rotate(this.mouseAngle)
-    ctx.scale(1, Math.cos(this.mouseAngle) < 0 ? -1 : 1)
-    ctx.translate(8, 0)
-    ctx.drawImage(assets.images.gunArm, 0, -16)
-    ctx.restore()
+    // colliders are just triangles considered solid
+    const colliderList = getThing("terrain").query(this.position[0] - 64, this.position[1] - 64, 128, 128)
+
+    // floor collisions
+    for (const collider of colliderList) {
+      const {normal, points} = collider
+      if (normal[2] < 0.7) continue
+      let position = [...this.position]
+      position[2] -= this.height
+
+      if (!vec3.isInsideTriangle(...points, [0, 0, 1], position)) {
+        continue
+      }
+
+      const distance = vec3.distanceToTriangle(points[0], normal, position)
+      if (distance > 0) continue
+      if (distance < -64) continue
+
+      const dot = vec3.dotProduct(this.speed, normal)
+      this.speed[2] -= dot * normal[2]
+      this.position[2] += normal[2]*(-1 * distance)
+      this.onGround = true
+
+      if (this.wasOnGround && distance < 0) {
+        this.staircaseOffset = Math.min(
+          this.staircaseOffset + Math.abs(distance),
+          48
+        )
+      }
+    }
+
+    // wall/ceiling collisions
+    for (const collider of colliderList) {
+      const {normal, points} = collider
+      if (normal[2] >= 0.7) continue
+
+      const fakeNormal = vec3.findMostSimilarVector(normal, [
+        [0, 0, -1],
+        [1, 0, 0],
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, -1, 0],
+      ])
+
+      let stepHeight = this.onGround ? 48 : 16
+      for (let h=stepHeight; h<=64; h+=8) {
+        let position = [...this.position]
+        position[2] += h - this.height
+
+        if (!vec3.isInsideTriangle(...points, fakeNormal, position)) {
+          continue
+        }
+
+        const distance = vec3.distanceToTriangle(points[0], normal, position)
+        if (distance > this.width) continue
+        if (distance < -1 * this.width) continue
+
+        const dot = vec3.dotProduct(this.speed, normal)
+        if (dot < 0) {
+          this.speed[0] -= dot * normal[0]
+          this.speed[1] -= dot * normal[1]
+          this.speed[2] -= dot * normal[2]
+        }
+        const push = (this.width - distance) / 10
+        this.position[0] += normal[0]*push
+        this.position[1] += normal[1]*push
+        this.position[2] += normal[2]*push
+      }
+    }
   }
 
-  _guiDraw() {
-    const pointerSize = 28
+  getClosestWall() {
+    let closest = null
+    let closestDistance = Infinity
+    const position = [...this.position]
+    position[2] -= this.height/2
+
+    for (const collider of getThing("terrain").query(this.position[0] - 64, this.position[1] - 64, 128, 128)) {
+      const {normal, points} = collider
+      if (normal[2] >= 0.7) continue
+
+      if (!vec3.isInsideTriangle(...points, normal, position)) {
+        continue
+      }
+
+      const distance = vec3.distanceToTriangle(points[0], normal, position)
+      if (distance > this.width*1.25) continue
+      if (distance < -1 * this.width) continue
+
+      if (distance < closestDistance) {
+        closestDistance = distance
+        closest = collider
+      }
+    }
+
+    return closest
+  }
+
+  cameraUpdate() {
+    const scene = getScene()
+
+    // mouse look
+    mouse.click && mouse.lock()
+    if (mouse.isLocked()) {
+      scene.camera3D.yaw += mouse.delta[0]/500
+      scene.camera3D.pitch += mouse.delta[1]/500
+    }
+    scene.camera3D.yaw += this.inputs.get("xLook")
+    scene.camera3D.pitch += this.inputs.get("yLook")
+    scene.camera3D.position = vec3.lerp(this.lastPosition, this.position, 1)
+  }
+
+  draw(inter) {
+    const scene = getScene()
+    scene.camera3D.position = vec3.lerp(this.lastPosition, this.position, inter)
+
+    const gl = gfx.gl
+    //gfx.setFramebuffer(this.framebuffer)
+    gfx.setShader(assets.shaders.defaultShaded)
+    ///getScene().camera3D.setUniforms()
+    gfx.set("viewMatrix", [
+      1, 0, 0, 0,
+      0, 0, 1, 0,
+      0, 1, 0, 0,
+      0, 0, 0, 1,
+    ])
+    gfx.set("projectionMatrix", mat.getPerspective({fovy: Math.PI/4}))
+    gfx.set("modelMatrix", mat.getTransformation({
+      //translation: [-32, -32, -16],
+      translation: [-20, -70, -18],
+      rotation: [0, 0, Math.PI/-2],
+      scale: 640
+    }))
+    gfx.set("color", [0.25, 0.5, 1, 1])
+    gfx.setTexture(assets.textures.square)
+    gfx.drawMesh(assets.models.pistol)
+
+    /*
+    gfx.setFramebuffer()
+
+    gfx.set("projectionMatrix", mat.getIdentity())
+    gfx.set("viewMatrix", mat.getIdentity())
+    gfx.set("modelMatrix", mat.getIdentity())
+    gfx.setTexture(this.framebuffer.texture)
+    gfx.drawQuad(
+      [1, 0, 0],
+      [-1, 0, 0],
+      [0, 1, 0],
+      [0, -1, 0]
+    )
+    */
+  }
+
+  guiDraw() {
     ctx.save()
-    ctx.translate(...mouse.position)
-    ctx.fillStyle = "white"
-    ctx.beginPath()
-    ctx.moveTo(0, 0)
-    ctx.lineTo(...vec2.angleToVector(Math.PI/4, pointerSize))
-    ctx.lineTo(...vec2.angleToVector(Math.PI*3/8, pointerSize * 0.75))
-    ctx.lineTo(...vec2.angleToVector(Math.PI/2, pointerSize))
-    ctx.closePath()
-    ctx.fillStyle = "white"
-    ctx.fill()
-    ctx.lineWidth = 2
-    ctx.strokeStyle = "black"
-    ctx.stroke()
+    ctx.fillStyle = "black"
+    ctx.font = "48px Arial"
+    ctx.fillText("FPS: " + getFramerate(), 100, 100)
     ctx.restore()
   }
 }

@@ -7,7 +7,7 @@ import * as vec2 from "./core/vector2.js"
 import * as vec3 from "./core/vector3.js"
 import assets from "./assets.js"
 import SpatialHash from "./core/spatialhash.js"
-import Player3D from "./player3d.js"
+import Player from "./player.js"
 const utils = u
 
 let cache = {
@@ -680,6 +680,6 @@ export default class Terrain extends Thing {
   }
 
   populate() {
-    getScene().addThing(new Player3D())
+    getScene().addThing(new Player())
   }
 }
