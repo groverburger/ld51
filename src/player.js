@@ -63,6 +63,8 @@ export default class Player extends Thing {
 
     //getScene().addThing(new DemoHelper())
 
+    //this.position[2] = 10000
+    this.position[2] = getThing("terrain").getGroundHeight(this.position[0], this.position[1]) + 64
     getScene().camera3D.position = [...this.position]
     getScene().camera3D.pitch = 0.25
 
@@ -81,7 +83,6 @@ export default class Player extends Thing {
     }
 
     this.collisionSettings.tiles = new Set()
-    this.position[2] = this.height + 128
     this.spawnPosition = [...this.position]
     this.speed[2] = 0
     //this.direction = 0
@@ -400,15 +401,16 @@ export default class Player extends Thing {
     }
     scene.camera3D.yaw += this.inputs.get("xLook")
     scene.camera3D.pitch += this.inputs.get("yLook")
-    scene.camera3D.position = vec3.lerp(this.lastPosition, this.position, 1)
+    scene.camera3D.position = this.position
   }
 
   draw(inter) {
     const scene = getScene()
     scene.camera3D.position = vec3.lerp(this.lastPosition, this.position, inter)
 
+    gfx.setFramebuffer(this.framebuffer)
     const gl = gfx.gl
-    //gfx.setFramebuffer(this.framebuffer)
+    //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
     gfx.setShader(assets.shaders.defaultShaded)
     ///getScene().camera3D.setUniforms()
     gfx.set("viewMatrix", [
@@ -428,18 +430,19 @@ export default class Player extends Thing {
     gfx.setTexture(assets.textures.square)
     gfx.drawMesh(assets.models.pistol)
 
-    /*
+    gfx.setShader(assets.shaders.default)
     gfx.setFramebuffer()
-
     gfx.set("projectionMatrix", mat.getIdentity())
     gfx.set("viewMatrix", mat.getIdentity())
     gfx.set("modelMatrix", mat.getIdentity())
+    gfx.set("color", [1,1,1,1])
     gfx.setTexture(this.framebuffer.texture)
+    /*
     gfx.drawQuad(
-      [1, 0, 0],
-      [-1, 0, 0],
-      [0, 1, 0],
-      [0, -1, 0]
+      1, 1, 0,
+      1, -1, 0,
+      -1, 1, 0,
+      -1, -1, 0
     )
     */
   }
