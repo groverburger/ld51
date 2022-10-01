@@ -1,4 +1,4 @@
-import {getScene} from "./core/game.js"
+import {getScene, getThing} from "./core/game.js"
 import Thing from "./core/thing.js"
 import * as gfx from "./core/webgl.js"
 import * as mat from "./core/matrices.js"
@@ -11,6 +11,7 @@ import * as caves from "./proccaves.js"
 import assets from "./assets.js"
 import SpatialHash from "./core/spatialhash.js"
 import Player from "./player.js"
+import Goal from "./goal.js"
 const utils = u
 
 let cache = {
@@ -691,8 +692,9 @@ export default class Terrain extends Thing {
     this.startPoint = generated.startPoint
     this.endPoint = generated.endPoint
 
-    proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
+    proc.guaranteePath(generated.terrain, generated.startPoint, generated.endPoint)
 
+    proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
   }
 
   populate() {
@@ -700,5 +702,11 @@ export default class Terrain extends Thing {
     p.position[0] = this.startPoint[0] * 64
     p.position[1] = this.startPoint[1] * 64
     p.position[2] = this.map[this.startPoint] * 64
+
+    const g = getScene().addThing(new Goal())
+    g.position[0] = this.endPoint[0] * 64
+    g.position[1] = this.endPoint[1] * 64
+    g.position[2] = getThing("terrain").getGroundHeight(p.position[0], p.position[1]) + 64
+    console.log("Flag placed at height " + g.position[2])
   }
 }

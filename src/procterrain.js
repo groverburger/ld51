@@ -1,4 +1,5 @@
 import * as proc from "./procgeneral.js"
+import { add, scale } from "./core/vector2.js"
 
 const ROUGHNESS_CONSTANT = 0.5
 const BELL_ITERATIONS = 9
@@ -77,7 +78,7 @@ function smoothIteration(terrain) {
     let lowest = 0
     let pos = proc.stringToPosition(key);
     for (const delta of deltas) {
-      let samplePos = proc.posAdd(pos, delta)
+      let samplePos = add(pos, delta)
       
       if (samplePos in terrain) {
         let here = terrain[pos];
@@ -127,7 +128,7 @@ function diamondSquareIterate(terrain, size, moveDistance, variance, varianceMod
         
         // Collect the four parent points for the average
         for (const delta of deltas) {
-          let samplePos = proc.posAdd(pos, proc.posScale(delta, deltaScale))
+          let samplePos = add(pos, scale(delta, deltaScale))
           if (samplePos in terrain) {
             count += 1
             total += terrain[samplePos]

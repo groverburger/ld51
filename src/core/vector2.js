@@ -23,6 +23,13 @@ export function subtract(a, b) {
   ]
 }
 
+export function scale(vector, scale) {
+  return [
+    vector[0] * scale,
+    vector[1] * scale,
+  ]
+}
+
 export function normalize(vector) {
   const magnitude = Math.sqrt(vector[0]**2 + vector[1]**2)
 
