@@ -71,11 +71,8 @@ function frame(frameTime) {
   }
   accumulator %= refreshRate
 
-  // only redraw if an update occured
-  if (times) {
-    draw()
-    frameCount += 1
-  }
+  draw(accumulator / refreshRate)
+  frameCount += 1
 
   requestAnimationFrame(frame)
 }
@@ -121,9 +118,9 @@ function update() {
   mouse.click = false
 }
 
-function draw() {
+function draw(inter) {
   if (!document.hasFocus()) { return }
-  scene.draw()
+  scene?.draw(inter)
 }
 
 function loseFocus() {

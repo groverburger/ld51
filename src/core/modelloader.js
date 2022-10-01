@@ -5,19 +5,24 @@ export let loadObj = (fileString, combine=false) => {
   const objects = {}
   let currentObject
 
+  const makeObject = (name) => {
+    objects[name] = {
+      verts: [],
+      positions: [],
+      uvs: [],
+      normals: [],
+      lines: [],
+      name: name,
+    }
+    currentObject = objects[name]
+  }
+  makeObject("default")
+
   for (const line of fileString.split(/\r?\n/)) {
     const words = line.split(/ +/)
 
     if (words[0] == "o") {
-      objects[words[1]] = {
-        verts: [],
-        positions: [],
-        uvs: [],
-        normals: [],
-        lines: [],
-        name: words[1],
-      }
-      currentObject = objects[words[1]]
+      makeObject(words[1])
       continue
     }
 

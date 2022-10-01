@@ -124,7 +124,7 @@ export default class Scene {
     }
   }
 
-  draw() {
+  draw(inter) {
     const bgColor = this.getLevelAt(...this.camera.position)?.bgColor || "#4488ff"
     if (isWebglEnabled) {
       // webgl is enabled, so fill color on the webgl canvas instead of the 2d canvas
@@ -192,7 +192,7 @@ export default class Scene {
     const layerOrder = Object.keys(this.layers).map(Number).sort((a, b) => a - b)
     for (const layer of layerOrder) {
       for (const thing of this.layers[layer]) {
-        thing.draw()
+        thing.draw(inter)
       }
     }
 
@@ -200,7 +200,7 @@ export default class Scene {
 
     for (const layer of layerOrder) {
       for (const thing of this.layers[layer]) {
-        thing.guiDraw()
+        thing.guiDraw(inter)
       }
     }
   }

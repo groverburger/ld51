@@ -10,7 +10,7 @@ import * as terrain from "./procterrain.js"
 import * as caves from "./proccaves.js"
 import assets from "./assets.js"
 import SpatialHash from "./core/spatialhash.js"
-import Player3D from "./player3d.js"
+import Player from "./player.js"
 const utils = u
 
 let cache = {
@@ -687,6 +687,6 @@ export default class Terrain extends Thing {
   }
 
   populate() {
-    getScene().addThing(new Player3D())
+    getScene().addThing(new Player())
   }
 }

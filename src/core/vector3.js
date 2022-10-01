@@ -110,23 +110,24 @@ export function vectorToAngles(vector) {
   ]
 }
 
-export function isInsideTriangle(p1, p2, p3, normal, position) {
-  const edge1 = crossProduct(subtract(p2, p1), subtract(position, p1))
-  const edge2 = crossProduct(subtract(p3, p2), subtract(position, p2))
-  const edge3 = crossProduct(subtract(p1, p3), subtract(position, p3))
+function triEdge(p1, p2, position, normal) {
+  const s1x = p2[0] - p1[0]
+  const s1y = p2[1] - p1[1]
+  const s1z = p2[2] - p1[2]
+  const s2x = position[0] - p1[0]
+  const s2y = position[1] - p1[1]
+  const s2z = position[2] - p1[2]
+  const ex = s1y*s2z - s1z*s2y
+  const ey = s1z*s2x - s1x*s2z
+  const ez = s1x*s2y - s1y*s2x
+  return ex*normal[0] + ey*normal[1] + ez*normal[2]
+}
 
-  return (
-    (
-      dotProduct(edge1, normal) >= 0 &&
-      dotProduct(edge2, normal) >= 0 &&
-      dotProduct(edge3, normal) >= 0
-    ) ||
-    (
-      dotProduct(edge1, normal) < 0 &&
-      dotProduct(edge2, normal) < 0 &&
-      dotProduct(edge3, normal) < 0
-    )
-  )
+export function isInsideTriangle(p1, p2, p3, normal, position) {
+  const e1 = triEdge(p1, p2, position, normal)
+  const e2 = triEdge(p2, p3, position, normal)
+  const e3 = triEdge(p3, p1, position, normal)
+  return (e1 >= 0 && e2 >= 0 && e3 >= 0) || (e1 < 0 && e2 < 0 && e3 < 0)
 }
 
 export function distanceToTriangle(p1, normal, position) {
