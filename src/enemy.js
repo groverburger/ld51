@@ -6,23 +6,39 @@ import * as u from "./core/utils.js"
 import assets from "./assets.js"
 import * as vec3 from "./core/vector3.js"
 import * as vec2 from "./core/vector2.js"
+import Bullet from "./bullet.js"
 
 export default class Enemy extends Thing {
   height = 48
+  angle = 0
 
   constructor(position) {
     super()
     this.position = position
     this.groundHeight = game.getThing("terrain").getGroundHeight(this.position[0], this.position[1])
     this.position[2] = this.groundHeight + this.height
+    this.speed[2] = 0
+    this.after(60, () => this.angleUpdate())
   }
 
   update() {
+    // fall down when above ground
+    this.groundHeight = game.getThing("terrain").getGroundHeight(this.position[0], this.position[1])
+    if (this.position[2] > this.groundHeight + this.height) {
+      this.speed[2] -= 1
+    } else if (this.speed[2] < 0) {
+      this.speed[2] = 0
+      this.position[2] = this.groundHeight + this.height
+    }
+
+    // step up when below ground
+    if (this.position[2] < this.groundHeight + this.height) {
+      this.position[2] += 4
+    }
+
+    // move towards player
     const player = game.getThing("player")
-    const accel = vec2.angleToVector(
-      u.angleTowards(this.position[0], this.position[1], player.position[0], player.position[1]),
-      0.5
-    )
+    const accel = vec2.angleToVector(this.angle, 0.5)
     this.speed[0] += accel[0]
     this.speed[1] += accel[1]
 
@@ -30,7 +46,16 @@ export default class Enemy extends Thing {
     this.speed[0] *= friction
     this.speed[1] *= friction
 
+    for (const thing of this.getAllThingCollisions()) {
+      if (thing instanceof Bullet && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 8) {
+        this.dead = true
+        thing.dead = true
+        break
+      }
+    }
+
     super.update()
+    this.position[2] += this.speed[2]
   }
 
   draw() {
@@ -48,7 +73,14 @@ export default class Enemy extends Thing {
   checkCollision(x=this.position[0], y=this.position[1]) {
     return (
       super.checkCollision(x, y) ||
-      game.getThing("terrain").getGroundHeight(x, y) != this.groundHeight
+      game.getThing("terrain").getGroundHeight(x, y) >= this.groundHeight + 96
     )
+  }
+
+  angleUpdate() {
+    this.after(60, () => this.angleUpdate())
+    const player = game.getThing("player")
+    this.angle = u.angleTowards(this.position[0], this.position[1], player.position[0], player.position[1])
+    this.angle += u.random(-1, 1)
   }
 }
