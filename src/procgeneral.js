@@ -10,6 +10,7 @@ export default class GeneratorParams {
   caveWallHeight = 20 // How tall the bounding walls are
   caveSpaciousness = 0.5 // How much space vs walls
   caveOpenness = 0.5 // High values make the cave open to move around, low values make it snakey and linear
+  caveLayers = 3
 
   // Terrain
   terrainVariance = 9 // How jagged the terrain is

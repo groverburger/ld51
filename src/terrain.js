@@ -687,10 +687,10 @@ export default class Terrain extends Thing {
     genParams.width = 70
     genParams.length = 30
     genParams.height = 4
-    genParams.caveWallHeight = 70
+    genParams.caveWallHeight = 40
     genParams.caveSpaciousness = -1
     genParams.caveOpenness = -1
-    genParams.terrainVariance = 20
+    genParams.terrainVariance = 40
 
     proc.mergeTerrain(this.map, caves.generateCaves(genParams), [-1, -1])
 
