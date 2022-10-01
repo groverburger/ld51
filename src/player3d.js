@@ -46,7 +46,7 @@ export default class Player3D extends Thing {
   showGui = true // cutscenes set this to false
   deliveredCount = 0
 
-  constructor(data) {
+  constructor(data={}) {
     super(data)
 
     assets.sounds.music.loop = true

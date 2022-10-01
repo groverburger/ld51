@@ -7,6 +7,7 @@ import * as vec2 from "./core/vector2.js"
 import * as vec3 from "./core/vector3.js"
 import assets from "./assets.js"
 import SpatialHash from "./core/spatialhash.js"
+import Player3D from "./player3d.js"
 const utils = u
 
 let cache = {
@@ -21,11 +22,13 @@ export default class Terrain extends Thing {
   texturedMeshes = {}
   texturedVerts = {}
   time = 0
+  map = {}
 
   constructor(data) {
     super(data)
     this.position[2] = 0
-    getScene().namedThings.terrain = this
+    this.setName("terrain")
+
     for (let i=1; i<=128; i++) {
       this.heightMap[i] = (i-1)*32
     }
@@ -44,13 +47,19 @@ export default class Terrain extends Thing {
     cache.name = getScene().name
     cache.object = this
 
+    this.generate()
+    this.createMesh()
+    this.populate()
+  }
+
+  createMesh() {
     /********************************************************************************
        list all the tile positions in the map
      ********************************************************************************/
 
-    const grid = getScene().map.gridSize
+    const grid = 64
     const tileSet = new Set()
-    for (const tile of Object.keys(getScene().map.tileLayers.Main)) {
+    for (const tile of Object.keys(this.map)) {
       const [x, y] = tile.split(",").map(Number)
       tileSet.add([x, y])
       tileSet.add([x+1, y])
@@ -185,11 +194,11 @@ export default class Terrain extends Thing {
     const meshed = {}
     const greedyMesh = (x, y) => {
       const xMin = x, yMin = y
-      const tile = getScene().getTileAt(x, y)
-      const tileType = getScene().getTileAt(x, y, "TileType")
+      const tile = this.getTileAt(x, y)
+      const tileType = this.getTileAt(x, y, "TileType")
       while (
-        getScene().getTileAt(x, y) == tile &&
-        getScene().getTileAt(x, y, "TileType") == tileType
+        this.getTileAt(x, y) == tile &&
+        this.getTileAt(x, y, "TileType") == tileType
       ) {
         meshed[[x,y]] = true
         y += 1
@@ -200,8 +209,8 @@ export default class Terrain extends Thing {
       while (!stop) {
         for (let y=yMin; y<=yMax; y++) {
           if (
-            getScene().getTileAt(x, y) != tile ||
-            getScene().getTileAt(x, y, "TileType") != tileType
+            this.getTileAt(x, y) != tile ||
+            this.getTileAt(x, y, "TileType") != tileType
           ) {
             stop = true
             break
@@ -237,7 +246,7 @@ export default class Terrain extends Thing {
     const tau = Math.PI*2
     const seaLevel = this.seaLevel
     for (let [x, y] of tiles) {
-      const tile = getScene().getTileAt(x, y)
+      const tile = this.getTileAt(x, y)
       if (!tile) continue
       const height = this.heightMap[tile]
 
@@ -248,14 +257,14 @@ export default class Terrain extends Thing {
           [greedy[2], greedy[1]],
           [greedy[0], greedy[3]],
           height,
-          getFloorTexture(getScene().getTileAt(x, y, "TileType"))
+          getFloorTexture(this.getTileAt(x, y, "TileType"))
         )
         addFloorTri(
           [greedy[2], greedy[3]],
           [greedy[2], greedy[1]],
           [greedy[0], greedy[3]],
           height,
-          getFloorTexture(getScene().getTileAt(x, y, "TileType"))
+          getFloorTexture(this.getTileAt(x, y, "TileType"))
         )
       }
 
@@ -266,17 +275,17 @@ export default class Terrain extends Thing {
       const cy = y+grid/2
       const center = [cx, cy]
 
-      const heightAt = (x, y) => this.heightMap[getScene().getTileAtWorld(x, y)]
+      const heightAt = (x, y) => this.heightMap[this.getTileAtWorld(x, y)]
 
       // deal with sloped floors
-      if (isSlope(getScene().getTileAtWorld(x, y, "TileType"))) {
+      if (isSlope(this.getTileAtWorld(x, y, "TileType"))) {
         const slopeDistance = height == 0 ? grid*10 : grid*1.5
 
         for (let i=0; i<tau; i+=tau/4) {
           const normal = [cos(i), sin(i)]
           const coord = [cx + normal[0]*64, cy + normal[1]*64]
           const otherHeight = heightAt(...coord)
-          const otherTiletype = getScene().getTileAtWorld(...coord)
+          const otherTiletype = this.getTileAtWorld(...coord)
           if (otherHeight >= height) continue
           const turn = [cos(i+pi/2), sin(i+pi/2)]
 
@@ -299,7 +308,7 @@ export default class Terrain extends Thing {
               otherHeight
             ],
 
-            getFloorTexture(getScene().getTileAtWorld(x, y, "TileType"))
+            getFloorTexture(this.getTileAtWorld(x, y, "TileType"))
           )
 
           add3DFloorTri(
@@ -321,7 +330,7 @@ export default class Terrain extends Thing {
               otherHeight
             ],
 
-            getFloorTexture(getScene().getTileAtWorld(x, y, "TileType"))
+            getFloorTexture(this.getTileAtWorld(x, y, "TileType"))
           )
         }
 
@@ -352,7 +361,7 @@ export default class Terrain extends Thing {
               otherHeight
             ],
 
-            getFloorTexture(getScene().getTileAtWorld(x, y, "TileType"))
+            getFloorTexture(this.getTileAtWorld(x, y, "TileType"))
           )
         }
 
@@ -414,7 +423,7 @@ export default class Terrain extends Thing {
                 center[1] + normal[1]*grid/2 + turn[1]*grid/-2,
               ],
               height,
-              getFloorTexture(getScene().getTileAtWorld(x, y, "TileType"))
+              getFloorTexture(this.getTileAtWorld(x, y, "TileType"))
             )
           }
         }
@@ -446,8 +455,8 @@ export default class Terrain extends Thing {
               -256,
               height,
               {
-                texture: getWallTexture(getScene().getTileAtWorld(x, y, "TileType")),
-                flair: getFlairTexture(getScene().getTileAtWorld(x, y, "TileType"))
+                texture: getWallTexture(this.getTileAtWorld(x, y, "TileType")),
+                flair: getFlairTexture(this.getTileAtWorld(x, y, "TileType"))
               }
             )
 
@@ -465,7 +474,7 @@ export default class Terrain extends Thing {
                 center[1] + normal[1]*grid/2 + turn[1]*grid/-2,
               ],
               height,
-              getFloorTexture(getScene().getTileAtWorld(x, y, "TileType"))
+              getFloorTexture(this.getTileAtWorld(x, y, "TileType"))
             )
           }
         }
@@ -489,8 +498,8 @@ export default class Terrain extends Thing {
           -256,
           height,
           {
-            texture: getWallTexture(getScene().getTileAtWorld(x, y, "TileType")),
-            flair: getFlairTexture(getScene().getTileAtWorld(x, y, "TileType"))
+            texture: getWallTexture(this.getTileAtWorld(x, y, "TileType")),
+            flair: getFlairTexture(this.getTileAtWorld(x, y, "TileType"))
           }
         )
       }
@@ -651,5 +660,26 @@ export default class Terrain extends Thing {
 
   query(x, y, w, h) {
     return this.spatialHash.query(x, y, w, h)
+  }
+
+  getTileAt(x, y, what) {
+    if (what == "TileType") { return undefined }
+    return this.map[[x,y]]
+  }
+
+  getTileAtWorld(x, y, what) {
+    return this.getTileAt(Math.floor(x/64), Math.floor(y/64), what)
+  }
+
+  generate() {
+    for (let x=-32; x<32; x++) {
+      for (let y=-32; y<32; y++) {
+        this.map[[x, y]] = u.random(1, 3)|0
+      }
+    }
+  }
+
+  populate() {
+    getScene().addThing(new Player3D())
   }
 }
