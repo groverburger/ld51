@@ -16,7 +16,6 @@ export default class Bullet extends Thing {
   }
 
   update() {
-    /*
     const colliderSize = 256
     const colliders = game.getThing("terrain").query(
       this.position[0] - colliderSize,
@@ -34,12 +33,11 @@ export default class Bullet extends Thing {
         normal
       )
 
-      if (itx) {
+      if (itx && u.distance3d(...itx, ...this.position) <= vec3.magnitude(this.speed)) {
         this.dead = true
         break
       }
     }
-    */
 
     this.position[0] += this.speed[0]
     this.position[1] += this.speed[1]
@@ -49,13 +47,13 @@ export default class Bullet extends Thing {
   }
 
   draw() {
-    for (let i=0; i<5; i++) {
+    for (let i=0; i<3; i++) {
       gfx.setShader(assets.shaders.billboard)
       gfx.setTexture(assets.textures.circle)
       game.getScene().camera3D.setUniforms()
       gfx.set("modelMatrix", mat.getTransformation({
         translation: vec3.add(this.position, vec3.multiply(this.direction, i * -12)),
-        scale: 12 - i*2
+        scale: 14 - i*3
       }))
       gfx.set("color", i == 0 ? [1,1,1,1] : [1,0,0,1])
       gfx.drawBillboard()

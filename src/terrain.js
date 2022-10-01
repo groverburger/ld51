@@ -142,7 +142,7 @@ export default class Terrain extends Thing {
         texture
       )
 
-      if (flair) {
+      if (false && flair) {
         addTriangle(
           [p1[0], p1[1], height],
           [p2[0], p2[1], height],
@@ -674,12 +674,15 @@ export default class Terrain extends Thing {
   generate() {
     for (let x=-32; x<32; x++) {
       for (let y=-32; y<32; y++) {
-        this.map[[x, y]] = u.random(1, 3)|0
+        //this.map[[x, y]] = u.random(1, 6)|0
+        const f = 13.67
+        this.map[[x, y]] = u.map(u.noise(x/f, y/f), -1, 1, 1, 8)|0
       }
     }
   }
 
   populate() {
-    getScene().addThing(new Player())
+    const p = getScene().addThing(new Player())
+    p.position[2] = 300
   }
 }

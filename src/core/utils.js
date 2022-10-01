@@ -160,10 +160,6 @@ export function noise(x, y=0, z=0) {
     return Math.sin(angle * 512)
   }
 
-  const lerp = (v0, v1, t) => {
-    return v0 + t*(v1-v0)
-  }
-
   const fx = Math.floor(x)
   const fy = Math.floor(y)
   const fz = Math.floor(z)

@@ -262,8 +262,8 @@ export default class Player extends Thing {
 
       const look = getScene().camera3D.lookVector
       const side = vec3.crossProduct(look, [0, 0, 1])
-      let pos = vec3.add(this.position, vec3.multiply(side, 20))
-      pos = vec3.add(pos, [0, 0, -16])
+      let pos = vec3.add(this.position, vec3.multiply(side, 16))
+      pos = vec3.add(pos, [0, 0, -14])
       getScene().addThing(new Bullet(pos, look))
     }
 
@@ -285,18 +285,6 @@ export default class Player extends Thing {
   }
 
   moveAndCollide() {
-    this.position[0] += this.speed[0]
-    this.position[1] += this.speed[1]
-    this.position[2] += this.speed[2]
-    this.wasOnGround = this.onGround
-    this.onGround = false
-    if (this.position[2] < 128) {
-      this.position[2] = 128
-      this.speed[2] = 0
-    }
-  }
-
-  _moveAndCollide() {
     this.position[0] += this.speed[0]
     this.position[1] += this.speed[1]
     this.position[2] += this.speed[2]
