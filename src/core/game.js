@@ -77,10 +77,10 @@ function frame(frameTime) {
   }
   accumulator %= refreshRate
 
-  if (times) {
-    draw(0)
+  //if (times) {
+    draw(accumulator / refreshRate)
     frameCount += 1
-  }
+  //}
 
   requestAnimationFrame(frame)
 }

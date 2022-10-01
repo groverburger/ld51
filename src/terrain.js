@@ -231,11 +231,13 @@ export default class Terrain extends Thing {
     }
 
     const getFloorTexture = (tileType) => {
-      return tileType ? (["grass", "sand"])[tileType-1] : "grass"
+      //return tileType ? (["grass", "sand"])[tileType-1] : "grass"
+      return "stone"
     }
 
     const getWallTexture = (tileType) => {
-      return tileType ? (["stone", "sand"])[tileType-1] : "stone"
+      //return tileType ? (["stone", "sand"])[tileType-1] : "stone"
+      return "stone"
     }
 
     const getFlairTexture = (tileType) => {
@@ -604,6 +606,7 @@ export default class Terrain extends Thing {
     )
 
     // draw clouds
+    /*
     gfx.setShader(assets.shaders.clouds)
     getScene().camera3D.setUniforms()
     gfx.setTexture(assets.textures.perlin)
@@ -625,6 +628,7 @@ export default class Terrain extends Thing {
       -1, 1, 0,
       1, 1, 0,
     )
+    */
   }
 
   addToSpatialHash(p1, p2, p3, {material}={}) {
