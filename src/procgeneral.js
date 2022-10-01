@@ -1,3 +1,22 @@
+export default class GeneratorParams {
+  constructor() {}
+
+  // General
+  width = 5 // How wide on the x axis to make the structure
+  length = 5 // How long on the y axis to make the structure
+  height = 1 // The height of the floor
+
+  // Caves
+  caveWallHeight = 20 // How tall the bounding walls are
+  caveSpaciousness = 0.5 // How much space vs walls
+  caveOpenness = 0.5 // High values make the cave open to move around, low values make it snakey and linear
+
+  // Terrain
+  terrainVariance = 9 // How jagged the terrain is
+  terrainRoughness = 0.4 // How steep the hills can be
+}
+
+
 export function posAdd(pos1, pos2) {
   return [parseInt(pos1[0]) + parseInt(pos2[0]), parseInt(pos1[1]) + parseInt(pos2[1])]
 }

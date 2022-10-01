@@ -1,34 +1,40 @@
 import * as proc from "./procgeneral.js"
+import * as terr from "./procterrain.js"
 
 const BIRTH_LIMIT = 3
 const DEATH_LIMIT = 2
-const INITIAL_CHANCE = .22
-const STEPS = 7
 
-export function generateCaves(width, length, floorHeight, wallHeight) {
-  let spaces = {}
+export function generateCaves(params) {
+  // Get necessary params
+  let width = params.width
+  let length = params.length
+  let floorHeight = params.height
+  let wallHeight = params.caveWallHeight
+
+  // Calculate initialChance and steps
+  let initialChanceParam = ((1-params.caveSpaciousness) + (params.caveOpenness)) / 2
+  let stepsParam = ((1-params.caveSpaciousness) + (1-params.caveOpenness)) / 2
+  let initialChance = initialChanceParam * 0.1 + 0.2
+  let steps = stepsParam * 5 + 2
 
   // Create the initial array
+  let spaces = {}
   for (let i = 0; i < width; i ++) {
     for (let j = 0; j < length; j ++) {
-      spaces[[i,j]] = Math.random() < INITIAL_CHANCE
+      spaces[[i,j]] = Math.random() < initialChance
     }
   }
 
   // Iterate the algorithm
-  for (let i = 0; i < STEPS; i ++) {
-    console.log(spaces)
+  for (let i = 0; i < steps; i ++) {
     caveIterate(spaces)
   }
 
   // Convert into terrain
-  let terrain = {}
+  let terrain = terr.generateTerrain(params)
   for (const key in spaces) {
     if (spaces[key] == true) {
       terrain[key] = wallHeight
-    }
-    else {
-      terrain[key] = floorHeight
     }
   }
 
@@ -49,6 +55,9 @@ function caveIterate(spaces) {
         if (spaces[samplePos] == true) {
           count += 1
         }
+      }
+      else {
+        count += 1
       }
     }
 

@@ -5,7 +5,7 @@ import * as mat from "./core/matrices.js"
 import * as u from "./core/utils.js"
 import * as vec2 from "./core/vector2.js"
 import * as vec3 from "./core/vector3.js"
-import * as proc from "./procgeneral.js"
+import GeneratorParams, * as proc from "./procgeneral.js"
 import * as terrain from "./procterrain.js"
 import * as caves from "./proccaves.js"
 import assets from "./assets.js"
@@ -682,12 +682,22 @@ export default class Terrain extends Thing {
     }
 
     //proc.mergeTerrain(this.map, terrain.generateTerrain(10, 10, 4, 0.4, 9, 0), [0, 0])
-    proc.mergeTerrain(this.map, caves.generateCaves(80, 80, 1, 20), [0, 0])
+
+    let genParams = new GeneratorParams()
+    genParams.width = 70
+    genParams.length = 30
+    genParams.height = 4
+    genParams.caveWallHeight = 70
+    genParams.caveSpaciousness = -1
+    genParams.caveOpenness = -1
+    genParams.terrainVariance = 20
+
+    proc.mergeTerrain(this.map, caves.generateCaves(genParams), [-1, -1])
 
   }
 
   populate() {
     const p = getScene().addThing(new Player())
-    p.position[2] = 300
+    p.position[2] = 3000
   }
 }
