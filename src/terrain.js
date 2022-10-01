@@ -632,6 +632,12 @@ export default class Terrain extends Thing {
     const w = [p1, p2, p3].reduce((prev, now) => Math.max(prev, now[0]-x), 1)
     const h = [p1, p2, p3].reduce((prev, now) => Math.max(prev, now[1]-y), 1)
 
+    for (const point of [p1,p2,p3]) {
+      if (point[2] == undefined) {
+        point[2] = this.seaLevel
+      }
+    }
+
     let normal = vec3.getNormalOf(p1, p2, p3)
     if (normal[2] > 0.99) {
       normal = [0, 0, 1]
