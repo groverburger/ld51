@@ -5,7 +5,7 @@ import * as mat from "./core/matrices.js"
 import * as u from "./core/utils.js"
 import * as vec2 from "./core/vector2.js"
 import * as vec3 from "./core/vector3.js"
-import GeneratorParams, * as proc from "./procgeneral.js"
+import * as proc from "./procgeneral.js"
 import * as terrain from "./procterrain.js"
 import * as caves from "./proccaves.js"
 import assets from "./assets.js"
@@ -26,6 +26,8 @@ export default class Terrain extends Thing {
   texturedVerts = {}
   time = 0
   map = {}
+  startPoint = [0, 0]
+  endPoint = [0, 0]
 
   constructor(data) {
     super(data)
@@ -683,7 +685,7 @@ export default class Terrain extends Thing {
 
     //proc.mergeTerrain(this.map, terrain.generateTerrain(10, 10, 4, 0.4, 9, 0), [0, 0])
 
-    let genParams = new GeneratorParams()
+    let genParams = new proc.GeneratorParams()
     genParams.width = 70
     genParams.length = 30
     genParams.height = 4
@@ -692,12 +694,19 @@ export default class Terrain extends Thing {
     genParams.caveOpenness = -1
     genParams.terrainVariance = 40
 
-    proc.mergeTerrain(this.map, caves.generateCaves(genParams), [-1, -1])
+    let generated = caves.generateCaves(genParams)
+
+    this.startPoint = generated.startPoint
+    this.endPoint = generated.endPoint
+
+    proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
 
   }
 
   populate() {
     const p = getScene().addThing(new Player())
-    p.position[2] = 3000
+    p.position[0] = this.startPoint[0] * 64
+    p.position[1] = this.startPoint[1] * 64
+    p.position[2] = this.map[this.startPoint] * 64
   }
 }

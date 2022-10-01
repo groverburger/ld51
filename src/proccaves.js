@@ -11,16 +11,28 @@ export function generateCaves(params) {
   let layers = params.caveLayers
   let wallHeight = params.caveWallHeight
 
-  // Create multiple layers
   // Start by creating an uncarved flat at wall height
   let flatParams = {...params}
   flatParams.height = wallHeight
   let terrain = basic.generateFlat(flatParams)
+
   // Iterate over cave layers
+  let startPoint = [0, 0]
+  let endPoint = [0, 0]
   for (let i = layers-1; i >= 0; i --) {
-    let terrainLayer = terr.generateTerrain(params)
+    // Generate the terrain
+    let terrainLayer = terr.generateTerrain(params).terrain
     let spacesLayer = caveAlgorithm(params)
-    console.log(spacesLayer)
+
+    // If this is layer 0, make sure the maze is actually solvable
+    if (i == 0) {
+      let sneResult = determineStartAndEndPoint(spacesLayer)
+      startPoint = sneResult[0]
+      endPoint = sneResult[1]
+      guaranteePath(spacesLayer, startPoint, endPoint)
+    }
+
+    // Merge the cave-gen with the terrain-gen
     for (const key in spacesLayer) {
       if (spacesLayer[key] == false) {
         terrain[key] = terrainLayer[key] + (i * LAYER_HEIGHT_DIFFERENCE)
@@ -28,7 +40,12 @@ export function generateCaves(params) {
     }
   }
 
-  return terrain
+  // Return
+  let ret = new proc.GeneratorResult()
+  ret.terrain = terrain
+  ret.startPoint = startPoint
+  ret.endPoint = endPoint
+  return ret
 }
 
 function caveAlgorithm(params) {
@@ -103,5 +120,91 @@ function caveIterate(spaces) {
   // Save iteration
   for (const key in newSpaces) {
     spaces[key] = newSpaces[key]
+  }
+}
+
+function determineStartAndEndPoint(spaces) {
+  let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+  let candidates = []
+
+  for (const key in spaces) {
+    // If this is an open space
+    if (spaces[key] == false) {
+      // Look through adjacent spaces
+      let count = 0
+      let pos = proc.stringToPosition(key);
+      for (const delta of deltas) {
+        let samplePos = proc.posAdd(pos, delta)
+        if (samplePos in spaces) {
+          if (spaces[samplePos] == true) {
+            count += 1
+          }
+        }
+        else {
+          count += 1
+        }
+      }
+
+      // If this is a corner alcove, add this as a candidate
+      if (count >= 5) {
+        candidates.push(pos)
+      }
+    }
+  }
+
+  
+  // Randomly whittle candidates down to seven
+  // Adds some RNG and limits the time complexity of the next step
+  while (candidates.length > 7) {
+    let remove = Math.floor(Math.random() * candidates.length)
+    console.log("Whittling")
+    candidates.splice(remove, 1)
+  }
+
+  // Find the two candidates that are furthest apart
+  let maxDistance = 0
+  let maxPos1 = [0,0]
+  let maxPos2 = [0,0]
+  for (let i = 0; i < candidates.length; i ++) {
+    for (let j = i+1; j < candidates.length; j ++) {
+      // Determine the distance between the two candidates
+      let pos1 = candidates[i]
+      let pos2 = candidates[j]
+      let distance = Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2)
+
+      // Track the max distance pair
+      if (distance > maxDistance) {
+        maxPos1 = pos1
+        maxPos2 = pos2
+        maxDistance = distance
+      }
+    }
+  }
+
+  // Return
+  return [maxPos1, maxPos2]
+}
+
+function guaranteePath(spaces, startPoint, endPoint) {
+  // Make sure the start point and end point exist
+  if (!(startPoint in spaces)) {
+    console.error("Player start point is not a valid space")
+    return
+  }
+  if (!(endPoint in spaces)) {
+    console.error("Player end point is not a valid space")
+    return
+  }
+
+  // Start by carving out a 3x3 space at each point
+  let startHeight = spaces[startPoint]
+  let endHeight = spaces[endPoint]
+  let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+  for (const delta of deltas) {
+    let startAdj = proc.posAdd(startPoint, delta)
+    spaces[startAdj] = startHeight
+
+    let endAdj = proc.posAdd(endPoint, delta)
+    spaces[endAdj] = endHeight
   }
 }

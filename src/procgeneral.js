@@ -1,6 +1,4 @@
-export default class GeneratorParams {
-  constructor() {}
-
+export class GeneratorParams {
   // General
   width = 5 // How wide on the x axis to make the structure
   length = 5 // How long on the y axis to make the structure
@@ -15,6 +13,14 @@ export default class GeneratorParams {
   // Terrain
   terrainVariance = 9 // How jagged the terrain is
   terrainRoughness = 0.4 // How steep the hills can be
+}
+
+export class GeneratorResult {
+  // General
+  terrain = {}
+  types = {}
+  startPoint = [0, 0]
+  endPoint = [0, 0]
 }
 
 

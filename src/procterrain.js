@@ -56,7 +56,10 @@ export function generateTerrain(params) {
   // Smoothing step to prevent one-tile holes
   smooth(terrain, SMOOTHING_ITERATIONS)
 
-  return terrain
+  // Return
+  let ret = new proc.GeneratorResult()
+  ret.terrain = terrain
+  return ret
 }
 
 function smooth(terrain, iterations) {
