@@ -62,10 +62,12 @@ export default class Player3D extends Thing {
       globals.showLevelIntro = false
     }
 
-    for (const {__identifier: id, __value: val} of data.fieldInstances) {
-      if (id == "direction") {
-        this.direction = 2*Math.PI*val/8
-        getScene().camera3D.yaw = Math.PI + this.direction
+    if (data.fieldInstances) {
+      for (const {__identifier: id, __value: val} of data.fieldInstances) {
+        if (id == "direction") {
+          this.direction = 2*Math.PI*val/8
+          getScene().camera3D.yaw = Math.PI + this.direction
+        }
       }
     }
 
