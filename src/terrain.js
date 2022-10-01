@@ -677,18 +677,10 @@ export default class Terrain extends Thing {
   }
 
   generate() {
-    for (let x=-5; x<5; x++) {
-      for (let y=-5; y<5; y++) {
-        this.map[[x, y]] = Math.floor(u.random(1, 1))
-      }
-    }
-
-    //proc.mergeTerrain(this.map, terrain.generateTerrain(10, 10, 4, 0.4, 9, 0), [0, 0])
-
     let genParams = new proc.GeneratorParams()
     genParams.width = 70
     genParams.length = 30
-    genParams.height = 4
+    genParams.height = 17
     genParams.caveWallHeight = 40
     genParams.caveSpaciousness = -1
     genParams.caveOpenness = -1
