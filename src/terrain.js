@@ -8,6 +8,7 @@ import * as vec3 from "./core/vector3.js"
 import * as proc from "./procgeneral.js"
 import * as terrain from "./procterrain.js"
 import * as caves from "./proccaves.js"
+import * as room from "./procroom.js"
 import assets from "./assets.js"
 import SpatialHash from "./core/spatialhash.js"
 import Player from "./player.js"
@@ -690,21 +691,26 @@ export default class Terrain extends Thing {
 
   generate() {
     let genParams = new proc.GeneratorParams()
-    genParams.width = 70
-    genParams.length = 70
-    genParams.height = 17
-    genParams.caveWallHeight = 40
-    genParams.caveSpaciousness = 0.8
-    genParams.caveOpenness = 0.9
-    genParams.terrainVariance = 1
-    genParams.terrainRoughness = 0.1
+    genParams.width = 10
+    genParams.length = 10
+    genParams.height = 10
+    genParams.caveWallHeight = 2
+    genParams.caveSteps = 7
+    genParams.caveInitialChance = 0.3
+    genParams.terrainVariance = 30
+    genParams.terrainRoughness = 0.4
+    genParams.roomWallHeight = 15
 
-    let generated = caves.generateCaves(genParams)
+    /*let generated = caves.generateCaves(genParams)
 
     this.startPoint = generated.startPoint
     this.endPoint = generated.endPoint
 
-    proc.guaranteePath(generated.terrain, generated.startPoint, generated.endPoint)
+    proc.guaranteePath(generated.terrain, generated.startPoint, generated.endPoint, genParams)
+
+    room.insertRoom(generated.terrain, generated.types, [0, 0], genParams)*/
+
+    let generated = room.generateRooms(genParams)
 
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
   }
@@ -718,10 +724,9 @@ export default class Terrain extends Thing {
       getScene().addThing(new Enemy([u.random(0, 70*64), u.random(0, 30*64), 0]))
     }
 
-    const g = getScene().addThing(new Goal())
+    /*const g = getScene().addThing(new Goal())
     g.position[0] = this.endPoint[0] * 64
     g.position[1] = this.endPoint[1] * 64
-    g.position[2] = getThing("terrain").getGroundHeight(p.position[0], p.position[1]) + 64
-    console.log("Flag placed at height " + g.position[2])
+    g.position[2] = getThing("terrain").getGroundHeight(g.position[0], g.position[1]) + 64*/
   }
 }

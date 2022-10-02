@@ -23,11 +23,13 @@ export function generateCaves(params) {
   for (let i = layers-1; i >= 0; i --) {
     // Generate the terrain
     let terrainLayer = terr.generateTerrain(params).terrain
-    let spacesLayer = caveAlgorithm(params)
+    let spacesLayer = caveAlgorithm({...params,
+      initialChance: params.initialChance + (0.01 * i)
+    })
 
     // If this is layer 0, set the start and end points
     if (i == 0) {
-      let sneResult = determineStartAndEndPoint(spacesLayer)
+      let sneResult = determineStartAndEndPoint(spacesLayer, params)
       startPoint = sneResult[0]
       endPoint = sneResult[1]
       carvePoint(spacesLayer, startPoint)
@@ -57,18 +59,19 @@ function caveAlgorithm(params) {
   // Get necessary params
   let width = params.width
   let length = params.length
-  let layers = params.caveLayers
+  let initialChance = params.caveInitialChance
+  let steps = params.caveSteps
 
   // Calculate initialChance and steps
-  let initialChanceParam = ((1-params.caveSpaciousness) + (params.caveOpenness)) / 2
+  /*let initialChanceParam = ((1-params.caveSpaciousness) + (params.caveOpenness)) / 2
   let stepsParam = ((1-params.caveSpaciousness) + (1-params.caveOpenness)) / 2
   let initialChance = (initialChanceParam * 0.1) + 0.2 + (layers * .01)
-  let steps = (stepsParam * 5) + 2
+  let steps = (stepsParam * 5) + 2*/
 
   // Iterate
   for (let i = 0; i < width; i ++) {
     for (let j = 0; j < length; j ++) {
-      spaces[[i,j]] = Math.random() < initialChance
+      spaces[[i,j]] = params.random() < initialChance
     }
   }
 
@@ -125,40 +128,45 @@ function caveIterate(spaces) {
   }
 }
 
-function determineStartAndEndPoint(spaces) {
+function determineStartAndEndPoint(spaces, params) {
   let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
   let candidates = []
+  let cornerFactor = 5
 
-  for (const key in spaces) {
-    // If this is an open space
-    if (spaces[key] == false) {
-      // Look through adjacent spaces
-      let count = 0
-      let pos = proc.stringToPosition(key);
-      for (const delta of deltas) {
-        let samplePos = add(pos, delta)
-        if (samplePos in spaces) {
-          if (spaces[samplePos] == true) {
+  while (candidates.length < 10 && cornerFactor > 0) {
+    candidates = []
+    for (const key in spaces) {
+      // If this is an open space
+      if (spaces[key] == false) {
+        // Look through adjacent spaces
+        let count = 0
+        let pos = proc.stringToPosition(key);
+        for (const delta of deltas) {
+          let samplePos = add(pos, delta)
+          if (samplePos in spaces) {
+            if (spaces[samplePos] == true) {
+              count += 1
+            }
+          }
+          else {
             count += 1
           }
         }
-        else {
-          count += 1
+
+        // If this is a corner alcove, add this as a candidate
+        if (count >= cornerFactor) {
+          candidates.push(pos)
         }
       }
-
-      // If this is a corner alcove, add this as a candidate
-      if (count >= 5) {
-        candidates.push(pos)
-      }
     }
+    cornerFactor -= 1
   }
 
   
   // Randomly whittle candidates down to seven
   // Adds some RNG and limits the time complexity of the next step
   while (candidates.length > 7) {
-    let remove = Math.floor(Math.random() * candidates.length)
+    let remove = Math.floor(params.random() * candidates.length)
     candidates.splice(remove, 1)
   }
 
