@@ -733,7 +733,7 @@ export default class Terrain extends Thing {
 
   populate() {
     const p = getScene().addThing(new Player({
-      position: [this.startPoint[0]*64, this.startPoint[1]*64, 10000]
+      position: [this.startPoint[0]*64 - 32, this.startPoint[1]*64 - 32, 10000]
     }))
 
     for (let i=0; i<10; i++) {
@@ -741,8 +741,8 @@ export default class Terrain extends Thing {
     }
 
     const g = getScene().addThing(new Goal())
-    g.position[0] = this.endPoint[0] * 64
-    g.position[1] = this.endPoint[1] * 64
+    g.position[0] = this.endPoint[0] * 64 - 32
+    g.position[1] = this.endPoint[1] * 64 - 32
     g.position[2] = getThing("terrain").getGroundHeight(g.position[0], g.position[1]) + 64
   }
 }

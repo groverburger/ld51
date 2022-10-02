@@ -260,25 +260,48 @@ function buildAlongPath(terrain, types, path, params) {
   // Determine build locations
   let build1 = path[Math.floor(path.length * 0.25)]
   let build2 = path[Math.floor(path.length * 0.52)]
-  //let build3 = path[Math.floor(path.length * 0.75)]
 
   // Build the rooms
-  room.insertRoom(terrain, types, build1, params)
-  room.insertRoom(terrain, types, build2, params)
-  //room.insertRoom(terrain, types, build3, params)
+  room.insertRoom(terrain, types, build1, {
+    ...params,
+    height: terrain[build1]
+  })
+  room.insertRoom(terrain, types, build2, {
+    ...params,
+    height: terrain[build2]
+  })
 
   // Build doorways
-  let deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+  
   for (let i = 0; i < path.length; i ++) {
     let pos = path[i]
     // If wall...
     if (types[pos] == 2) {
       // Carve doorway
-      for (const delta of deltas) {
-        let newPos = add(pos, delta)
-        terrain[newPos] = params.height
-      }
+      makeDoorway(terrain, types, pos)
     }
+  }
+}
+
+function makeDoorway(terrain, types, pos) {
+  let deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+
+  // Find average ground height
+  let total = 0
+  let count = 0
+  for (const delta of deltas) {
+    let newPos = add(pos, delta)
+    if (types[newPos] != 2 && terrain[newPos] < WORLD_HEIGHT) {
+      count += 1
+      total += terrain[newPos]
+    }
+  }
+  let average = Math.floor(total/count)
+
+  // Carve doorway
+  for (const delta of deltas) {
+    let newPos = add(pos, delta)
+    terrain[newPos] = average
   }
 }
 
