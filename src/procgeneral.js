@@ -2,6 +2,7 @@ import { add, lerp, distance } from "./core/vector2.js"
 import * as utils from "./core/utils.js"
 import * as cave from "./proccaves.js"
 import * as room from "./procroom.js"
+import * as feature from "./procfeature.js"
 
 const PLAYER_JUMP_HEIGHT = 4
 const ABSOLUTE_HEIGHT_DIFFERENCE_MAX = 10
@@ -35,8 +36,8 @@ export class GeneratorParams {
     this.height = 20
 
     // Caves
-    this.caveSteps = this.bellRandom(7, 3, true)
-    this.caveInitialChance = this.bellRandom(0.3, 0.08, false)
+    this.caveSteps = this.bellRandom(7, 2, true)
+    this.caveInitialChance = this.bellRandom(0.3, 0.05, false)
     this.caveLayers = 1
     this.caveLayerSpacing = 2
     this.caveInitalChanceAdvanceOdds = this.bellRandom(0.5, 0.4, false)
@@ -50,6 +51,12 @@ export class GeneratorParams {
     this.roomMaxSize = this.bellRandom(4, 5, true)
     this.roomMinSize = this.bellRandom(10, 3, true)
     this.roomWallHeight = this.bellRandom(8, 7, true)
+    this.room1Position = this.random()
+    this.room2Position = this.random()
+
+    // Misc
+    this.favoriteFeature = Math.floor(this.random() * 100)
+    this.levelFeature = 0
   }
 
   advance() {
@@ -63,10 +70,11 @@ export class GeneratorParams {
       }
     }
 
-    this.width += 1
-    this.length += 1
+    this.width += 3
+    this.length += 3
     this.terrainVariance += 1
     this.roomMaxSize += 1
+    this.levelFeature = Math.floor(this.random() * 100)
 
     // Increase number of layers
     if (this.random() < 0.5 && this.caveLayers < 15) {this.caveLayers += 1;}
@@ -74,7 +82,12 @@ export class GeneratorParams {
     // Make things more cramped
     if (this.random() < this.caveInitalChanceAdvanceOdds && this.caveInitialChance < 0.4) {this.caveInitialChance += 0.02;}
 
-
+    // Reroll
+    if (this.random() < 0.3) { this.caveSteps = this.bellRandom(7, 3, true) }
+    if (this.random() < 0.3) { this.roomWallHeight = this.bellRandom(8, 7, true) }
+    if (this.random() < 0.3) { this.favoriteFeature = Math.floor(this.random() * 100) }
+    if (this.random() < 0.4) { this.room1Position = this.random() }
+    if (this.random() < 0.4) { this.room2Position = this.random() }
   }
 
   bellRandom(center, radius, truncate) {
@@ -149,15 +162,6 @@ export function guaranteePath(terrain, startPoint, endPoint, params) {
     let endInd = Math.floor(params.random() * endAccessible.length)
     let pos2 = stringToPosition(endAccessible[endInd])
 
-    if (pos1 == null) {
-      console.log("POS1 UNDEFINED")
-      console.log(startAccessible)
-    }
-    if (pos2 == null) {
-      console.log("POS2 UNDEFINED")
-      console.log(endAccessible)
-    }
-
     // Check their dist
     let dist = Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2)
 
@@ -212,15 +216,8 @@ export function carveHallway(terrain, pos1, pos2) {
   pos1 = stringToPosition(pos1)
   pos2 = stringToPosition(pos2)
 
-  // console.log("CARVING from " + pos1 + " to " + pos2)
-
   let dist = distance(pos1, pos2)
   if (dist <= 1) {
-    console.log("Carve Failed")
-    console.log("pos1: " + pos1)
-    console.log("pos2: " + pos2)
-    console.log("dist: " + dist)
-
     return
   }
 
@@ -320,8 +317,8 @@ function buildAlongPath(terrain, types, path, params) {
   }
 
   // Determine build locations
-  let build1 = path[Math.floor(path.length * 0.25)]
-  let build2 = path[Math.floor(path.length * 0.52)]
+  let build1 = path[Math.floor(path.length * params.room1Position)]
+  let build2 = path[Math.floor(path.length * params.room2Position)]
 
   // Build the rooms
   room.insertRoom(terrain, types, build1, {

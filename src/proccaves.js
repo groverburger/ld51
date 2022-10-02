@@ -31,6 +31,18 @@ export function generateCaves(params) {
       let sneResult = determineStartAndEndPoint(spacesLayer, params)
       startPoint = sneResult[0]
       endPoint = sneResult[1]
+
+      if (startPoint.toString() == "0,0") {
+        startPoint = [10, 10]
+        terrain[startPoint] = 10
+        spacesLayer[startPoint] = false
+      }
+      if (endPoint.toString() == "0,0") {
+        endPoint = [10, 20]
+        terrain[endPoint] = 10
+        spacesLayer[endPoint] = false
+      }
+
       carvePoint(spacesLayer, startPoint)
       carvePoint(spacesLayer, endPoint)
     }

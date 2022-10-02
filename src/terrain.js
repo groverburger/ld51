@@ -240,6 +240,7 @@ export default class Terrain extends Thing {
       if (tileType == 1) {return "path"}
       if (tileType == 2) {return "path"}
       if (tileType == 3) {return "path"}
+      if (tileType == 4) {return "goldenFloor"}
       return "stone"
     }
 
@@ -248,6 +249,7 @@ export default class Terrain extends Thing {
       if (tileType == 1) {return "roomWall"}
       if (tileType == 2) {return "roomWall"}
       if (tileType == 3) {return "stone"}
+      if (tileType == 4) {return "goldenWall"}
       return "stone"
     }
 
@@ -260,6 +262,13 @@ export default class Terrain extends Thing {
         return false
       }
       return true
+    }
+
+    const getShouldSlope = (tileType) => {
+      if (false) {
+        return true
+      }
+      return false
     }
 
     const isSlope = (tileType) => {
@@ -305,7 +314,7 @@ export default class Terrain extends Thing {
       const heightAt = (x, y) => this.heightMap[this.getTileAtWorld(x, y)]
 
       // deal with sloped floors
-      if (isSlope(this.getTileAtWorld(x, y, "TileType"))) {
+      if (getShouldSlope(this.getTileAtWorld(x, y, "TileType"))) {
         const slopeDistance = height == 0 ? grid*10 : grid*1.5
 
         for (let i=0; i<tau; i+=tau/4) {
@@ -714,7 +723,9 @@ export default class Terrain extends Thing {
     // Init the parameterBuilder object
     let parameterBuilder = globals.parameterBuilder
     if (!parameterBuilder) {
-      parameterBuilder = new proc.GeneratorParams(0)
+      //parameterBuilder = new proc.GeneratorParams(Math.floor(Math.random() * 100000))
+      parameterBuilder = new proc.GeneratorParams(32577)
+      parameterBuilder.advance()
       globals.parameterBuilder = parameterBuilder
     }
 
