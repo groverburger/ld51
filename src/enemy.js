@@ -58,7 +58,7 @@ export default class Enemy extends Thing {
     this.dead = this.dead || (!this.timer("hurt") && this.health <= 0)
 
     for (const thing of this.getAllThingCollisions()) {
-      if (thing instanceof Bullet && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 8 && !thing.dead) {
+      if (thing instanceof Bullet && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 32 && !thing.dead) {
         this.health -= 1
         thing.dead = true
         this.after(15, () => {}, "hurt")

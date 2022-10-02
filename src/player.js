@@ -271,15 +271,16 @@ export default class Player extends Thing {
     }
 
     if (this.inputs.get("shoot") && !this.timer("shoot")) {
-      this.after(12, () => {}, "shoot")
-      const look = getScene().camera3D.lookVector
-      const side = vec3.crossProduct(look, [0, 0, 1])
+      this.after(16, () => {}, "shoot")
+      this.after(12, () => {}, "fire")
+      const look = vec3.multiply(getScene().camera3D.lookVector, -1)
+      const side = vec3.crossProduct([0, 0, 1], look)
       let pos = vec3.add(this.position, vec3.multiply(side, 16))
       pos = vec3.add(pos, [0, 0, -14])
-      getScene().addThing(new Bullet(pos, look))
-      this.speed[0] += look[0]*3
-      this.speed[1] += look[1]*3
-      this.speed[2] += look[2]*1.5
+      getScene().addThing(new Bullet(pos, look, 28))
+      this.speed[0] -= look[0]*3
+      this.speed[1] -= look[1]*3
+      this.speed[2] -= look[2]*1.5
     }
 
     if (this.time > 5 && this.inputs.pressed("reset")) {
@@ -428,7 +429,7 @@ export default class Player extends Thing {
     const scene = getScene()
     //scene.camera3D.position = vec3.lerp(this.lastPosition, this.position, inter)
 
-    gfx.setFramebuffer(this.framebuffer)
+    //gfx.setFramebuffer(this.framebuffer)
     const gl = gfx.gl
     //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
     gfx.setShader(assets.shaders.defaultShaded)
@@ -439,32 +440,18 @@ export default class Player extends Thing {
       0, 1, 0, 0,
       0, 0, 0, 1,
     ])
+
+    let knockback = this.timer("fire") ? 1 - this.timer("fire") : 0
+    knockback *= Math.PI/4
     gfx.set("projectionMatrix", mat.getPerspective({fovy: Math.PI/4}))
     gfx.set("modelMatrix", mat.getTransformation({
-      //translation: [-32, -32, -16],
-      translation: [-20, -70, -18],
-      rotation: [0, 0, Math.PI/-2],
-      scale: 640
+      translation: [-2, -7 + knockback*1.5, -1.8],
+      rotation: [0, -knockback, Math.PI/-2],
+      scale: 64
     }))
-    gfx.set("color", [0.25, 0.5, 1, 1])
+    gfx.set("color", [1, 0, 0, 1])
     gfx.setTexture(assets.textures.square)
     gfx.drawMesh(assets.models.pistol)
-
-    gfx.setShader(assets.shaders.default)
-    gfx.setFramebuffer()
-    gfx.set("projectionMatrix", mat.getIdentity())
-    gfx.set("viewMatrix", mat.getIdentity())
-    gfx.set("modelMatrix", mat.getIdentity())
-    gfx.set("color", [1,1,1,1])
-    gfx.setTexture(this.framebuffer.texture)
-    /*
-    gfx.drawQuad(
-      1, 1, 0,
-      1, -1, 0,
-      -1, 1, 0,
-      -1, -1, 0
-    )
-    */
   }
 
   guiDraw() {
