@@ -76,8 +76,10 @@ function frame(frameTime) {
   }
   accumulator %= 1
 
-  draw(accumulator)
-  frameCount += 1
+  if (times) {
+    draw(0)
+    frameCount += 1
+  }
 
   requestAnimationFrame(frame)
 }

@@ -244,6 +244,9 @@ export default class Terrain extends Thing {
 
     const getWallTexture = (tileType) => {
       //return tileType ? (["stone", "sand"])[tileType-1] : "stone"
+      if (tileType == 1) {return "roomWall"}
+      if (tileType == 2) {return "roomWall"}
+      if (tileType == 3) {return "stone"}
       return "stone"
     }
 
