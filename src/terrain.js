@@ -715,6 +715,7 @@ export default class Terrain extends Thing {
 
     let generated = proc.generateEverything(parameterBuilder)
     parameterBuilder.advance()
+    console.log(parameterBuilder.width)
 
     this.startPoint = generated.startPoint
     this.endPoint = generated.endPoint

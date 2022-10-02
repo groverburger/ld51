@@ -22,7 +22,7 @@ export class GeneratorParams {
   caveSteps = 7
   caveInitialChance = 0.3
   caveLayers = 1 // How many layers of terrain to make
-  caveLayerSpacing = 0 // How far apart should layers be
+  caveLayerSpacing = 2 // How far apart should layers be
 
   // Terrain
   terrainVariance = 15 // How jagged the terrain is
@@ -49,7 +49,7 @@ export class GeneratorParams {
     this.length = this.bellRandom(this.length, 10, true)
 
     this.caveSteps = this.bellRandom(this.caveSteps, 3, true)
-    this.caveInitialChance = this.bellRandom(this.caveInitialChance, 0.1, false)
+    this.caveInitialChance = this.bellRandom(this.caveInitialChance, 0.08, false)
 
     this.terrainVariance = this.bellRandom(this.terrainVariance, 10, true)
 
@@ -64,8 +64,7 @@ export class GeneratorParams {
     this.terrainVariance += 1
     this.roomMaxSize += 1
 
-    if (this.random() < 0.5) {this.caveLayers += 1}
-    if (this.random() < 0.4) {this.caveLayerSpacing += 1}
+    if (this.random() < 0.5 && this.cave_Layers < 15) {this.caveLayers += 1}
   }
 
   bellRandom(center, radius, truncate) {
@@ -140,6 +139,15 @@ export function guaranteePath(terrain, startPoint, endPoint, params) {
     let pos1 = stringToPosition(startAccessible[startInd])
     let endInd = Math.floor(params.random() * endAccessible.length)
     let pos2 = stringToPosition(endAccessible[endInd])
+
+    if (pos1 == null) {
+      console.log("POS1 UNDEFINED")
+      console.log(startAccessible)
+    }
+    if (pos2 == null) {
+      console.log("POS2 UNDEFINED")
+      console.log(endAccessible)
+    }
 
     // Check their dist
     let dist = Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2)
