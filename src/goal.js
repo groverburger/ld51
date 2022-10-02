@@ -30,23 +30,12 @@ export default class Goal extends Thing {
     if (!player) return
 
     if (!this.visited && u.distance3d(...this.position, ...player.position) < 80) {
-      getThing("player").deliveredCount += 1
       this.visited = true
       assets.sounds.delivery.currentTime = 0
       assets.sounds.delivery.volume = 0.25
       assets.sounds.delivery.playbackRate = u.random(0.8, 1.2)
       assets.sounds.delivery.play()
-
-      let mailboxes = 0
-      for (const thing of getScene().things) {
-        if (thing instanceof Goal) {
-          mailboxes += 1
-        }
-      }
-
-      if (getThing("player").deliveredCount >= mailboxes) {
-        getScene().addThing(new LevelWin())
-      }
+      getScene().addThing(new LevelWin())
     }
   }
 

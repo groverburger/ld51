@@ -4,15 +4,16 @@ import * as game from "./core/game.js"
 import * as u from "./core/utils.js"
 import * as vec3 from "./core/vector3.js"
 import * as mat from "./core/matrices.js"
-import Pickup from "./pickup.js"
+import TimePickup from "./timepickup.js"
 
-export default class TimePickup extends Pickup {
-  texture = assets.textures.timePickup
+export default class OneUp extends TimePickup {
+  texture = assets.textures.oneUp
 
   onPickup() {
-    const sound = assets.sounds.timePickup
+    const { globals } = game
+    const sound = assets.sounds.oneUp
     sound.currentTime = 0
     sound.play()
-    this.player.time += 5*60
+    globals.lives += 1
   }
 }

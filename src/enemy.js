@@ -62,6 +62,12 @@ export default class Enemy extends Thing {
         this.health -= 1
         thing.dead = true
         this.after(15, () => {}, "hurt")
+
+        const sound = u.choose(assets.sounds.enemyHurt1, assets.sounds.enemyHurt2)
+        sound.playbackRate = u.random(0.9, 1.1)
+        sound.currentTime = 0
+        sound.play()
+
         break
       }
 

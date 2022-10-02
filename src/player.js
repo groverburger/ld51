@@ -45,24 +45,24 @@ export default class Player extends Thing {
   inputs = null
   lastFallSpeed = 0
   time = 600
-  footstepToggle = false
   showGui = true // cutscenes set this to false
   deliveredCount = 0
   sprite = null
-  framebuffer = gfx.gl.createFramebuffer()
+  //framebuffer = gfx.gl.createFramebuffer()
   depth = -10000
+  stepCounter = 0
   lastPosition = [0, 0, 0]
-  weapon = "shotgun"
+  weapon = "pistol"
   walkFrames = 0
   walkFrameAccel = 0
 
   constructor(data={}) {
     super(data)
 
-    assets.sounds.music.loop = true
-    assets.sounds.music.volume = 0.3
+    //assets.sounds.music.loop = true
+    //assets.sounds.music.volume = 0.3
 
-    if (!globals.lives) {
+    if (!globals.level) {
       globals.lives = 3
       globals.level = 1
     }
@@ -284,7 +284,10 @@ export default class Player extends Thing {
       this.after(20, null, "dashCooldown")
     }
 
-    if (this.inputs.get("shoot") && !this.timer("shoot")) {      
+    // shooting
+    if (this.inputs.get("shoot") && !this.timer("shoot")) {
+      this.after(16, () => {}, "shoot")
+      this.after(12, () => {}, "fire")
       const look = vec3.multiply(getScene().camera3D.lookVector, -1)
       const side = vec3.crossProduct([0, 0, 1], look)
       let pos = vec3.add(this.position, vec3.multiply(side, 16))
@@ -309,8 +312,7 @@ export default class Player extends Thing {
         sound.currentTime = 0
         sound.volume = 0.4
         sound.play()
-      }
-      else if (this.weapon == "machinegun") {
+      } else if (this.weapon == "machinegun") {
         // Animation and Timing
         this.after(7, () => {}, "shoot")
         this.after(4, () => {}, "fire")
@@ -324,8 +326,7 @@ export default class Player extends Thing {
         sound.currentTime = 0
         sound.volume = 0.4
         sound.play()
-      }
-      else {
+      } else {
         // Animation and Timing
         this.after(16, () => {}, "shoot")
         this.after(12, () => {}, "fire")
@@ -333,12 +334,17 @@ export default class Player extends Thing {
         // Create bullet
         getScene().addThing(new Bullet(pos, look, 28, this.weapon))
 
-        // Sound effect
         const sound = assets.sounds.machinegun
         sound.playbackRate = u.random(1, 1.3)
         sound.currentTime = 0
         sound.volume = 0.4
         sound.play()
+        /*
+        const sound = assets.sounds.pistolShoot
+        sound.currentTime = 0
+        sound.playbackRate = u.random(0.9, 1.1)
+        sound.play()
+        */
       }
 
       // Kickback
@@ -347,7 +353,23 @@ export default class Player extends Thing {
         this.speed[1] -= look[1]*3
         this.speed[2] -= look[2]*1.5
       }
-      
+    }
+
+    // step sounds
+    if (this.onGround) {
+      this.stepCounter += vec2.magnitude(this.speed)
+      const interval = 150
+      if (this.stepCounter > interval) {
+        this.stepCounter -= interval
+        const sound = u.choose(
+          assets.sounds.footstep1,
+          assets.sounds.footstep2
+          //assets.sounds.footstep3
+        )
+        sound.playbackRate = u.random(0.9, 1.1)
+        sound.currentTime = 0
+        sound.play()
+      }
     }
 
     //if (this.time > 5 && this.inputs.pressed("reset")) {
@@ -360,11 +382,26 @@ export default class Player extends Thing {
 
     this.moveAndCollide()
     this.updateTimers()
-    //super.update()
     this.cameraUpdate()
-    this.lastPosition[0] = this.position[0]
-    this.lastPosition[1] = this.position[1]
-    this.lastPosition[2] = this.position[2]
+
+    if (this.time%60 == 0 && this.time > 0 && this.time < 600) {
+      let sound = assets.sounds.tick
+      if (this.time%120 == 0) {
+        sound = assets.sounds.tock
+      }
+      sound.playbackRate = u.random(0.9, 1.1)
+      sound.currentTime = 0
+      sound.volume = 1//u.map(this.time, 600-60, 0, 0.3, 1, true)**2
+      sound.play()
+    }
+
+    if (this.time%60 == 0 && this.time < 300 - 60 && this.time > 0) {
+      const sound = assets.sounds.impact
+      sound.playbackRate = u.random(0.9, 1.1)
+      sound.currentTime = 0
+      sound.volume = 0.5
+      sound.play()
+    }
 
     this.dead = this.dead || this.time < 0
   }
@@ -492,9 +529,8 @@ export default class Player extends Thing {
     ]
   }
 
-  draw(inter) {
+  draw() {
     const scene = getScene()
-    //scene.camera3D.position = vec3.lerp(this.lastPosition, this.position, inter)
 
     //gfx.setFramebuffer(this.framebuffer)
     const gl = gfx.gl
@@ -519,7 +555,7 @@ export default class Player extends Thing {
     if (knockback > 0) {
       this.walkFrames = 0
     }
-    
+
     // Animation
     if (this.weapon == "shotgun") {
       gfx.set("modelMatrix", mat.getTransformation({
@@ -601,6 +637,16 @@ export default class Player extends Thing {
 
   onDeath() {
     globals.lives -= 1
+    if (globals.lives <= 0) {
+      this.resetGame()
+    }
     resetScene()
+  }
+
+  resetGame() {
+    delete globals.level
+    delete globals.lives
+    delete globals.parameterBuilder
+    delete globals.generated
   }
 }
