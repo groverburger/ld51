@@ -12,27 +12,47 @@ export function generateCaves(params) {
 
   // Set params from cave mode
   let wallHeight = 0
+  let boundaryLayer = false
   if (params.caveMode == 1) {
     wallHeight = 40
   }
   else if (params.caveMode == 2) {
+    boundaryLayer = true
     wallHeight = 40
+    layers ++
   }
 
   // Start by creating an uncarved flat at wall height
-  let flatParams = {...params}
-  flatParams.height = wallHeight
-  let terrain = basic.generateFlat(flatParams)
+  let terrain = basic.generateFlat({
+    ...params,
+    height: wallHeight
+  })
 
   // Iterate over cave layers
   let startPoint = [0, 0]
   let endPoint = [0, 0]
-  for (let i = layers-1; i >= -1; i --) {
-    // Generate the terrain
-    let terrainLayer = terr.generateTerrain(params).terrain
-    let spacesLayer = caveAlgorithm({...params,
-      initialChance: params.initialChance + (0.01 * i)
-    })
+  for (let i = layers-1; i >= 0; i --) {
+    // If this is the first layer generated, make it the boundary layer
+    let terrainLayer
+    let spacesLayer
+    if (i == layers-1 && boundaryLayer) {
+      // Terrain
+      terrainLayer = basic.generateFlat({
+        ...params,
+        height: 0,
+      })
+      // Caves
+      spacesLayer = caveAlgorithm({
+        ...params,
+        caveInitialChance: 0.25,
+        caveSteps: 3,
+      })
+    } else {
+      // Terrain
+      terrainLayer = terr.generateTerrain(params).terrain
+      //Caves
+      spacesLayer = caveAlgorithm(params)
+    }
 
     // If this is layer 0, set the start and end points
     if (i == 0) {
@@ -59,9 +79,10 @@ export function generateCaves(params) {
     }
 
     // Merge the cave-gen with the terrain-gen
+    let spacing = boundaryLayer ? 0 : (i * params.caveLayerSpacing)
     for (const key in spacesLayer) {
       if (!(key in spacesLayer) || spacesLayer[key] == false) {
-        terrain[key] = Math.floor(terrainLayer[key] + (i * params.caveLayerSpacing))
+        terrain[key] = Math.floor(terrainLayer[key] + spacing)
       }
     }
   }
