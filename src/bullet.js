@@ -9,11 +9,11 @@ import * as mat from "./core/matrices.js"
 export default class Bullet extends Thing {
   aabb = [-24, -24, 24, 24]
 
-  constructor(position, speed) {
+  constructor(position, direction, speed) {
     super()
     this.position = position
-    this.speed = vec3.multiply(speed, -24)
-    this.direction = vec3.multiply(speed, -1)
+    this.speed = vec3.multiply(direction, speed)
+    this.direction = direction
     this.after(60, () => this.dead = true)
   }
 

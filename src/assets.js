@@ -54,6 +54,7 @@ const assets = {
     roomWall: "brick1.png",
     goldenFloor: "brick2_f.png",
     goldenWall: "brick2.png"
+    timePickup: "timepickup.png",
   },
 
   textureSettings: {

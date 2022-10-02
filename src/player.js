@@ -44,7 +44,7 @@ export default class Player extends Thing {
   staircaseOffset = 0
   inputs = null
   lastFallSpeed = 0
-  time = 0
+  time = 600
   footstepToggle = false
   showGui = true // cutscenes set this to false
   deliveredCount = 0
@@ -154,7 +154,7 @@ export default class Player extends Thing {
   update() {
     this.inputs.update()
     const scene = getScene()
-    this.time += 1
+    this.time -= 1
 
     // walking and friction
     let dx = this.inputs.get("xMove")
@@ -247,11 +247,11 @@ export default class Player extends Thing {
     if (this.position[2] < 0) {
       assets.sounds.playerSplash.play()
       //resetScene()
-      this.death()
+      this.dead = true
     }
     this.wannaJump = Math.max(this.wannaJump - 1, 0)
     this.coyoteFrames = Math.max(this.coyoteFrames - 1, 0)
-    this.staircaseOffset = Math.max(this.staircaseOffset - 4, 0)
+    this.staircaseOffset = Math.max(this.staircaseOffset - 6, 0)
     this.disableAirControl = Math.max(this.disableAirControl - 1, 0)
 
     // dashing
@@ -271,24 +271,25 @@ export default class Player extends Thing {
     }
 
     if (this.inputs.get("shoot") && !this.timer("shoot")) {
-      this.after(12, () => {}, "shoot")
-      const look = getScene().camera3D.lookVector
-      const side = vec3.crossProduct(look, [0, 0, 1])
+      this.after(16, () => {}, "shoot")
+      this.after(12, () => {}, "fire")
+      const look = vec3.multiply(getScene().camera3D.lookVector, -1)
+      const side = vec3.crossProduct([0, 0, 1], look)
       let pos = vec3.add(this.position, vec3.multiply(side, 16))
       pos = vec3.add(pos, [0, 0, -14])
-      getScene().addThing(new Bullet(pos, look))
-      this.speed[0] += look[0]*3
-      this.speed[1] += look[1]*3
-      this.speed[2] += look[2]*1.5
+      getScene().addThing(new Bullet(pos, look, 28))
+      this.speed[0] -= look[0]*3
+      this.speed[1] -= look[1]*3
+      this.speed[2] -= look[2]*1.5
     }
 
-    if (this.time > 5 && this.inputs.pressed("reset")) {
-      this.death()
-    }
+    //if (this.time > 5 && this.inputs.pressed("reset")) {
+      //this.dead = true
+    //}
 
-    if (this.time > 5 && keysDown.KeyN) {
-      setNextScene()
-    }
+    //if (this.time > 5 && keysDown.KeyN) {
+      //setNextScene()
+    //}
 
     this.moveAndCollide()
     this.updateTimers()
@@ -297,6 +298,8 @@ export default class Player extends Thing {
     this.lastPosition[0] = this.position[0]
     this.lastPosition[1] = this.position[1]
     this.lastPosition[2] = this.position[2]
+
+    this.dead = this.dead || this.time < 0
   }
 
   moveAndCollide() {
@@ -426,7 +429,7 @@ export default class Player extends Thing {
     const scene = getScene()
     //scene.camera3D.position = vec3.lerp(this.lastPosition, this.position, inter)
 
-    gfx.setFramebuffer(this.framebuffer)
+    //gfx.setFramebuffer(this.framebuffer)
     const gl = gfx.gl
     //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
     gfx.setShader(assets.shaders.defaultShaded)
@@ -437,32 +440,18 @@ export default class Player extends Thing {
       0, 1, 0, 0,
       0, 0, 0, 1,
     ])
+
+    let knockback = this.timer("fire") ? 1 - this.timer("fire") : 0
+    knockback *= Math.PI/4
     gfx.set("projectionMatrix", mat.getPerspective({fovy: Math.PI/4}))
     gfx.set("modelMatrix", mat.getTransformation({
-      //translation: [-32, -32, -16],
-      translation: [-20, -70, -18],
-      rotation: [0, 0, Math.PI/-2],
-      scale: 640
+      translation: [-2, -7 + knockback*1.5, -1.8],
+      rotation: [0, -knockback, Math.PI/-2],
+      scale: 64
     }))
-    gfx.set("color", [0.25, 0.5, 1, 1])
+    gfx.set("color", [1, 0, 0, 1])
     gfx.setTexture(assets.textures.square)
     gfx.drawMesh(assets.models.pistol)
-
-    gfx.setShader(assets.shaders.default)
-    gfx.setFramebuffer()
-    gfx.set("projectionMatrix", mat.getIdentity())
-    gfx.set("viewMatrix", mat.getIdentity())
-    gfx.set("modelMatrix", mat.getIdentity())
-    gfx.set("color", [1,1,1,1])
-    gfx.setTexture(this.framebuffer.texture)
-    /*
-    gfx.drawQuad(
-      1, 1, 0,
-      1, -1, 0,
-      -1, 1, 0,
-      -1, -1, 0
-    )
-    */
   }
 
   guiDraw() {
@@ -470,7 +459,7 @@ export default class Player extends Thing {
     ctx.font = "italic bold 64px Times New Roman"
     ctx.textAlign = "center"
     ctx.translate(width/2, height * 2/3)
-    const seconds = Math.max(10 - this.time / 60, 0)
+    const seconds = Math.max(this.time / 60, 0)
     const time = seconds.toFixed(2)
     ctx.fillStyle = "red"
     ctx.fillText(time, 4, 4)
@@ -511,7 +500,7 @@ export default class Player extends Thing {
     ctx.restore()
   }
 
-  death() {
+  onDeath() {
     globals.lives -= 1
     resetScene()
   }

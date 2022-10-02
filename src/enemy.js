@@ -45,7 +45,7 @@ export default class Enemy extends Thing {
 
     // move towards player
     const player = game.getThing("player")
-    if (u.distance2d(player.position[0], player.position[1], this.position[0], this.position[1]) < 64*16) {
+    if (player && u.distance2d(player.position[0], player.position[1], this.position[0], this.position[1]) < 64*16) {
       const accel = vec2.angleToVector(this.angle, 0.85)
       this.speed[0] += accel[0]
       this.speed[1] += accel[1]
@@ -58,7 +58,7 @@ export default class Enemy extends Thing {
     this.dead = this.dead || (!this.timer("hurt") && this.health <= 0)
 
     for (const thing of this.getAllThingCollisions()) {
-      if (thing instanceof Bullet && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 8 && !thing.dead) {
+      if (thing instanceof Bullet && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 32 && !thing.dead) {
         this.health -= 1
         thing.dead = true
         this.after(15, () => {}, "hurt")
@@ -66,7 +66,7 @@ export default class Enemy extends Thing {
       }
 
       if (this.health > 0 && thing instanceof Player && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 24) {
-        thing.death()
+        thing.dead = true
       }
     }
 
@@ -102,6 +102,7 @@ export default class Enemy extends Thing {
   angleUpdate() {
     this.after(60, () => this.angleUpdate())
     const player = game.getThing("player")
+    if (!player) return
     this.angle = u.angleTowards(this.position[0], this.position[1], player.position[0], player.position[1])
     this.angle += u.random(-0.5, 0.5)
   }

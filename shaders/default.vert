@@ -8,11 +8,13 @@ uniform mat4 projectionMatrix;
 
 varying vec2 uv;
 varying vec3 normal;
+varying vec3 origNormal;
 varying vec4 worldPosition;
 varying vec4 viewPosition;
 
 void main() {
   normal = (modelMatrix * vec4(vertexNormal.xyz, 1.0)).xyz;
+  origNormal = vertexNormal;
   uv = vertexTexture;
   worldPosition = modelMatrix * vertexPosition;
   viewPosition = viewMatrix * worldPosition;
