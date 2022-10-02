@@ -2,6 +2,7 @@ import * as proc from "./procgeneral.js"
 import * as terr from "./procterrain.js"
 import * as basic from "./procbasics.js"
 import { add } from "./core/vector2.js"
+import { generateCaves } from "./proccaves.js"
 
 export function generateRooms(params) {
   let terrain = {}
@@ -69,7 +70,7 @@ export function generateRoom(params) {
       let newSpace = add(delta, proc.stringToPosition(space))
       if (!(newSpace in terrain)) {
         terrain[newSpace] = params.height + params.roomWallHeight
-        types[newSpace] = 1
+        types[newSpace] = 2
       }
     }
   }

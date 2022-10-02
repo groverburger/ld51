@@ -1,6 +1,7 @@
 import { add, lerp, distance } from "./core/vector2.js"
 import * as utils from "./core/utils.js"
 import * as cave from "./proccaves.js"
+import * as room from "./procroom.js"
 
 const PLAYER_JUMP_HEIGHT = 4
 const ABSOLUTE_HEIGHT_DIFFERENCE_MAX = 10
@@ -14,8 +15,6 @@ export class GeneratorParams {
       seed = Math.floor(Math.random() * 1000)
     }
     this.random = utils.randomizer(seed)
-    // TODO: Remove the following line
-    //this.random = () => {return Math.random()}
     console.log("Level Seed: " + seed)
   }
 
@@ -36,8 +35,8 @@ export class GeneratorParams {
   terrainRoughness = 0.4 // How steep the hills can be
 
   // Rooms
-  roomMinSize = 5
-  roomMaxSize = 15
+  roomMinSize = 4
+  roomMaxSize = 10
   roomWallHeight = 8
 }
 
@@ -137,7 +136,7 @@ function getAccessibleSpacesRecurse(terrain, pos, backwards, collected) {
       let absoluteHeightDifference = Math.abs(terrain[pos] - terrain[adj])
       if (heightDifference <= PLAYER_JUMP_HEIGHT && absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
         // Make sure we're not navigating past world height
-        if (terrain[pos] < WORLD_HEIGHT) {
+        if (terrain[adj] < WORLD_HEIGHT) {
           collected.add(adj.toString())
           collected = getAccessibleSpacesRecurse(terrain, adj, backwards, collected)
         }
@@ -150,6 +149,8 @@ function getAccessibleSpacesRecurse(terrain, pos, backwards, collected) {
 export function carveHallway(terrain, pos1, pos2) {
   pos1 = stringToPosition(pos1)
   pos2 = stringToPosition(pos2)
+
+  // console.log("CARVING from " + pos1 + " to " + pos2)
 
   let dist = distance(pos1, pos2)
   if (dist <= 1) {
@@ -168,9 +169,152 @@ export function carveHallway(terrain, pos1, pos2) {
   for (let i = -1; i <= dist+1; i += 1) {
     let frac = i/dist
     let newPos = lerp(pos1, pos2, frac)
-    let newHeight = Math.floor(((1-frac) * height1) + ((frac) * height2))
+    newPos[0] = Math.round(newPos[0])
+    newPos[1] = Math.round(newPos[1])
+    let newHeight = Math.floor(((1-frac) * height1) + (frac * height2))
 
     terrain[newPos] = newHeight
     cave.carvePoint(terrain, newPos)
   }
+}
+
+export function findPath(terrain, types, start, end) {
+  start = stringToPosition(start)
+  end = stringToPosition(end)
+  let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+  let queue = [{
+    pos: start,
+    dist: 0
+  }]
+  let prev = {}
+  prev[start] = start
+
+  // Run search algorithm to find shortest path to the flag
+  while (queue.length > 0) {
+    let cur = queue.shift()
+    for (const delta of deltas) {
+      // Get the adjacent space
+      let adj = add(cur.pos, delta)
+      cur.pos = stringToPosition(cur.pos)
+      adj = stringToPosition(adj)
+      // Make sure this space hasn't already been collected
+      if (!(adj in prev)) {
+        // check if the height difference of the adjacent space is at most jump height
+        let heightDifference = (terrain[adj] - terrain[cur.pos])
+        let absoluteHeightDifference = Math.abs(terrain[cur.pos] - terrain[adj])
+        absoluteHeightDifference = 0
+        if (heightDifference <= PLAYER_JUMP_HEIGHT) {
+          if (absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
+            // Make sure we're not navigating past world height
+            if (terrain[adj] < WORLD_HEIGHT) {
+              prev[adj] = cur.pos
+              queue.push({
+                pos: adj,
+                dist: cur.dist + 1
+              })
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Retrace shortest path
+  if (!(end in prev)) {
+    // debug
+    let ret = []
+
+    /*for (const reached in prev) {
+      ret.push(stringToPosition(reached))
+    }*/
+
+    return ret
+  }
+  let retrace = end;
+  let path = [end]
+  while (prev[retrace].toString() != retrace.toString()) {
+    retrace = prev[retrace]
+    path.push(retrace)
+  }
+  return path
+}
+
+export function paintPath(types, path, params) {
+  let deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+  
+  for (const space of path) {
+    for (const delta of deltas) {
+      if (params.random() < 0.5) {
+        let newSpace = add(delta, space)
+        types[newSpace] = 3
+      }
+    }
+  }  
+}
+
+function buildAlongPath(terrain, types, path, params) {
+  if (path.length < 2) {
+    return
+  }
+
+  // Determine build locations
+  let build1 = path[Math.floor(path.length * 0.25)]
+  let build2 = path[Math.floor(path.length * 0.52)]
+
+  // Build the rooms
+  room.insertRoom(terrain, types, build1, {
+    ...params,
+    height: terrain[build1]
+  })
+  room.insertRoom(terrain, types, build2, {
+    ...params,
+    height: terrain[build2]
+  })
+
+  // Build doorways
+  
+  for (let i = 0; i < path.length; i ++) {
+    let pos = path[i]
+    // If wall...
+    if (types[pos] == 2) {
+      // Carve doorway
+      makeDoorway(terrain, types, pos)
+    }
+  }
+}
+
+function makeDoorway(terrain, types, pos) {
+  let deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+
+  // Find average ground height
+  let total = 0
+  let count = 0
+  for (const delta of deltas) {
+    let newPos = add(pos, delta)
+    if (types[newPos] != 2 && terrain[newPos] < WORLD_HEIGHT) {
+      count += 1
+      total += terrain[newPos]
+    }
+  }
+  let average = Math.floor(total/count)
+
+  // Carve doorway
+  for (const delta of deltas) {
+    let newPos = add(pos, delta)
+    terrain[newPos] = average
+  }
+}
+
+export function generateEverything(params) {
+  let gen = cave.generateCaves(params)
+
+  guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
+
+  let path = findPath(gen.terrain, gen.types, gen.startPoint, gen.endPoint)
+  paintPath(gen.types, path, params)
+  buildAlongPath(gen.terrain, gen.types, path, params)
+
+
+  return gen
+
 }
