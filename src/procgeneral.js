@@ -16,6 +16,9 @@ const CAMPAIGN_LENGTH = 10
 export class GeneratorParams {
   // General
   random = () => {return 4}
+  stage = 0
+  caveWallHeight = 0
+  maxPathLength = 73
   
   constructor(seed) {
     // Set up randomizer
@@ -30,12 +33,10 @@ export class GeneratorParams {
 
   randomize() {
     // General
-    this.stage = 0
     this.theme = "cave"
     this.width = this.bellRandom(40, 10, true)
     this.length = this.bellRandom(70, 10, true)
     this.height = 20
-    this.maxPathLength = 73
 
     // Caves
     this.caveSteps = this.bellRandom(7, 1, true)
@@ -43,7 +44,6 @@ export class GeneratorParams {
     this.caveLayers = 1
     this.caveLayerSpacing = 2
     this.caveInitalChanceAdvanceOdds = this.bellRandom(0.5, 0.4, false)
-    this.caveWallHeight = 0
 
     // Terrain
     this.terrainVariance = this.bellRandom(15, 10, true)

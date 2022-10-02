@@ -722,12 +722,15 @@ export default class Terrain extends Thing {
   }
 
   generate() {
+    // Generate seed
+    let seed = Math.floor(Math.random() * 100000)
+    seed = 12873
+
     // Init the parameterBuilder object
     let parameterBuilder = globals.parameterBuilder
     if (!parameterBuilder) {
-      //parameterBuilder = new proc.GeneratorParams(Math.floor(Math.random() * 100000))
-      parameterBuilder = new proc.GeneratorParams(32685)
-      //parameterBuilder.advance()
+      parameterBuilder = new proc.GeneratorParams(seed)
+      parameterBuilder.advance()
       globals.parameterBuilder = parameterBuilder
     }
 
@@ -742,6 +745,10 @@ export default class Terrain extends Thing {
           break
         }
         catch(e) {
+          console.log("Generation error: " + e)
+          console.log(parameterBuilder)
+          delete globals.generated
+          console.log(parameterBuilder.random())
           parameterBuilder.randomize()
         }
       }

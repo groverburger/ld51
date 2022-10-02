@@ -45,6 +45,9 @@ export function generateCaves(params) {
       
       carvePoint(terrainLayer, startPoint)
       carvePoint(terrainLayer, endPoint)
+
+      carvePoint(spacesLayer, startPoint)
+      carvePoint(spacesLayer, endPoint)
     }
 
     // Merge the cave-gen with the terrain-gen
@@ -209,9 +212,6 @@ export function carvePoint(terrain, startPoint) {
 
   // Carve out a 3x3 space at each point
   let startHeight = terrain[startPoint]
-  if (startHeight == null) {
-    startHeight = 20
-  }
   let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
   for (const delta of deltas) {
     let startAdj = add(startPoint, delta)
