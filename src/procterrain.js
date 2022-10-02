@@ -11,8 +11,6 @@ export function generateTerrain(params) {
   let height = params.height
   let roughness = params.terrainRoughness
   let variance = params.terrainVariance
-  let varianceMode = 0
-
   // Determine how big of a grid we'll need for the requested size
   let greater = Math.max(width, length)
   let size = 2
@@ -23,19 +21,19 @@ export function generateTerrain(params) {
 
   // Build the initial object
   let terrain = {}
-  terrain[[0, 0]] = diamondSquareRandomize(variance, varianceMode)
-  terrain[[0, size-1]] = diamondSquareRandomize(variance, varianceMode)
-  terrain[[size-1, 0]] = diamondSquareRandomize(variance, varianceMode)
-  terrain[[size-1, size-1]] = diamondSquareRandomize(variance, varianceMode)
+  terrain[[0, 0]] = diamondSquareRandomize(variance, params)
+  terrain[[0, size-1]] = diamondSquareRandomize(variance, params)
+  terrain[[size-1, 0]] = diamondSquareRandomize(variance, params)
+  terrain[[size-1, size-1]] = diamondSquareRandomize(variance, params)
   
   // Run the algorithm
   let moveDistance = (size-1)/2
   let varianceFactor = variance
   while (moveDistance > 1) {
-    diamondSquareIterate(terrain, size, moveDistance, varianceFactor, varianceMode, 1)
+    diamondSquareIterate(terrain, size, moveDistance, varianceFactor, 1, params)
     moveDistance /= 2
     varianceFactor *= roughness
-    diamondSquareIterate(terrain, size, moveDistance, varianceFactor, varianceMode, 0)
+    diamondSquareIterate(terrain, size, moveDistance, varianceFactor, 0, params)
   }
 
   // Cut the terrain down to size
@@ -102,7 +100,7 @@ function smoothIteration(terrain) {
   }
 }
 
-function diamondSquareIterate(terrain, size, moveDistance, variance, varianceMode, mode) {
+function diamondSquareIterate(terrain, size, moveDistance, variance, mode, params) {
   // Create delta pattern
   let deltas = []
   let deltaScale = 0;
@@ -137,7 +135,7 @@ function diamondSquareIterate(terrain, size, moveDistance, variance, varianceMod
         
         // Average the four (or fewer) samples and add the random value
         if (count > 0) {
-          let value = total/count + diamondSquareRandomize(variance, varianceMode)
+          let value = total/count + diamondSquareRandomize(variance, params)
           terrain[pos] = value
         }
       }
@@ -145,16 +143,6 @@ function diamondSquareIterate(terrain, size, moveDistance, variance, varianceMod
   }
 }
 
-function diamondSquareRandomize(variance, varianceMode) {
-  if (varianceMode == 0) {
-    return (Math.random() - 0.5) * variance * ROUGHNESS_CONSTANT
-  }
-  else if (varianceMode == 1) {
-    let val = 0
-    for (let i = 0; i < BELL_ITERATIONS; i ++) {
-      val += (Math.random() - 0.5) * variance * ROUGHNESS_CONSTANT
-    }
-    val /= ROUGHNESS_CONSTANT
-    return val
-  }
+function diamondSquareRandomize(variance, params) {
+  return (params.random() - 0.5) * variance * ROUGHNESS_CONSTANT
 }

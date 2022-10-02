@@ -57,7 +57,7 @@ export function randomizer(startIndex=0) {
     523, 541
   ]
   const pseudoRandom = []
-  for (let i=0; i<512; i++) {
+  for (let i=0; i<1048576; i++) {
     total += primes[(i * 721)%primes.length]
     pseudoRandom.push((total % 100) / 100)
   }
