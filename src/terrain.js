@@ -746,7 +746,8 @@ export default class Terrain extends Thing {
 
   populate() {
     const p = getScene().addThing(new Player({
-      position: [this.startPoint[0]*64 - 32, this.startPoint[1]*64 - 32, 10000]
+      position: [this.startPoint[0]*64 - 32, this.startPoint[1]*64 - 32, 10000],
+      angle: this.startAngle
     }))
     // TODO: Start player with rotation specified by startAngle variable
 

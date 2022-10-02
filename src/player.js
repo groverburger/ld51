@@ -72,6 +72,7 @@ export default class Player extends Thing {
     this.position[2] = getThing("terrain").getGroundHeight(this.position[0], this.position[1]) + 64
     getScene().camera3D.position = [...this.position]
     getScene().camera3D.pitch = 0.25
+    getScene().camera3D.yaw = data.angle || 0
 
     if (globals.showLevelIntro) {
       getScene().addThing(new FadeIn())
