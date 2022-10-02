@@ -384,6 +384,25 @@ export default class Player extends Thing {
     this.updateTimers()
     this.cameraUpdate()
 
+    if (this.time%60 == 0 && this.time > 0 && this.time < 600) {
+      let sound = assets.sounds.tick
+      if (this.time%120 == 0) {
+        sound = assets.sounds.tock
+      }
+      sound.playbackRate = u.random(0.9, 1.1)
+      sound.currentTime = 0
+      sound.volume = 1//u.map(this.time, 600-60, 0, 0.3, 1, true)**2
+      sound.play()
+    }
+
+    if (this.time%60 == 0 && this.time < 300 - 60 && this.time > 0) {
+      const sound = assets.sounds.impact
+      sound.playbackRate = u.random(0.9, 1.1)
+      sound.currentTime = 0
+      sound.volume = 0.5
+      sound.play()
+    }
+
     this.dead = this.dead || this.time < 0
   }
 
@@ -618,6 +637,16 @@ export default class Player extends Thing {
 
   onDeath() {
     globals.lives -= 1
+    if (globals.lives <= 0) {
+      this.resetGame()
+    }
     resetScene()
+  }
+
+  resetGame() {
+    delete globals.level
+    delete globals.lives
+    delete globals.parameterBuilder
+    delete globals.generated
   }
 }

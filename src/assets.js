@@ -57,6 +57,7 @@ const assets = {
     timePickup: "timepickup.png",
     goldenFloor: "brick2_f.png",
     goldenWall: "brick2.png",
+    oneUp: "oneup.png",
   },
 
   textureSettings: {},
@@ -66,9 +67,9 @@ const assets = {
     playerLand: "land.wav",
     playerSplash: "splash.wav",
     win: "win1.wav",
-    tick: "clocktick.mp3",
-    tock: "clocktock.mp3",
-    impact: "impact.mp3",
+    tick: "clocktick.wav",
+    tock: "clocktock.wav",
+    impact: "impact.wav",
     footstep1: "bigfootstep3.wav",
     footstep2: "bigfootstep4.wav",
     rank: "win.wav",
@@ -80,6 +81,8 @@ const assets = {
     machinegun: "shoot3.wav",
     enemyHurt1: "ehurt1.wav",
     enemyHurt2: "ehurt2.wav",
+    timePickup: "timepickup.wav",
+    oneUp: "oneup.wav",
   },
 
   sceneSources: {

@@ -15,6 +15,7 @@ import Player from "./player.js"
 import Enemy from "./enemy.js"
 import Goal from "./goal.js"
 import TimePickup from "./timepickup.js"
+import OneUp from "./oneup.js"
 const utils = u
 
 let cache = {
@@ -796,8 +797,11 @@ export default class Terrain extends Thing {
 
     {
       const itemLocations = getLocations("other")
-      const coord = itemLocations.pop()
+      let coord = itemLocations.pop()
       getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+
+      coord = itemLocations.pop()
+      getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
     }
 
     const g = getScene().addThing(new Goal())
