@@ -20,13 +20,8 @@ import Thing from "./core/thing.js"
 
 function* LevelWinAnim() {
   const player = getThing("player")
-  player.showGui = false
+  if (player) player.showGui = false
   globals.showLevelIntro = true
-  const rankList = [480, 600, 900, 1200, 2000]
-  let rank = 0
-  while (player.time > rankList[rank]) {
-    rank += 1
-  }
 
   for (let i=0; i<10; i++) {
     ctx.fillStyle = `rgba(0, 0, 0, ${u.map(i, 0, 10, 0, 0.25, true)})`
@@ -36,9 +31,6 @@ function* LevelWinAnim() {
 
   let i = 0
   while (true) {
-    if (i == 3) {
-      assets.sounds.win.play()
-    }
     ctx.fillStyle = "rgba(0, 0, 0, 0.25)"
     ctx.fillRect(0, 0, width, height)
     /*

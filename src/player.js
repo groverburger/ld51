@@ -48,11 +48,11 @@ export default class Player extends Thing {
   showGui = true // cutscenes set this to false
   deliveredCount = 0
   sprite = null
-  framebuffer = gfx.gl.createFramebuffer()
+  //framebuffer = gfx.gl.createFramebuffer()
   depth = -10000
   stepCounter = 0
   lastPosition = [0, 0, 0]
-  weapon = "machinegun"
+  weapon = "pistol"
   walkFrames = 0
   walkFrameAccel = 0
 
@@ -62,7 +62,7 @@ export default class Player extends Thing {
     //assets.sounds.music.loop = true
     //assets.sounds.music.volume = 0.3
 
-    if (!globals.lives) {
+    if (!globals.level) {
       globals.lives = 3
       globals.level = 1
     }
@@ -334,10 +334,17 @@ export default class Player extends Thing {
         // Create bullet
         getScene().addThing(new Bullet(pos, look, 28, this.weapon))
 
+        const sound = assets.sounds.machinegun
+        sound.playbackRate = u.random(1, 1.3)
+        sound.currentTime = 0
+        sound.volume = 0.4
+        sound.play()
+        /*
         const sound = assets.sounds.pistolShoot
         sound.currentTime = 0
         sound.playbackRate = u.random(0.9, 1.1)
         sound.play()
+        */
       }
 
       // Kickback
