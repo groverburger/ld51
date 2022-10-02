@@ -247,7 +247,7 @@ export default class Player extends Thing {
     if (this.position[2] < 0) {
       assets.sounds.playerSplash.play()
       //resetScene()
-      this.death()
+      this.dead = true
     }
     this.wannaJump = Math.max(this.wannaJump - 1, 0)
     this.coyoteFrames = Math.max(this.coyoteFrames - 1, 0)
@@ -283,7 +283,7 @@ export default class Player extends Thing {
     }
 
     if (this.time > 5 && this.inputs.pressed("reset")) {
-      this.death()
+      this.dead = true
     }
 
     if (this.time > 5 && keysDown.KeyN) {
@@ -297,6 +297,8 @@ export default class Player extends Thing {
     this.lastPosition[0] = this.position[0]
     this.lastPosition[1] = this.position[1]
     this.lastPosition[2] = this.position[2]
+
+    this.dead = this.dead || this.time > 600
   }
 
   moveAndCollide() {
@@ -511,7 +513,7 @@ export default class Player extends Thing {
     ctx.restore()
   }
 
-  death() {
+  onDeath() {
     globals.lives -= 1
     resetScene()
   }

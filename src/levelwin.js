@@ -39,6 +39,9 @@ function* LevelWinAnim() {
     if (i == 3) {
       assets.sounds.win.play()
     }
+    ctx.fillStyle = "rgba(0, 0, 0, 0.25)"
+    ctx.fillRect(0, 0, width, height)
+    /*
     const string = "Complete!"
     ctx.save()
     ctx.fillStyle = "rgba(0, 0, 0, 0.25)"
@@ -55,10 +58,11 @@ function* LevelWinAnim() {
     ctx.fillStyle = u.colorToString(...u.hsvToRgb(i/300, 1, 1))
     ctx.fillText(string, 0, 0)
     ctx.restore()
+    */
 
 
     const button = gamepads[0]?.buttons[0].pressed || mouse.button
-    if (button && i > 100) break
+    if (button && i > 5) break
 
     if (gamepads[0]?.buttons[1].pressed || keysDown.KeyR) {
       resetScene()

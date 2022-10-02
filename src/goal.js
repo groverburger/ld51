@@ -26,7 +26,10 @@ export default class Goal extends Thing {
 
   update() {
     this.time += 1
-    if (!this.visited && u.distance3d(...this.position, ...getThing("player").position) < 80) {
+    const player = getThing("player")
+    if (!player) return
+
+    if (!this.visited && u.distance3d(...this.position, ...player.position) < 80) {
       getThing("player").deliveredCount += 1
       this.visited = true
       assets.sounds.delivery.currentTime = 0
