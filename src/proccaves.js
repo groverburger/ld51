@@ -62,12 +62,6 @@ function caveAlgorithm(params) {
   let initialChance = params.caveInitialChance
   let steps = params.caveSteps
 
-  // Calculate initialChance and steps
-  /*let initialChanceParam = ((1-params.caveSpaciousness) + (params.caveOpenness)) / 2
-  let stepsParam = ((1-params.caveSpaciousness) + (1-params.caveOpenness)) / 2
-  let initialChance = (initialChanceParam * 0.1) + 0.2 + (layers * .01)
-  let steps = (stepsParam * 5) + 2*/
-
   // Iterate
   for (let i = 0; i < width; i ++) {
     for (let j = 0; j < length; j ++) {
@@ -162,7 +156,6 @@ function determineStartAndEndPoint(spaces, params) {
     cornerFactor -= 1
   }
 
-  
   // Randomly whittle candidates down to seven
   // Adds some RNG and limits the time complexity of the next step
   while (candidates.length > 7) {
@@ -200,6 +193,8 @@ export function carvePoint(terrain, startPoint) {
     console.error("Carved point is not a valid space")
     return
   }
+
+  startPoint = proc.stringToPosition(startPoint)
 
   // Carve out a 3x3 space at each point
   let startHeight = terrain[startPoint]

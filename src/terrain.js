@@ -29,6 +29,7 @@ export default class Terrain extends Thing {
   texturedVerts = {}
   time = 0
   map = {}
+  types = {}
   startPoint = [0, 0]
   endPoint = [0, 0]
 
@@ -233,7 +234,9 @@ export default class Terrain extends Thing {
     }
 
     const getFloorTexture = (tileType) => {
-      //return tileType ? (["grass", "sand"])[tileType-1] : "grass"
+      if (tileType == 1) {return "sand"}
+      if (tileType == 2) {return "sand"}
+      if (tileType == 3) {return "grass"}
       return "stone"
     }
 
@@ -247,7 +250,8 @@ export default class Terrain extends Thing {
     }
 
     const isSlope = (tileType) => {
-      return tileType ? ([true, true])[tileType-1] : false
+      //return tileType ? ([true, true])[tileType-1] : false
+      return false
     }
 
     const cos = what => Math.round(Math.cos(what))
@@ -681,7 +685,9 @@ export default class Terrain extends Thing {
   }
 
   getTileAt(x, y, what) {
-    if (what == "TileType") { return undefined }
+    if (what == "TileType") {
+      return this.types[[x,y]]
+    }
     return this.map[[x,y]]
   }
 
@@ -691,30 +697,23 @@ export default class Terrain extends Thing {
 
   generate() {
     let genParams = new proc.GeneratorParams()
-    genParams.width = 10
-    genParams.length = 10
-    genParams.height = 10
-    genParams.caveWallHeight = 2
+    genParams.width = 30
+    genParams.length = 70
+    genParams.height = 20
+    genParams.caveWallHeight = 40
     genParams.caveSteps = 7
     genParams.caveInitialChance = 0.3
     genParams.terrainVariance = 30
     genParams.terrainRoughness = 0.4
-    genParams.roomWallHeight = 15
+    genParams.roomWallHeight = 10
 
-    /*let generated = caves.generateCaves(genParams)
-
-    
-
-    proc.guaranteePath(generated.terrain, generated.startPoint, generated.endPoint, genParams)
-
-    room.insertRoom(generated.terrain, generated.types, [0, 0], genParams)*/
-
-    let generated = room.generateRooms(genParams)
+    let generated = proc.generateEverything(genParams)
 
     this.startPoint = generated.startPoint
     this.endPoint = generated.endPoint
 
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
+    proc.mergeTerrain(this.types, generated.types, [-1, -1])
   }
 
   _generate() {
