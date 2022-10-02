@@ -12,6 +12,7 @@ export default class TimePickup extends Pickup {
   onPickup() {
     const sound = assets.sounds.timePickup
     sound.currentTime = 0
+    sound.volume = 0.5
     sound.play()
     this.player.time += 5*60
   }

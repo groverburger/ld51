@@ -124,7 +124,49 @@ export default class Scene {
     }
   }
 
-  draw(inter) {
+  draw() {
+    const camera = this.camera
+    ctx.save()
+
+    // draw screenshake, and black offscreen border to cover up gaps
+    if (this.screenShake.amount > 0) {
+      ctx.translate(...this.screenShake.vector)
+      ctx.fillStyle = "black"
+      const s = this.screenShake.strength + 4
+      ctx.fillRect(-s, -s, width+s*2, s)
+      ctx.fillRect(-s, height, width+s*2, s)
+      ctx.fillRect(-s, 0, s, height)
+      ctx.fillRect(width, 0, s, height)
+    }
+
+    ctx.translate(width/2, height/2)
+    ctx.scale(...camera.scale)
+    ctx.rotate(camera.rotation)
+    ctx.translate(-camera.position[0], -camera.position[1])
+
+    for (const level of this.map.levels) {
+      if (level.visuals && level.isVisible) {
+        ctx.drawImage(level.visuals, level.aabb[0], level.aabb[1])
+      }
+    }
+
+    const layerOrder = Object.keys(this.layers).map(Number).sort((a, b) => a - b)
+    for (const layer of layerOrder) {
+      for (const thing of this.layers[layer]) {
+        thing.draw()
+      }
+    }
+
+    ctx.restore()
+
+    for (const layer of layerOrder) {
+      for (const thing of this.layers[layer]) {
+        thing.guiDraw()
+      }
+    }
+  }
+
+  clearScreen() {
     const bgColor = this.getLevelAt(...this.camera.position)?.bgColor || "#4488ff"
     if (isWebglEnabled) {
       // webgl is enabled, so fill color on the webgl canvas instead of the 2d canvas
@@ -162,46 +204,6 @@ export default class Scene {
       // no webgl, fill the 2d canvas with background color
       ctx.fillStyle = bgColor
       ctx.fillRect(0, 0, width, height)
-    }
-
-    const camera = this.camera
-    ctx.save()
-
-    // draw screenshake, and black offscreen border to cover up gaps
-    if (this.screenShake.amount > 0) {
-      ctx.translate(...this.screenShake.vector)
-      ctx.fillStyle = "black"
-      const s = this.screenShake.strength + 4
-      ctx.fillRect(-s, -s, width+s*2, s)
-      ctx.fillRect(-s, height, width+s*2, s)
-      ctx.fillRect(-s, 0, s, height)
-      ctx.fillRect(width, 0, s, height)
-    }
-
-    ctx.translate(width/2, height/2)
-    ctx.scale(...camera.scale)
-    ctx.rotate(camera.rotation)
-    ctx.translate(-camera.position[0], -camera.position[1])
-
-    for (const level of this.map.levels) {
-      if (level.visuals && level.isVisible) {
-        ctx.drawImage(level.visuals, level.aabb[0], level.aabb[1])
-      }
-    }
-
-    const layerOrder = Object.keys(this.layers).map(Number).sort((a, b) => a - b)
-    for (const layer of layerOrder) {
-      for (const thing of this.layers[layer]) {
-        thing.draw(inter)
-      }
-    }
-
-    ctx.restore()
-
-    for (const layer of layerOrder) {
-      for (const thing of this.layers[layer]) {
-        thing.guiDraw(inter)
-      }
     }
   }
 
