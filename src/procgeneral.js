@@ -13,26 +13,7 @@ const BELL_CURVE_SAMPLES = 8
 export class GeneratorParams {
   // General
   random = () => {return 4}
-  width = 30 // How wide on the x axis to make the structure
-  length = 70 // How long on the y axis to make the structure
-  height = 20 // The height of the floor
-
-  // Caves
-  caveWallHeight = 40 // How tall the bounding walls are
-  caveSteps = 7
-  caveInitialChance = 0.3
-  caveLayers = 1 // How many layers of terrain to make
-  caveLayerSpacing = 2 // How far apart should layers be
-
-  // Terrain
-  terrainVariance = 15 // How jagged the terrain is
-  terrainRoughness = 0.4 // How steep the hills can be
-
-  // Rooms
-  roomMinSize = 4
-  roomMaxSize = 10
-  roomWallHeight = 8
-
+  
   constructor(seed) {
     // Set up randomizer
     if (typeof seed != "number") {
@@ -45,26 +26,54 @@ export class GeneratorParams {
   }
 
   randomize() {
-    this.width = this.bellRandom(this.width, 10, true)
-    this.length = this.bellRandom(this.length, 10, true)
+    // General
+    this.stage = 0
+    this.theme = "cave"
+    this.width = this.bellRandom(40, 10, true)
+    this.length = this.bellRandom(70, 10, true)
+    this.height = 20
 
-    this.caveSteps = this.bellRandom(this.caveSteps, 3, true)
-    this.caveInitialChance = this.bellRandom(this.caveInitialChance, 0.08, false)
+    // Caves
+    this.caveSteps = this.bellRandom(7, 3, true)
+    this.caveInitialChance = this.bellRandom(0.3, 0.08, false)
+    this.caveLayers = 1
+    this.caveLayerSpacing = 2
+    this.caveInitalChanceAdvanceOdds = this.bellRandom(0.5, 0.4, false)
+    this.caveWallHeight = 0
 
-    this.terrainVariance = this.bellRandom(this.terrainVariance, 10, true)
+    // Terrain
+    this.terrainVariance = this.bellRandom(0.4, 10, true)
+    this.terrainRoughness = 0.4
 
-    this.roomMaxSize = this.bellRandom(this.roomMaxSize, 5, true)
-    this.roomMinSize = this.bellRandom(this.roomMinSize, 3, true)
-    this.roomWallHeight = this.bellRandom(this.roomWallHeight, 7, true)
+    // Rooms
+    this.roomMaxSize = this.bellRandom(4, 5, true)
+    this.roomMinSize = this.bellRandom(10, 3, true)
+    this.roomWallHeight = this.bellRandom(8, 7, true)
   }
 
   advance() {
+    // Advance to the next stage
+    this.stage ++
+    
+    // Theme-based advancements
+    if (this.theme == "cave") {
+      if (this.stage >= 2) {
+        this.caveWallHeight = 40
+      }
+    }
+
     this.width += 1
     this.length += 1
     this.terrainVariance += 1
     this.roomMaxSize += 1
 
-    if (this.random() < 0.5 && this.cave_Layers < 15) {this.caveLayers += 1}
+    // Increase number of layers
+    if (this.random() < 0.5 && this.caveLayers < 15) {this.caveLayers += 1;}
+
+    // Make things more cramped
+    if (this.random() < this.caveInitalChanceAdvanceOdds && this.caveInitialChance < 0.4) {this.caveInitialChance += 0.02;}
+
+
   }
 
   bellRandom(center, radius, truncate) {
@@ -87,10 +96,9 @@ export class GeneratorResult {
   terrain = {}
   types = {}
   startPoint = [0, 0]
+  startAngle = 0
   endPoint = [0, 0]
 }
-
-
 
 // Pass in a position in either string format or list format and it will convert it to list format
 export function stringToPosition(p) {
@@ -359,14 +367,24 @@ function makeDoorway(terrain, types, pos) {
 }
 
 export function generateEverything(params) {
+  // Generate caves
   let gen = cave.generateCaves(params)
 
+  // Make sure it is possible to complete the level
   guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
 
+  // Create the path and the buildings on it
   let path = findPath(gen.terrain, gen.types, gen.startPoint, gen.endPoint)
   paintPath(gen.types, path, params)
   buildAlongPath(gen.terrain, gen.types, path, params)
 
+  // Set the player's rotation from the path
+  if (path.length >= 5) {
+    let point1 = path[0]
+    let point2 = path[1]
+    let angle = utils.angleTowards(point1, point2)
+    gen.startAngle = angle
+  }
 
   return gen
 
