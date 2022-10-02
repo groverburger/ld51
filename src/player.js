@@ -458,7 +458,7 @@ export default class Player extends Thing {
     ctx.save()
     ctx.font = "italic bold 64px Times New Roman"
     ctx.textAlign = "center"
-    ctx.translate(width/2, height * 1/3)
+    ctx.translate(width/2, height * 2/3)
     const seconds = Math.max(10 - this.time / 60, 0)
     const time = seconds.toFixed(2)
     ctx.fillStyle = "red"
