@@ -703,14 +703,16 @@ export default class Terrain extends Thing {
 
     /*let generated = caves.generateCaves(genParams)
 
-    this.startPoint = generated.startPoint
-    this.endPoint = generated.endPoint
+    
 
     proc.guaranteePath(generated.terrain, generated.startPoint, generated.endPoint, genParams)
 
     room.insertRoom(generated.terrain, generated.types, [0, 0], genParams)*/
 
     let generated = room.generateRooms(genParams)
+
+    this.startPoint = generated.startPoint
+    this.endPoint = generated.endPoint
 
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
   }
@@ -739,9 +741,9 @@ export default class Terrain extends Thing {
       getScene().addThing(new Enemy([u.random(0, 70*64), u.random(0, 30*64), 0]))
     }
 
-    /*const g = getScene().addThing(new Goal())
+    const g = getScene().addThing(new Goal())
     g.position[0] = this.endPoint[0] * 64
     g.position[1] = this.endPoint[1] * 64
-    g.position[2] = getThing("terrain").getGroundHeight(g.position[0], g.position[1]) + 64*/
+    g.position[2] = getThing("terrain").getGroundHeight(g.position[0], g.position[1]) + 64
   }
 }
