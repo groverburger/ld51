@@ -751,15 +751,15 @@ export default class Terrain extends Thing {
       angle: this.startAngle
     }))
 
-    u.shuffle(this.enemyLocations)
+    u.shuffle(this.enemyLocations, u.randomizer())
     for (let i=0; i<5; i++) {
       const coord = this.enemyLocations.pop()
       getScene().addThing(new Enemy([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
     }
 
     const g = getScene().addThing(new Goal())
-    g.position[0] = this.endPoint[0] * 64 - 32
-    g.position[1] = this.endPoint[1] * 64 - 32
+    g.position[0] = this.endPoint[0] * 64 + 32
+    g.position[1] = this.endPoint[1] * 64 + 32
     g.position[2] = getThing("terrain").getGroundHeight(g.position[0], g.position[1]) + 64
   }
 }
