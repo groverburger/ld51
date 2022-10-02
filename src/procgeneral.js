@@ -72,7 +72,7 @@ export class GeneratorParams {
       }
       // Post-story 
       if (this.stage >= 2) {
-        this.caveMode = this.random() < 1 ? 1 : 2
+        this.caveMode = this.random() < 0.3 ? 2 : 1
       }
     }
 
