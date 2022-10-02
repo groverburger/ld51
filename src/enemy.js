@@ -13,6 +13,7 @@ export default class Enemy extends Thing {
   height = 64
   angle = 0
   time = 0
+  health = 1
 
   constructor(position) {
     super()
@@ -24,6 +25,8 @@ export default class Enemy extends Thing {
   }
 
   update() {
+    this.updateTimers()
+    if (this.timer("hurt")) return
     this.time += 1
 
     // fall down when above ground
@@ -52,26 +55,33 @@ export default class Enemy extends Thing {
     this.speed[0] *= friction
     this.speed[1] *= friction
 
+    this.dead = this.dead || (!this.timer("hurt") && this.health <= 0)
+
     for (const thing of this.getAllThingCollisions()) {
-      if (thing instanceof Bullet && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 8) {
-        this.dead = true
+      if (thing instanceof Bullet && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 8 && !thing.dead) {
+        this.health -= 1
         thing.dead = true
+        this.after(15, () => {}, "hurt")
         break
       }
 
-      if (thing instanceof Player) {
+      if (this.health > 0 && thing instanceof Player && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 24) {
         thing.death()
       }
     }
 
-    super.update()
+    this.move()
     this.position[2] += this.speed[2]
   }
 
   draw() {
     gfx.setShader(assets.shaders.animatedBillboard)
-    gfx.set("cellSize", [1/2, 1])
-    gfx.set("cellIndex", [this.time%60 < 30 ? 0 : 1, 0])
+    gfx.set("cellSize", [1/4, 1])
+    if (this.timer("hurt")) {
+      gfx.set("cellIndex", [2, 0])
+    } else {
+      gfx.set("cellIndex", [this.time%60 < 30 ? 0 : 1, 0])
+    }
     gfx.setTexture(assets.textures.enemy)
     game.getScene().camera3D.setUniforms()
     gfx.set("modelMatrix", mat.getTransformation({

@@ -714,12 +714,9 @@ export default class Terrain extends Thing {
     // Init the parameterBuilder object
     let parameterBuilder = globals.parameterBuilder
     if (!parameterBuilder) {
-      parameterBuilder = new proc.GeneratorParams(globals.levelSeed)
+      parameterBuilder = new proc.GeneratorParams(0)
       globals.parameterBuilder = parameterBuilder
     }
-
-    // Advance to the next stage
-    parameterBuilder.advance()
 
     // Generate the world
     let generated = proc.generateEverything(parameterBuilder)

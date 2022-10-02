@@ -7,12 +7,12 @@ import * as vec3 from "./core/vector3.js"
 import * as mat from "./core/matrices.js"
 
 export default class Bullet extends Thing {
-  aabb = [-16, -16, 16, 16]
+  aabb = [-24, -24, 24, 24]
 
   constructor(position, speed) {
     super()
     this.position = position
-    this.speed = vec3.multiply(speed, -16)
+    this.speed = vec3.multiply(speed, -24)
     this.direction = vec3.multiply(speed, -1)
     this.after(60, () => this.dead = true)
   }
