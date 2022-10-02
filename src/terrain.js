@@ -707,22 +707,14 @@ export default class Terrain extends Thing {
   }
 
   generate() {
-    let genParams = globals.genParams
-    if (!genParams) {
-      genParams = new proc.GeneratorParams()
-      genParams.width = 30
-      genParams.length = 70
-      genParams.height = 20
-      genParams.caveWallHeight = 40
-      genParams.caveSteps = 7
-      genParams.caveInitialChance = 0.3
-      genParams.terrainVariance = 30
-      genParams.terrainRoughness = 0.4
-      genParams.roomWallHeight = 10
-      globals.genParams = genParams
+    let parameterBuilder = globals.parameterBuilder
+    if (!parameterBuilder) {
+      parameterBuilder = new proc.GeneratorParams()
+      globals.parameterBuilder = parameterBuilder
     }
 
-    let generated = proc.generateEverything(genParams)
+    let generated = proc.generateEverything(parameterBuilder)
+    parameterBuilder.advance()
 
     this.startPoint = generated.startPoint
     this.endPoint = generated.endPoint
