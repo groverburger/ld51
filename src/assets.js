@@ -49,6 +49,7 @@ const assets = {
     water: "water.png",
     skybox: "skybox.png",
     goal: "flag.png",
+    path: "sand.png",
   },
 
   textureSettings: {

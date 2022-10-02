@@ -1,4 +1,4 @@
-import {getScene, getThing} from "./core/game.js"
+import {getScene, getThing, globals} from "./core/game.js"
 import Thing from "./core/thing.js"
 import * as gfx from "./core/webgl.js"
 import * as mat from "./core/matrices.js"
@@ -46,6 +46,7 @@ export default class Terrain extends Thing {
 
     // if the scene hasn't changed, load the terrain from cache
     // because generating terrain takes a second
+    /*
     if (cache.name == getScene().name) {
       for (const field in cache.object) {
         this[field] = cache.object[field]
@@ -55,6 +56,7 @@ export default class Terrain extends Thing {
     }
     cache.name = getScene().name
     cache.object = this
+    */
 
     this.generate()
     this.createMesh()
@@ -234,9 +236,9 @@ export default class Terrain extends Thing {
     }
 
     const getFloorTexture = (tileType) => {
-      if (tileType == 1) {return "sand"}
-      if (tileType == 2) {return "sand"}
-      if (tileType == 3) {return "grass"}
+      if (tileType == 1) {return "path"}
+      if (tileType == 2) {return "path"}
+      if (tileType == 3) {return "path"}
       return "stone"
     }
 
@@ -705,16 +707,20 @@ export default class Terrain extends Thing {
   }
 
   generate() {
-    let genParams = new proc.GeneratorParams()
-    genParams.width = 30
-    genParams.length = 70
-    genParams.height = 20
-    genParams.caveWallHeight = 40
-    genParams.caveSteps = 7
-    genParams.caveInitialChance = 0.3
-    genParams.terrainVariance = 30
-    genParams.terrainRoughness = 0.4
-    genParams.roomWallHeight = 10
+    let genParams = globals.genParams
+    if (!genParams) {
+      genParams = new proc.GeneratorParams()
+      genParams.width = 30
+      genParams.length = 70
+      genParams.height = 20
+      genParams.caveWallHeight = 40
+      genParams.caveSteps = 7
+      genParams.caveInitialChance = 0.3
+      genParams.terrainVariance = 30
+      genParams.terrainRoughness = 0.4
+      genParams.roomWallHeight = 10
+      globals.genParams = genParams
+    }
 
     let generated = proc.generateEverything(genParams)
 
