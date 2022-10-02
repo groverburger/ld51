@@ -42,6 +42,9 @@ export function generateCaves(params) {
         terrain[endPoint] = 10
         spacesLayer[endPoint] = false
       }
+      
+      carvePoint(terrainLayer, startPoint)
+      carvePoint(terrainLayer, endPoint)
 
       carvePoint(spacesLayer, startPoint)
       carvePoint(spacesLayer, endPoint)
@@ -49,8 +52,8 @@ export function generateCaves(params) {
 
     // Merge the cave-gen with the terrain-gen
     for (const key in spacesLayer) {
-      if (spacesLayer[key] == false) {
-        terrain[key] = terrainLayer[key] + (i * params.caveLayerSpacing)
+      if (!(key in spacesLayer) || spacesLayer[key] == false) {
+        terrain[key] = Math.floor(terrainLayer[key] + (i * params.caveLayerSpacing))
       }
     }
   }

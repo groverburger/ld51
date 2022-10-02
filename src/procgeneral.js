@@ -16,6 +16,9 @@ const CAMPAIGN_LENGTH = 10
 export class GeneratorParams {
   // General
   random = () => {return 4}
+  stage = 0
+  caveWallHeight = 0
+  maxPathLength = 73
   
   constructor(seed) {
     // Set up randomizer
@@ -30,12 +33,10 @@ export class GeneratorParams {
 
   randomize() {
     // General
-    this.stage = 0
     this.theme = "cave"
     this.width = this.bellRandom(40, 10, true)
     this.length = this.bellRandom(70, 10, true)
     this.height = 20
-    this.maxPathLength = 73
 
     // Caves
     this.caveSteps = this.bellRandom(7, 1, true)
@@ -43,7 +44,6 @@ export class GeneratorParams {
     this.caveLayers = 1
     this.caveLayerSpacing = 2
     this.caveInitalChanceAdvanceOdds = this.bellRandom(0.5, 0.4, false)
-    this.caveWallHeight = 0
 
     // Terrain
     this.terrainVariance = this.bellRandom(15, 10, true)
@@ -53,8 +53,8 @@ export class GeneratorParams {
     this.roomMaxSize = this.bellRandom(7, 5, true)
     this.roomMinSize = this.bellRandom(3, 2, true)
     this.roomWallHeight = this.bellRandom(8, 7, true)
-    this.room1Position = this.random()
-    this.room2Position = this.random()
+    this.room1Position = this.random()*0.9 + 0.1
+    this.room2Position = this.random()*0.9 + 0.1
 
     // Misc
     this.favoriteFeature = Math.floor(this.random() * 100)
@@ -322,7 +322,9 @@ export function paintPath(types, path, params) {
     for (const delta of deltas) {
       if (params.random() < 0.5) {
         let newSpace = add(delta, space)
-        types[newSpace] = 3
+        if (!(newSpace in types) || types[newSpace] == 0) {
+          types[newSpace] = 3
+        }
       }
     }
   }  
@@ -394,6 +396,15 @@ function makeDoorway(terrain, types, pos) {
 export function generateEverything(params) {
   // Generate caves
   let gen = cave.generateCaves(params)
+
+  // Maybe spawn the player on a plinth
+  if (params.random() < 1) {
+    room.insertPlinth(gen.terrain, gen.types, gen.startPoint, {
+      ...params,
+      height: gen.terrain[gen.startPoint] + params.bellRandom(10, 7, true),
+      roomWallHeight: 0
+    })
+  }
 
   // Make sure it is possible to complete the level
   guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
