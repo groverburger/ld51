@@ -49,14 +49,8 @@ export default class Goal extends Thing {
 
   draw() {
     const camera = getScene().camera3D
-    gfx.setShader(assets.shaders.animatedBillboard)
+    gfx.setShader(assets.shaders.billboard)
     gfx.setTexture(assets.textures.goal)
-    gfx.set("cellSize", [1/4, 1])
-    if (this.visited) {
-      gfx.set("cellIndex", [2, 0])
-    } else {
-      gfx.set("cellIndex", [this.time%60 < 30 ? 0 : 1, 0])
-    }
     camera.setUniforms()
 
     const boing = this.visited ? 64 : u.map(Math.sin(this.time/30), -1, 1, 64-16, 64+16)

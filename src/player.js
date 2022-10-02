@@ -95,6 +95,9 @@ export default class Player extends Thing {
         return keys.Space || gamepad?.buttons[0].pressed
       },
       dash(keys, mouse, gamepad) {
+        return keys.ShiftLeft || gamepad?.buttons[2].pressed
+      },
+      shoot(keys, mouse, gamepad) {
         return (mouse.isLocked() && mouse.button) || gamepad?.buttons[1].pressed
       },
 
@@ -250,17 +253,18 @@ export default class Player extends Thing {
       sound.playbackRate = u.random(1, 1.2)
       sound.currentTime = 0
       sound.play()
-      /*
       this.canDash = false
       //this.after(10, null, "dash")
-      const dash = vec3.multiply(vec3.anglesToVector(scene.camera3D.yaw, scene.camera3D.pitch - 0.25), -18)
+      const dash = vec3.multiply(vec3.anglesToVector(scene.camera3D.yaw, scene.camera3D.pitch), -18)
       this.speed[0] = dash[0]
       this.speed[1] = dash[1]
       this.speed[2] = dash[2]
       this.cancelTimer("disableAirControl")
       this.after(20, null, "dashCooldown")
-      */
+    }
 
+    if (this.inputs.get("shoot") && !this.timer("shoot")) {
+      this.after(10, () => {}, "shoot")
       const look = getScene().camera3D.lookVector
       const side = vec3.crossProduct(look, [0, 0, 1])
       let pos = vec3.add(this.position, vec3.multiply(side, 16))
@@ -449,9 +453,27 @@ export default class Player extends Thing {
 
   guiDraw() {
     ctx.save()
-    ctx.fillStyle = "black"
-    ctx.font = "48px Arial"
-    ctx.fillText("FPS: " + getFramerate(), 100, 100)
+    ctx.font = "italic bold 64px Times New Roman"
+    ctx.textAlign = "center"
+    ctx.translate(width/2, height * 1/3)
+    const seconds = Math.max(10 - this.time / 60, 0)
+    const time = seconds.toFixed(2)
+    ctx.fillStyle = "red"
+    ctx.fillText(time, 4, 4)
+    ctx.fillStyle = "white"
+    ctx.fillText(time, 0, 0)
+    ctx.restore()
+
+    const size = 10
+    ctx.save()
+    ctx.translate(width/2, height/2)
+    ctx.strokeStyle = "white"
+    ctx.lineWidth = 1
+    ctx.moveTo(-size, 0)
+    ctx.lineTo(size, 0)
+    ctx.moveTo(0, -size + 0.5)
+    ctx.lineTo(0, size + 0.5)
+    ctx.stroke()
     ctx.restore()
   }
 }

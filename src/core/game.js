@@ -60,27 +60,24 @@ export function start() {
 function frame(frameTime) {
   let delta = previousFrameTime == null ? 0 : (frameTime - previousFrameTime) / 1000
   previousFrameTime = frameTime
-  accumulator += delta
 
   delta *= 60
-  if (Math.abs(delta - 0.5) >= 0.49) {
+  if (delta >= 0.98 && delta <= 1.02) {
     delta = 1
   }
-  delta /= 60
+  accumulator += delta
 
   // make sure we update at 60hz
   let times = 0
-  while (accumulator >= refreshRate && times < config.catchupFrames) {
+  while (accumulator >= 1 && times < config.catchupFrames) {
     update()
-    accumulator -= refreshRate
+    accumulator -= 1
     times += 1
   }
-  accumulator %= refreshRate
+  accumulator %= 1
 
-  //if (times) {
-    draw(accumulator / refreshRate)
-    frameCount += 1
-  //}
+  draw(accumulator)
+  frameCount += 1
 
   requestAnimationFrame(frame)
 }
