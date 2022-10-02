@@ -1,0 +1,43 @@
+import assets from "./assets.js"
+import Thing from "./core/thing.js"
+import * as gfx from "./core/webgl.js"
+import * as game from "./core/game.js"
+import * as u from "./core/utils.js"
+import * as vec3 from "./core/vector3.js"
+import * as mat from "./core/matrices.js"
+
+export default class TimePickup extends Thing {
+  time = 0
+  height = 32
+
+  constructor(position) {
+    super()
+    this.position = position
+    this.groundHeight = game.getThing("terrain").getGroundHeight(this.position[0], this.position[1])
+    this.position[2] = this.groundHeight + this.height
+  }
+
+  update() {
+    super.update()
+    this.time += 1
+    this.position[2] += Math.sin(this.time/60) / 4
+
+    const player = game.getThing("player")
+    if (this.getAllThingCollisions().includes(player)) {
+      player.time += 5*60
+      this.dead = true
+    }
+  }
+
+  draw() {
+    gfx.setShader(assets.shaders.billboard)
+    gfx.setTexture(assets.textures.timePickup)
+    game.getScene().camera3D.setUniforms()
+    gfx.set("modelMatrix", mat.getTransformation({
+      translation: this.position,
+      scale: 32
+    }))
+    gfx.set("color", [1,1,1,1])
+    gfx.drawBillboard()
+  }
+}
