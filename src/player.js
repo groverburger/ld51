@@ -24,6 +24,7 @@ import InputHandler from "./core/inputs.js"
 import FadeIn from "./fadein.js"
 import DemoHelper from "./demohelper.js"
 import Bullet from "./bullet.js"
+import DeathAnim from "./deathanim.js"
 
 export default class Player extends Thing {
   height = 56
@@ -295,16 +296,16 @@ export default class Player extends Thing {
 
       if (this.weapon == "shotgun") {
         // Animation and Timing
-        this.after(16, () => {}, "shoot")
+        this.after(24, () => {}, "shoot")
         this.after(30, () => {}, "fire")
 
         // Create bullets
-        let angle1 = vec3.normalize(look);
-        let angle2 = vec3.normalize(vec3.add(look, vec3.multiply(side, 0.08)))
-        let angle3 = vec3.normalize(vec3.add(look, vec3.multiply(side, -0.08)))
-        getScene().addThing(new Bullet(pos, angle1, 50, this.weapon))
-        getScene().addThing(new Bullet(vec3.add(pos, side), angle2, 50, this.weapon))
-        getScene().addThing(new Bullet(vec3.subtract(pos, side), angle3, 50, this.weapon))
+        for (let i=0; i<6; i++) {
+          const r = 0.15
+          let dir = vec3.add(look, [u.random(-r, r), u.random(-r, r), u.random(-r, r)])
+          dir = vec3.normalize(dir)
+          getScene().addThing(new Bullet(pos, dir, 28))
+        }
 
         // Sound effect
         const sound = assets.sounds.shotgun
@@ -312,13 +313,20 @@ export default class Player extends Thing {
         sound.currentTime = 0
         sound.volume = 0.4
         sound.play()
+
+        this.speed[0] -= look[0]*4.5
+        this.speed[1] -= look[1]*4.5
+        this.speed[2] -= look[2]*2.5
       } else if (this.weapon == "machinegun") {
         // Animation and Timing
         this.after(7, () => {}, "shoot")
         this.after(4, () => {}, "fire")
 
         // Create bullet
-        getScene().addThing(new Bullet(pos, look, 28, this.weapon))
+        const r = 0.1
+        let dir = vec3.add(look, [u.random(-r, r), u.random(-r, r), u.random(-r, r)])
+        dir = vec3.normalize(dir)
+        getScene().addThing(new Bullet(pos, dir, 28))
 
         // Sound effect
         const sound = assets.sounds.machinegun
@@ -326,13 +334,17 @@ export default class Player extends Thing {
         sound.currentTime = 0
         sound.volume = 0.4
         sound.play()
+
+        this.speed[0] -= look[0]*1.5
+        this.speed[1] -= look[1]*1.5
+        this.speed[2] -= look[2]*1
       } else {
         // Animation and Timing
         this.after(16, () => {}, "shoot")
         this.after(12, () => {}, "fire")
 
         // Create bullet
-        getScene().addThing(new Bullet(pos, look, 28, this.weapon))
+        getScene().addThing(new Bullet(pos, look, 28))
 
         const sound = assets.sounds.machinegun
         sound.playbackRate = u.random(1, 1.3)
@@ -344,11 +356,9 @@ export default class Player extends Thing {
         sound.currentTime = 0
         sound.playbackRate = u.random(0.9, 1.1)
         sound.play()
-        */
-      }
 
-      // Kickback
-      if (this.weapon != "machinegun") {
+        */
+
         this.speed[0] -= look[0]*3
         this.speed[1] -= look[1]*3
         this.speed[2] -= look[2]*1.5
@@ -367,6 +377,7 @@ export default class Player extends Thing {
           //assets.sounds.footstep3
         )
         sound.playbackRate = u.random(0.9, 1.1)
+        sound.volume = 0.25
         sound.currentTime = 0
         sound.play()
       }
@@ -384,7 +395,7 @@ export default class Player extends Thing {
     this.updateTimers()
     this.cameraUpdate()
 
-    if (this.time%60 == 0 && this.time > 0 && this.time < 600) {
+    if (false && this.time%60 == 0 && this.time > 0 && this.time < 600) {
       let sound = assets.sounds.tick
       if (this.time%120 == 0) {
         sound = assets.sounds.tock
@@ -525,7 +536,7 @@ export default class Player extends Thing {
     scene.camera3D.position = [
       this.position[0],
       this.position[1],
-      this.position[2] - this.staircaseOffset
+      Math.max(this.position[2] - this.staircaseOffset, 32)
     ]
   }
 
@@ -636,17 +647,6 @@ export default class Player extends Thing {
   }
 
   onDeath() {
-    globals.lives -= 1
-    if (globals.lives <= 0) {
-      this.resetGame()
-    }
-    resetScene()
-  }
-
-  resetGame() {
-    delete globals.level
-    delete globals.lives
-    delete globals.parameterBuilder
-    delete globals.generated
+    getScene().addThing(new DeathAnim())
   }
 }
