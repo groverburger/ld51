@@ -608,7 +608,7 @@ export default class Player extends Thing {
     const seconds = Math.max(this.time / 60, 0)
     const time = seconds.toFixed(2)
     ctx.fillStyle = "red"
-    ctx.fillText(time, 4, 4)
+    ctx.fillText(time, -4, 4)
     ctx.fillStyle = "white"
     ctx.fillText(time, 0, 0)
     ctx.restore()

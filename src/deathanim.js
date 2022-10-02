@@ -15,15 +15,18 @@ function* DeathAnimation() {
     ctx.fillRect(0, 0, width, height)
 
     ctx.save()
-    ctx.translate(width/2, height/3)
+    ctx.translate(width/2, u.lerp(height/2, 0, u.map(i, 8, 24, 1, 0, true)**2))
     //ctx.fillStyle = "rgba(0, 0, 0, ${u.map(i, 0, 10, 0, 1, true)})"
     ctx.fillStyle = "red"
     ctx.font = "italic 64px Times New Roman"
     ctx.textAlign = "center"
-    ctx.fillText(globals.lives ? "You died" : "Game Over", 0, 0)
+
+    if (globals.lives) {
+      ctx.fillText("You Died", 0, 0)
+    }
     ctx.restore()
 
-    if (Object.keys(game.keysDown).length || game.mouse.button) {
+    if (Object.keys(game.keysPressed).length || game.mouse.click && i > 10) {
       break
     }
 
