@@ -9,6 +9,7 @@ const RANDOM_POINT_ITERATIONS = 50
 const WORLD_HEIGHT = 40
 const CARVE_PROXIMITY_WEIGHT = 30
 const BELL_CURVE_SAMPLES = 8
+const PATH_LOOK = 8
 
 export class GeneratorParams {
   // General
@@ -388,11 +389,12 @@ export function generateEverything(params) {
   paintPath(gen.types, path, params)
   buildAlongPath(gen.terrain, gen.types, path, params)
 
-  // Set the player's rotation from the path
-  if (path.length >= 5) {
-    let point1 = path[0]
-    let point2 = path[1]
-    let angle = utils.angleTowards(point1, point2)
+  // Set the player's starting rotation so that they look towards the path
+  if (path.length > PATH_LOOK + 2) {
+    let point1 = path[path.length-1]
+    let point2 = path[path.length - PATH_LOOK]
+
+    let angle = utils.angleTowards(point2[0], point2[1], point1[0], point1[1])
     gen.startAngle = angle
   }
 
