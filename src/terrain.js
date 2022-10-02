@@ -31,6 +31,7 @@ export default class Terrain extends Thing {
   map = {}
   types = {}
   startPoint = [0, 0]
+  startAngle = 0
   endPoint = [0, 0]
 
   constructor(data) {
@@ -710,18 +711,25 @@ export default class Terrain extends Thing {
   }
 
   generate() {
+    // Init the parameterBuilder object
     let parameterBuilder = globals.parameterBuilder
     if (!parameterBuilder) {
       parameterBuilder = new proc.GeneratorParams(globals.levelSeed)
       globals.parameterBuilder = parameterBuilder
     }
 
-    let generated = proc.generateEverything(parameterBuilder)
+    // Advance to the next stage
     parameterBuilder.advance()
 
+    // Generate the world
+    let generated = proc.generateEverything(parameterBuilder)
+
+    // Set entity data
     this.startPoint = generated.startPoint
     this.endPoint = generated.endPoint
+    this.startAngle = generated.startAngle
 
+    // Write terrain data to map
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
     proc.mergeTerrain(this.types, generated.types, [-1, -1])
 
@@ -740,6 +748,7 @@ export default class Terrain extends Thing {
     const p = getScene().addThing(new Player({
       position: [this.startPoint[0]*64 - 32, this.startPoint[1]*64 - 32, 10000]
     }))
+    // TODO: Start player with rotation specified by startAngle variable
 
     u.shuffle(this.enemyLocations)
     for (let i=0; i<5; i++) {
