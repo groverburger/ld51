@@ -16,6 +16,7 @@ import Enemy from "./enemy.js"
 import Goal from "./goal.js"
 import TimePickup from "./timepickup.js"
 import OneUp from "./oneup.js"
+import { ShotgunPickup, MachinegunPickup } from "./powerups.js"
 const utils = u
 
 let cache = {
@@ -35,6 +36,7 @@ export default class Terrain extends Thing {
   startPoint = [0, 0]
   startAngle = 0
   endPoint = [0, 0]
+  powerup = 0
 
   constructor(data) {
     super(data)
@@ -745,6 +747,7 @@ export default class Terrain extends Thing {
       // WARNING: Do not try this at home!
       while (true) {
         try {
+          // Generate the world
           generated = proc.generateEverything(parameterBuilder)
           break
         }
@@ -757,6 +760,13 @@ export default class Terrain extends Thing {
       }
       
       globals.generated = generated
+
+      // Pick the powerups for this level
+      let numberOfPowerups = Math.min(Math.ceil((parameterBuilder.stage-1) / 4), 4) * 2
+      globals.levelPowerups = []
+      for (let i = 0; i < numberOfPowerups; i ++) {
+        globals.levelPowerups.push(Math.floor(parameterBuilder.random() * 2))
+      }
     }
 
     // Set entity data
@@ -823,6 +833,17 @@ export default class Terrain extends Thing {
 
       coord = itemLocations.pop()
       getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+
+      for (const powerup in globals.levelPowerups) {
+        console.log(powerup)
+        coord = itemLocations.pop()
+        if (powerup == 0) {
+          getScene().addThing(new ShotgunPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+        }
+        else if (powerup == 1) {
+          getScene().addThing(new MachinegunPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+        }
+      }
     }
 
     const g = getScene().addThing(new Goal())

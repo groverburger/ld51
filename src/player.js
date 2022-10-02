@@ -53,7 +53,6 @@ export default class Player extends Thing {
   depth = -10000
   stepCounter = 0
   lastPosition = [0, 0, 0]
-  weapon = "pistol"
   walkFrames = 0
   walkFrameAccel = 0
 
@@ -294,7 +293,7 @@ export default class Player extends Thing {
       let pos = vec3.add(this.position, vec3.multiply(side, 16))
       pos = vec3.add(pos, [0, 0, -14])
 
-      if (this.weapon == "shotgun") {
+      if (globals.powerup == "shotgun") {
         // Animation and Timing
         this.after(24, () => {}, "shoot")
         this.after(30, () => {}, "fire")
@@ -317,7 +316,7 @@ export default class Player extends Thing {
         this.speed[0] -= look[0]*4.5
         this.speed[1] -= look[1]*4.5
         this.speed[2] -= look[2]*2.5
-      } else if (this.weapon == "machinegun") {
+      } else if (globals.powerup == "machinegun") {
         // Animation and Timing
         this.after(7, () => {}, "shoot")
         this.after(4, () => {}, "fire")
@@ -335,9 +334,9 @@ export default class Player extends Thing {
         sound.volume = 0.4
         sound.play()
 
-        this.speed[0] -= look[0]*1.5
-        this.speed[1] -= look[1]*1.5
-        this.speed[2] -= look[2]*1
+        this.speed[0] -= look[0]*0.9
+        this.speed[1] -= look[1]*0.9
+        this.speed[2] -= look[2]*0.5
       } else {
         // Animation and Timing
         this.after(16, () => {}, "shoot")
@@ -568,7 +567,7 @@ export default class Player extends Thing {
     }
 
     // Animation
-    if (this.weapon == "shotgun") {
+    if (globals.powerup == "shotgun") {
       gfx.set("modelMatrix", mat.getTransformation({
         translation: [bobX-2, -7 + knockback*4, bobY-1.8 - (knockback * 0.5)],
         rotation: [0, -knockback/3, Math.PI/-2],
@@ -578,7 +577,7 @@ export default class Player extends Thing {
       gfx.setTexture(assets.textures.square)
       gfx.drawMesh(assets.models.shotgun)
     }
-    else if (this.weapon == "machinegun") {
+    else if (globals.powerup == "machinegun") {
       gfx.set("modelMatrix", mat.getTransformation({
         translation: [bobX-2, -7 + knockback*0.9, bobY-1.8],
         rotation: [0, -knockback * 0.1, Math.PI/-2],

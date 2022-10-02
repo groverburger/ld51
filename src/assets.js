@@ -55,6 +55,8 @@ const assets = {
     roomFloor: "stone1.png",
     roomWall: "brick1.png",
     timePickup: "timepickup.png",
+    shotgunPickup: "shotgunpickup.png",
+    machinegunPickup: "machinegunpickup.png",
     goldenFloor: "brick2_f.png",
     goldenWall: "brick2.png",
     oneUp: "oneup.png",
@@ -83,6 +85,7 @@ const assets = {
     enemyHurt2: "ehurt2.wav",
     timePickup: "timepickup.wav",
     oneUp: "oneup.wav",
+    weaponPickup: "weapon.wav",
   },
 
   sceneSources: {

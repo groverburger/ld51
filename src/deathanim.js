@@ -8,6 +8,7 @@ import Thing from "./core/thing.js"
 function* DeathAnimation() {
   const {ctx, globals} = game
   globals.lives -= 1
+  globals.powerup = "none"
 
   let i = 0
   while (true) {
