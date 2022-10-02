@@ -689,7 +689,7 @@ export default class Terrain extends Thing {
     return this.getTileAt(Math.floor(x/64), Math.floor(y/64), what)
   }
 
-  _generate() {
+  generate() {
     let genParams = new proc.GeneratorParams()
     genParams.width = 10
     genParams.length = 10
@@ -715,7 +715,7 @@ export default class Terrain extends Thing {
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
   }
 
-  generate() {
+  _generate() {
     for (let x=0; x<64; x++) {
       for (let y=0; y<64; y++) {
         let h = 1
