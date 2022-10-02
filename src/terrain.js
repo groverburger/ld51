@@ -249,6 +249,13 @@ export default class Terrain extends Thing {
       return tileType ? (["grassSide", undefined])[tileType-1] : "grassSide"
     }
 
+    const getShouldRound = (tileType) => {
+      if (tileType == 1 || tileType == 2) {
+        return false
+      }
+      return true
+    }
+
     const isSlope = (tileType) => {
       //return tileType ? ([true, true])[tileType-1] : false
       return false
@@ -443,53 +450,55 @@ export default class Terrain extends Thing {
         }
 
         // diagonals
-        if (!meshMap[[coord]]) {
-          const n1 = [
-            coord[0] + turn[0]*64,
-            coord[1] + turn[1]*64,
-          ]
+        if (getShouldRound(this.getTileAtWorld(x, y, "TileType"))) {
+          if (!meshMap[[coord]]) {
+            const n1 = [
+              coord[0] + turn[0]*64,
+              coord[1] + turn[1]*64,
+            ]
 
-          if (heightAt(...n1) == height) {
-            let powerIndex = Math.round(i*4/tau)
-            meshMap[coord] = meshMap[coord] | 2**powerIndex
-            meshMap[coord] = meshMap[coord] | 2**((powerIndex+1)%4)
-            meshMap[coord] = meshMap[coord] | 2**((powerIndex+2)%4)
-            meshMap[coord] = meshMap[coord] | 2**((powerIndex+3)%4)
-            meshMap[coord] = meshMap[coord] | 2**((powerIndex+4)%4)
+            if (heightAt(...n1) == height) {
+              let powerIndex = Math.round(i*4/tau)
+              meshMap[coord] = meshMap[coord] | 2**powerIndex
+              meshMap[coord] = meshMap[coord] | 2**((powerIndex+1)%4)
+              meshMap[coord] = meshMap[coord] | 2**((powerIndex+2)%4)
+              meshMap[coord] = meshMap[coord] | 2**((powerIndex+3)%4)
+              meshMap[coord] = meshMap[coord] | 2**((powerIndex+4)%4)
 
-            addWall(
-              [
-                center[0] + normal[0]*grid*3/2 + turn[0]*grid/2,
-                center[1] + normal[1]*grid*3/2 + turn[1]*grid/2,
-              ],
-              [
-                center[0] + normal[0]*grid/2 + turn[0]*grid/-2,
-                center[1] + normal[1]*grid/2 + turn[1]*grid/-2,
-              ],
-              -256,
-              height,
-              {
-                texture: getWallTexture(this.getTileAtWorld(x, y, "TileType")),
-                flair: getFlairTexture(this.getTileAtWorld(x, y, "TileType"))
-              }
-            )
+              addWall(
+                [
+                  center[0] + normal[0]*grid*3/2 + turn[0]*grid/2,
+                  center[1] + normal[1]*grid*3/2 + turn[1]*grid/2,
+                ],
+                [
+                  center[0] + normal[0]*grid/2 + turn[0]*grid/-2,
+                  center[1] + normal[1]*grid/2 + turn[1]*grid/-2,
+                ],
+                -256,
+                height,
+                {
+                  texture: getWallTexture(this.getTileAtWorld(x, y, "TileType")),
+                  flair: getFlairTexture(this.getTileAtWorld(x, y, "TileType"))
+                }
+              )
 
-            addFloorTri(
-              [
-                center[0] + normal[0]*grid*3/2 + turn[0]*grid/2,
-                center[1] + normal[1]*grid*3/2 + turn[1]*grid/2,
-              ],
-              [
-                center[0] + normal[0]*grid/2 + turn[0]*grid/2,
-                center[1] + normal[1]*grid/2 + turn[1]*grid/2,
-              ],
-              [
-                center[0] + normal[0]*grid/2 + turn[0]*grid/-2,
-                center[1] + normal[1]*grid/2 + turn[1]*grid/-2,
-              ],
-              height,
-              getFloorTexture(this.getTileAtWorld(x, y, "TileType"))
-            )
+              addFloorTri(
+                [
+                  center[0] + normal[0]*grid*3/2 + turn[0]*grid/2,
+                  center[1] + normal[1]*grid*3/2 + turn[1]*grid/2,
+                ],
+                [
+                  center[0] + normal[0]*grid/2 + turn[0]*grid/2,
+                  center[1] + normal[1]*grid/2 + turn[1]*grid/2,
+                ],
+                [
+                  center[0] + normal[0]*grid/2 + turn[0]*grid/-2,
+                  center[1] + normal[1]*grid/2 + turn[1]*grid/-2,
+                ],
+                height,
+                getFloorTexture(this.getTileAtWorld(x, y, "TileType"))
+              )
+            }
           }
         }
       }
