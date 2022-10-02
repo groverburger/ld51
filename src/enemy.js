@@ -9,8 +9,9 @@ import * as vec2 from "./core/vector2.js"
 import Bullet from "./bullet.js"
 
 export default class Enemy extends Thing {
-  height = 48
+  height = 64
   angle = 0
+  time = 0
 
   constructor(position) {
     super()
@@ -22,6 +23,8 @@ export default class Enemy extends Thing {
   }
 
   update() {
+    this.time += 1
+
     // fall down when above ground
     this.groundHeight = game.getThing("terrain").getGroundHeight(this.position[0], this.position[1])
     if (this.position[2] > this.groundHeight + this.height) {
@@ -38,11 +41,11 @@ export default class Enemy extends Thing {
 
     // move towards player
     const player = game.getThing("player")
-    const accel = vec2.angleToVector(this.angle, 0.5)
+    const accel = vec2.angleToVector(this.angle, 1)
     this.speed[0] += accel[0]
     this.speed[1] += accel[1]
 
-    const friction = 0.85
+    const friction = 0.9
     this.speed[0] *= friction
     this.speed[1] *= friction
 
@@ -59,12 +62,14 @@ export default class Enemy extends Thing {
   }
 
   draw() {
-    gfx.setShader(assets.shaders.billboard)
+    gfx.setShader(assets.shaders.animatedBillboard)
+    gfx.set("cellSize", [1/2, 1])
+    gfx.set("cellIndex", [this.time%60 < 30 ? 0 : 1, 0])
     gfx.setTexture(assets.textures.enemy)
     game.getScene().camera3D.setUniforms()
     gfx.set("modelMatrix", mat.getTransformation({
       translation: this.position,
-      scale: 32
+      scale: 64
     }))
     gfx.set("color", [1,1,1,1])
     gfx.drawBillboard()
@@ -81,6 +86,6 @@ export default class Enemy extends Thing {
     this.after(60, () => this.angleUpdate())
     const player = game.getThing("player")
     this.angle = u.angleTowards(this.position[0], this.position[1], player.position[0], player.position[1])
-    this.angle += u.random(-1, 1)
+    this.angle += u.random(-0.5, 0.5)
   }
 }
