@@ -9,7 +9,15 @@ const DEATH_LIMIT = 2
 export function generateCaves(params) {
   // Get necessary params
   let layers = params.caveLayers
-  let wallHeight = params.caveWallHeight
+
+  // Set params from cave mode
+  let wallHeight = 0
+  if (params.caveMode == 1) {
+    wallHeight = 40
+  }
+  else if (params.caveMode == 2) {
+    wallHeight = 40
+  }
 
   // Start by creating an uncarved flat at wall height
   let flatParams = {...params}
@@ -19,7 +27,7 @@ export function generateCaves(params) {
   // Iterate over cave layers
   let startPoint = [0, 0]
   let endPoint = [0, 0]
-  for (let i = layers-1; i >= 0; i --) {
+  for (let i = layers-1; i >= -1; i --) {
     // Generate the terrain
     let terrainLayer = terr.generateTerrain(params).terrain
     let spacesLayer = caveAlgorithm({...params,

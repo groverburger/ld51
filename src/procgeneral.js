@@ -17,8 +17,8 @@ export class GeneratorParams {
   // General
   random = () => {return 4}
   stage = 0
-  caveWallHeight = 0
   maxPathLength = 73
+  caveLayers = 1
   
   constructor(seed) {
     // Set up randomizer
@@ -41,9 +41,9 @@ export class GeneratorParams {
     // Caves
     this.caveSteps = this.bellRandom(7, 1, true)
     this.caveInitialChance = this.bellRandom(0.3, 0.01, false)
-    this.caveLayers = 1
     this.caveLayerSpacing = 2
     this.caveInitalChanceAdvanceOdds = this.bellRandom(0.5, 0.4, false)
+    this.caveMode = 0
 
     // Terrain
     this.terrainVariance = this.bellRandom(15, 10, true)
@@ -68,11 +68,11 @@ export class GeneratorParams {
     // Theme-based advancements
     if (this.theme == "cave") {
       if (this.stage >= 2) {
-        this.caveWallHeight = WORLD_HEIGHT
+        this.caveMode = 1
       }
       // Post-story 
-      if (this.stage > CAMPAIGN_LENGTH) {
-        this.caveWallHeight = this.random() < 0.10 ? 0 : WORLD_HEIGHT
+      if (this.stage >= 2) {
+        this.caveMode = this.random() < 1 ? 1 : 2
       }
     }
 
@@ -322,6 +322,7 @@ export function paintPath(types, path, params) {
     for (const delta of deltas) {
       if (params.random() < 0.5) {
         let newSpace = add(delta, space)
+        // Make sure we don't paint over other painted tiles
         if (!(newSpace in types) || types[newSpace] == 0) {
           types[newSpace] = 3
         }
@@ -398,7 +399,7 @@ export function generateEverything(params) {
   let gen = cave.generateCaves(params)
 
   // Maybe spawn the player on a plinth
-  if (params.random() < 1) {
+  if (params.random() < 0.05) {
     room.insertPlinth(gen.terrain, gen.types, gen.startPoint, {
       ...params,
       height: gen.terrain[gen.startPoint] + params.bellRandom(10, 7, true),
