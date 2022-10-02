@@ -758,8 +758,8 @@ export default class Terrain extends Thing {
     }
 
     const g = getScene().addThing(new Goal())
-    g.position[0] = this.endPoint[0] * 64 + 32
-    g.position[1] = this.endPoint[1] * 64 + 32
+    g.position[0] = this.endPoint[0] * 64 - 32
+    g.position[1] = this.endPoint[1] * 64 - 32
     g.position[2] = getThing("terrain").getGroundHeight(g.position[0], g.position[1]) + 64
   }
 }
