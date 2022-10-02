@@ -590,11 +590,12 @@ export default class Terrain extends Thing {
       ],
       scale: 10000,
     }))
-    gfx.drawMesh(assets.models.cylinder)
+    gfx.drawMesh(assets.models.sphere)
     gfx.gl.depthMask(true)
 
     // draw a few layers of increasingly
     // opaque blue quads under the water surface
+    /*
     gfx.setTexture(assets.textures.square)
     gfx.set("color", u.stringToColor("#5B6EE188"))
     for (let i=0; i<3; i++) {
@@ -613,8 +614,10 @@ export default class Terrain extends Thing {
         1, 1, 0,
       )
     }
+    */
 
     // draw ocean surface
+    /*
     gfx.setShader(assets.shaders.scrolling)
     getScene().camera3D.setUniforms()
     gfx.setTexture(assets.textures.water)
@@ -636,6 +639,7 @@ export default class Terrain extends Thing {
       -1, 1, 0,
       1, 1, 0,
     )
+    */
 
     // draw clouds
     /*
@@ -745,7 +749,7 @@ export default class Terrain extends Thing {
           break
         }
         catch(e) {
-          console.log("Generation error: " + e)
+          console.log(e)
           console.log(parameterBuilder)
           delete globals.generated
           console.log(parameterBuilder.random())

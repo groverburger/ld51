@@ -49,7 +49,7 @@ const assets = {
     enemy: "enemy1.png",
     stone: "stone2.png",
     water: "water.png",
-    skybox: "skybox.png",
+    skybox: "skybox3.png",
     goal: "flag.png",
     path: "stone.png",
     roomFloor: "stone1.png",
