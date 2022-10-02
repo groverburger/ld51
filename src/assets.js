@@ -57,23 +57,20 @@ const assets = {
     timePickup: "timepickup.png",
   },
 
-  textureSettings: {
-    perlin: "linear"
-  },
+  textureSettings: {},
 
   soundSources: {
-    playerDash: "p_dash1.wav",
     playerJump: "jump.wav",
     playerLand: "land.wav",
     playerSplash: "splash.wav",
-    footstep1: "bigfootstep3.wav",
-    footstep2: "bigfootstep4.wav",
-    rank: "win.wav",
-    win: "win2.wav",
-    delivery: "win1.wav",
-    boing: "boing.wav",
-    boingFootstep: "boing.wav",
-    music: "music1.mp3",
+    pistolShoot: "pistolshoot.wav",
+    footstep1: "footstep1.wav",
+    footstep2: "footstep2.wav",
+    footstep3: "footstep3.wav",
+    win: "win1.wav",
+    tick: "clocktick.mp3",
+    tock: "clocktock.mp3",
+    impact: "impact.mp3",
   },
 
   sceneSources: {

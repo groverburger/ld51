@@ -45,19 +45,18 @@ export default class Player extends Thing {
   inputs = null
   lastFallSpeed = 0
   time = 600
-  footstepToggle = false
   showGui = true // cutscenes set this to false
   deliveredCount = 0
   sprite = null
   framebuffer = gfx.gl.createFramebuffer()
   depth = -10000
-  lastPosition = [0, 0, 0]
+  stepCounter = 0
 
   constructor(data={}) {
     super(data)
 
-    assets.sounds.music.loop = true
-    assets.sounds.music.volume = 0.3
+    //assets.sounds.music.loop = true
+    //assets.sounds.music.volume = 0.3
 
     if (!globals.lives) {
       globals.lives = 3
@@ -270,9 +269,14 @@ export default class Player extends Thing {
       this.after(20, null, "dashCooldown")
     }
 
+    // shooting
     if (this.inputs.get("shoot") && !this.timer("shoot")) {
       this.after(16, () => {}, "shoot")
       this.after(12, () => {}, "fire")
+      const sound = assets.sounds.pistolShoot
+      sound.currentTime = 0
+      sound.playbackRate = u.random(0.9, 1.1)
+      sound.play()
       const look = vec3.multiply(getScene().camera3D.lookVector, -1)
       const side = vec3.crossProduct([0, 0, 1], look)
       let pos = vec3.add(this.position, vec3.multiply(side, 16))
@@ -281,6 +285,23 @@ export default class Player extends Thing {
       this.speed[0] -= look[0]*3
       this.speed[1] -= look[1]*3
       this.speed[2] -= look[2]*1.5
+    }
+
+    // step sounds
+    if (this.onGround) {
+      this.stepCounter += vec2.magnitude(this.speed)
+      const interval = 150
+      if (this.stepCounter > interval) {
+        this.stepCounter -= interval
+        const sound = u.choose(
+          assets.sounds.footstep1,
+          assets.sounds.footstep2
+          //assets.sounds.footstep3
+        )
+        sound.playbackRate = u.random(0.9, 1.1)
+        sound.currentTime = 0
+        sound.play()
+      }
     }
 
     //if (this.time > 5 && this.inputs.pressed("reset")) {
@@ -293,11 +314,7 @@ export default class Player extends Thing {
 
     this.moveAndCollide()
     this.updateTimers()
-    //super.update()
     this.cameraUpdate()
-    this.lastPosition[0] = this.position[0]
-    this.lastPosition[1] = this.position[1]
-    this.lastPosition[2] = this.position[2]
 
     this.dead = this.dead || this.time < 0
   }
@@ -425,9 +442,8 @@ export default class Player extends Thing {
     ]
   }
 
-  draw(inter) {
+  draw() {
     const scene = getScene()
-    //scene.camera3D.position = vec3.lerp(this.lastPosition, this.position, inter)
 
     //gfx.setFramebuffer(this.framebuffer)
     const gl = gfx.gl
