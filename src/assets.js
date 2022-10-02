@@ -76,7 +76,7 @@ const assets = {
     win: "win2.wav",
     delivery: "win1.wav",
     music: "music1.mp3",
-    pistol: "shoot1.wav",
+    pistol: "pistolshoot.wav",
     shotgun: "shoot2.wav",
     machinegun: "shoot3.wav",
     enemyHurt1: "ehurt1.wav",
