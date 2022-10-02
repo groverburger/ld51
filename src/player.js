@@ -51,6 +51,10 @@ export default class Player extends Thing {
   framebuffer = gfx.gl.createFramebuffer()
   depth = -10000
   stepCounter = 0
+  lastPosition = [0, 0, 0]
+  weapon = "machinegun"
+  walkFrames = 0
+  walkFrameAccel = 0
 
   constructor(data={}) {
     super(data)
@@ -158,6 +162,17 @@ export default class Player extends Thing {
     // walking and friction
     let dx = this.inputs.get("xMove")
     let dy = this.inputs.get("yMove")
+
+
+    if (Math.abs(dx) + Math.abs(dy) > 0) {
+      this.walkFrameAccel = 0.08
+    }
+    else {
+      this.walkFrameAccel = Math.max(this.walkFrameAccel - 0.002, 0)
+    }
+    this.walkFrames += this.walkFrameAccel
+    this.walkFrames = this.walkFrames % (Math.PI * 2)
+
     if (u.distance2d(0, 0, dx, dy) > 1) {
       [dx, dy] = vec2.normalize([dx, dy])
     }
@@ -273,18 +288,64 @@ export default class Player extends Thing {
     if (this.inputs.get("shoot") && !this.timer("shoot")) {
       this.after(16, () => {}, "shoot")
       this.after(12, () => {}, "fire")
-      const sound = assets.sounds.pistolShoot
-      sound.currentTime = 0
-      sound.playbackRate = u.random(0.9, 1.1)
-      sound.play()
       const look = vec3.multiply(getScene().camera3D.lookVector, -1)
       const side = vec3.crossProduct([0, 0, 1], look)
       let pos = vec3.add(this.position, vec3.multiply(side, 16))
       pos = vec3.add(pos, [0, 0, -14])
-      getScene().addThing(new Bullet(pos, look, 28))
-      this.speed[0] -= look[0]*3
-      this.speed[1] -= look[1]*3
-      this.speed[2] -= look[2]*1.5
+
+      if (this.weapon == "shotgun") {
+        // Animation and Timing
+        this.after(16, () => {}, "shoot")
+        this.after(30, () => {}, "fire")
+
+        // Create bullets
+        let angle1 = vec3.normalize(look);
+        let angle2 = vec3.normalize(vec3.add(look, vec3.multiply(side, 0.08)))
+        let angle3 = vec3.normalize(vec3.add(look, vec3.multiply(side, -0.08)))
+        getScene().addThing(new Bullet(pos, angle1, 50, this.weapon))
+        getScene().addThing(new Bullet(vec3.add(pos, side), angle2, 50, this.weapon))
+        getScene().addThing(new Bullet(vec3.subtract(pos, side), angle3, 50, this.weapon))
+
+        // Sound effect
+        const sound = assets.sounds.shotgun
+        sound.playbackRate = u.random(1, 1.3)
+        sound.currentTime = 0
+        sound.volume = 0.4
+        sound.play()
+      } else if (this.weapon == "machinegun") {
+        // Animation and Timing
+        this.after(7, () => {}, "shoot")
+        this.after(4, () => {}, "fire")
+
+        // Create bullet
+        getScene().addThing(new Bullet(pos, look, 28, this.weapon))
+
+        // Sound effect
+        const sound = assets.sounds.machinegun
+        sound.playbackRate = u.random(1, 1.3)
+        sound.currentTime = 0
+        sound.volume = 0.4
+        sound.play()
+      } else {
+        // Animation and Timing
+        this.after(16, () => {}, "shoot")
+        this.after(12, () => {}, "fire")
+
+        // Create bullet
+        getScene().addThing(new Bullet(pos, look, 28, this.weapon))
+
+        const sound = assets.sounds.pistolShoot
+        sound.currentTime = 0
+        sound.playbackRate = u.random(0.9, 1.1)
+        sound.play()
+      }
+
+      // Kickback
+      if (this.weapon != "machinegun") {
+        this.speed[0] -= look[0]*3
+        this.speed[1] -= look[1]*3
+        this.speed[2] -= look[2]*1.5
+      }
     }
 
     // step sounds
@@ -460,14 +521,46 @@ export default class Player extends Thing {
     let knockback = this.timer("fire") ? 1 - this.timer("fire") : 0
     knockback *= Math.PI/4
     gfx.set("projectionMatrix", mat.getPerspective({fovy: Math.PI/4}))
-    gfx.set("modelMatrix", mat.getTransformation({
-      translation: [-2, -7 + knockback*1.5, -1.8],
-      rotation: [0, -knockback, Math.PI/-2],
-      scale: 64
-    }))
-    gfx.set("color", [1, 0, 0, 1])
-    gfx.setTexture(assets.textures.square)
-    gfx.drawMesh(assets.models.pistol)
+
+    // View bobbing
+    let t = this.walkFrames
+    let bobX = Math.sin(t) * 2 * 0.15
+    let bobY = Math.cos(2*t) * -0.5  * 0.15
+    if (knockback > 0) {
+      this.walkFrames = 0
+    }
+
+    // Animation
+    if (this.weapon == "shotgun") {
+      gfx.set("modelMatrix", mat.getTransformation({
+        translation: [bobX-2, -7 + knockback*4, bobY-1.8 - (knockback * 0.5)],
+        rotation: [0, -knockback/3, Math.PI/-2],
+        scale: 80
+      }))
+      gfx.set("color", [0, 0, 1, 1])
+      gfx.setTexture(assets.textures.square)
+      gfx.drawMesh(assets.models.shotgun)
+    }
+    else if (this.weapon == "machinegun") {
+      gfx.set("modelMatrix", mat.getTransformation({
+        translation: [bobX-2, -7 + knockback*0.9, bobY-1.8],
+        rotation: [0, -knockback * 0.1, Math.PI/-2],
+        scale: 64
+      }))
+      gfx.set("color", [0.8, 0.8, 0, 1])
+      gfx.setTexture(assets.textures.square)
+      gfx.drawMesh(assets.models.machinegun)
+    }
+    else {
+      gfx.set("modelMatrix", mat.getTransformation({
+        translation: [bobX-2, -7 + knockback*0.2, bobY-1.8 - (knockback * 0.5)],
+        rotation: [0, -knockback, Math.PI/-2],
+        scale: 64
+      }))
+      gfx.set("color", [1, 0, 0, 1])
+      gfx.setTexture(assets.textures.square)
+      gfx.drawMesh(assets.models.pistol)
+    }
   }
 
   guiDraw() {

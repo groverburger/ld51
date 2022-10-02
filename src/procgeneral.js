@@ -10,7 +10,8 @@ const RANDOM_POINT_ITERATIONS = 50
 const WORLD_HEIGHT = 40
 const CARVE_PROXIMITY_WEIGHT = 30
 const BELL_CURVE_SAMPLES = 8
-const PATH_LOOK = 8
+const PATH_LOOK = 5
+const CAMPAIGN_LENGTH = 10
 
 export class GeneratorParams {
   // General
@@ -34,22 +35,23 @@ export class GeneratorParams {
     this.width = this.bellRandom(40, 10, true)
     this.length = this.bellRandom(70, 10, true)
     this.height = 20
+    this.maxPathLength = 73
 
     // Caves
-    this.caveSteps = this.bellRandom(7, 2, true)
-    this.caveInitialChance = this.bellRandom(0.3, 0.05, false)
+    this.caveSteps = this.bellRandom(7, 1, true)
+    this.caveInitialChance = this.bellRandom(0.3, 0.01, false)
     this.caveLayers = 1
     this.caveLayerSpacing = 2
     this.caveInitalChanceAdvanceOdds = this.bellRandom(0.5, 0.4, false)
     this.caveWallHeight = 0
 
     // Terrain
-    this.terrainVariance = this.bellRandom(0.4, 10, true)
+    this.terrainVariance = this.bellRandom(15, 10, true)
     this.terrainRoughness = 0.4
 
     // Rooms
-    this.roomMaxSize = this.bellRandom(4, 5, true)
-    this.roomMinSize = this.bellRandom(10, 3, true)
+    this.roomMaxSize = this.bellRandom(7, 5, true)
+    this.roomMinSize = this.bellRandom(3, 2, true)
     this.roomWallHeight = this.bellRandom(8, 7, true)
     this.room1Position = this.random()
     this.room2Position = this.random()
@@ -66,21 +68,31 @@ export class GeneratorParams {
     // Theme-based advancements
     if (this.theme == "cave") {
       if (this.stage >= 2) {
-        this.caveWallHeight = 40
+        this.caveWallHeight = WORLD_HEIGHT
+      }
+      // Post-story 
+      if (this.stage > CAMPAIGN_LENGTH) {
+        this.caveWallHeight = this.random() < 0.10 ? 0 : WORLD_HEIGHT
       }
     }
 
-    this.width += 3
-    this.length += 3
-    this.terrainVariance += 1
+    if (this.width < 60) {
+      this.width += 3
+    }
+    if (this.length < 90) {
+      this.length += 3
+    }
+
+    if (this.maxPathLength < 102) {
+      this.maxPathLength += 3
+    }
+    
+    this.terrainVariance += 3
     this.roomMaxSize += 1
     this.levelFeature = Math.floor(this.random() * 100)
 
     // Increase number of layers
-    if (this.random() < 0.5 && this.caveLayers < 15) {this.caveLayers += 1;}
-
-    // Make things more cramped
-    if (this.random() < this.caveInitalChanceAdvanceOdds && this.caveInitialChance < 0.4) {this.caveInitialChance += 0.02;}
+    if (this.stage %2 == 0 && this.caveLayers < 15) {this.caveLayers += 1;}
 
     // Reroll
     if (this.random() < 0.3) { this.caveSteps = this.bellRandom(7, 3, true) }
@@ -163,7 +175,7 @@ export function guaranteePath(terrain, startPoint, endPoint, params) {
     let pos2 = stringToPosition(endAccessible[endInd])
 
     // Check their dist
-    let dist = Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2)
+    let dist = distance(pos1, pos2)
 
     // Weight against putting the path too close to the start or end point
     if (distance(pos1, startPoint) < CARVE_PROXIMITY_WEIGHT) {
@@ -171,6 +183,11 @@ export function guaranteePath(terrain, startPoint, endPoint, params) {
     }
     if (distance(pos2, endPoint) < CARVE_PROXIMITY_WEIGHT) {
       dist += CARVE_PROXIMITY_WEIGHT - distance(pos2, endPoint)
+    }
+
+    // Weigh against the points being too close together (and creating a staircase too steep to climb)
+    if (dist < Math.abs(terrain[pos1] - terrain[pos2]) * 2) {
+      dist += 30
     }
 
     if (dist < closestDist) {
@@ -283,9 +300,9 @@ export function findPath(terrain, types, start, end) {
     // debug
     let ret = []
 
-    /*for (const reached in prev) {
+    for (const reached in prev) {
       ret.push(stringToPosition(reached))
-    }*/
+    }
 
     return ret
   }
@@ -386,6 +403,17 @@ export function generateEverything(params) {
   paintPath(gen.types, path, params)
   buildAlongPath(gen.terrain, gen.types, path, params)
 
+  // If the path is too long, shorten it
+  if (path.length > params.maxPathLength) {
+    gen.endPoint = path[path.length - params.maxPathLength]
+    cave.carvePoint(gen.terrain, gen.endPoint)
+
+    console.log("Path length: " + params.maxPathLength)
+  }
+  else {
+    console.log("Path length: " + path.length)
+  }
+
   // Set the player's starting rotation so that they look towards the path
   if (path.length > PATH_LOOK + 2) {
     let point1 = path[path.length-1]
@@ -394,6 +422,9 @@ export function generateEverything(params) {
     let angle = utils.angleTowards(point2[0], point2[1], point1[0], point1[1])
     gen.startAngle = angle
   }
+
+  // Do another guarantee pass
+  guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
 
   return gen
 
