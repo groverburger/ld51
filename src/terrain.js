@@ -14,6 +14,7 @@ import SpatialHash from "./core/spatialhash.js"
 import Player from "./player.js"
 import Enemy from "./enemy.js"
 import Goal from "./goal.js"
+import TimePickup from "./timepickup.js"
 const utils = u
 
 let cache = {
@@ -245,7 +246,7 @@ export default class Terrain extends Thing {
 
     const getWallTexture = (tileType) => {
       //return tileType ? (["stone", "sand"])[tileType-1] : "stone"
-      if (tileType == 1) {return "roomWall"}
+      if (tileType == 1) {return "path"}
       if (tileType == 2) {return "roomWall"}
       if (tileType == 3) {return "stone"}
       return "stone"
@@ -734,12 +735,27 @@ export default class Terrain extends Thing {
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
     proc.mergeTerrain(this.types, generated.types, [-1, -1])
 
-    this.enemyLocations = []
+    this.locations = {
+      other: [],
+      path: [],
+      room: [],
+    }
     for (const coord in this.map) {
-      if (this.types[coord] == 1 && this.map[coord] < 30) {
+      if (this.map[coord] < 30 && this.map[coord] >= 1) {
         const [x, y] = coord.split(",").map(Number)
         if (u.distance2d(x, y, this.startPoint[0], this.startPoint[1]) > 8) {
-          this.enemyLocations.push([x, y])
+          if (this.types[coord] == 1) {
+            this.locations.room.push([x, y])
+            continue
+          }
+          if (this.types[coord] == 2) {
+            continue
+          }
+          if (this.types[coord] == 3) {
+            this.locations.path.push([x, y])
+            continue
+          }
+          this.locations.other.push([x, y])
         }
       }
     }
@@ -751,10 +767,24 @@ export default class Terrain extends Thing {
       angle: this.startAngle
     }))
 
-    u.shuffle(this.enemyLocations, u.randomizer())
+    const getLocations = (...types) => {
+      const result = []
+      for (const t of types) {
+        result.push(...this.locations[t])
+      }
+      return u.shuffle(result, u.randomizer())
+    }
+
+    const enemyLocations = getLocations("room")
     for (let i=0; i<5; i++) {
-      const coord = this.enemyLocations.pop()
+      const coord = enemyLocations.pop()
       getScene().addThing(new Enemy([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+    }
+
+    {
+      const itemLocations = getLocations("other")
+      const coord = itemLocations.pop()
+      getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
     }
 
     const g = getScene().addThing(new Goal())

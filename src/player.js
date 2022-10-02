@@ -44,7 +44,7 @@ export default class Player extends Thing {
   staircaseOffset = 0
   inputs = null
   lastFallSpeed = 0
-  time = 0
+  time = 600
   footstepToggle = false
   showGui = true // cutscenes set this to false
   deliveredCount = 0
@@ -154,7 +154,7 @@ export default class Player extends Thing {
   update() {
     this.inputs.update()
     const scene = getScene()
-    this.time += 1
+    this.time -= 1
 
     // walking and friction
     let dx = this.inputs.get("xMove")
@@ -251,7 +251,7 @@ export default class Player extends Thing {
     }
     this.wannaJump = Math.max(this.wannaJump - 1, 0)
     this.coyoteFrames = Math.max(this.coyoteFrames - 1, 0)
-    this.staircaseOffset = Math.max(this.staircaseOffset - 4, 0)
+    this.staircaseOffset = Math.max(this.staircaseOffset - 6, 0)
     this.disableAirControl = Math.max(this.disableAirControl - 1, 0)
 
     // dashing
@@ -283,13 +283,13 @@ export default class Player extends Thing {
       this.speed[2] -= look[2]*1.5
     }
 
-    if (this.time > 5 && this.inputs.pressed("reset")) {
-      this.dead = true
-    }
+    //if (this.time > 5 && this.inputs.pressed("reset")) {
+      //this.dead = true
+    //}
 
-    if (this.time > 5 && keysDown.KeyN) {
-      setNextScene()
-    }
+    //if (this.time > 5 && keysDown.KeyN) {
+      //setNextScene()
+    //}
 
     this.moveAndCollide()
     this.updateTimers()
@@ -299,7 +299,7 @@ export default class Player extends Thing {
     this.lastPosition[1] = this.position[1]
     this.lastPosition[2] = this.position[2]
 
-    this.dead = this.dead || this.time > 600
+    this.dead = this.dead || this.time < 0
   }
 
   moveAndCollide() {
@@ -459,7 +459,7 @@ export default class Player extends Thing {
     ctx.font = "italic bold 64px Times New Roman"
     ctx.textAlign = "center"
     ctx.translate(width/2, height * 2/3)
-    const seconds = Math.max(10 - this.time / 60, 0)
+    const seconds = Math.max(this.time / 60, 0)
     const time = seconds.toFixed(2)
     ctx.fillStyle = "red"
     ctx.fillText(time, 4, 4)

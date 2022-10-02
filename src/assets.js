@@ -52,6 +52,7 @@ const assets = {
     path: "stone.png",
     roomFloor: "stone1.png",
     roomWall: "brick1.png",
+    timePickup: "timepickup.png",
   },
 
   textureSettings: {

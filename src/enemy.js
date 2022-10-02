@@ -102,6 +102,7 @@ export default class Enemy extends Thing {
   angleUpdate() {
     this.after(60, () => this.angleUpdate())
     const player = game.getThing("player")
+    if (!player) return
     this.angle = u.angleTowards(this.position[0], this.position[1], player.position[0], player.position[1])
     this.angle += u.random(-0.5, 0.5)
   }
