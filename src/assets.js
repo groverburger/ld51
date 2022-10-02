@@ -39,6 +39,8 @@ const assets = {
     plane: "plane.obj",
     sphere: "sphere.obj",
     pistol: "pistol.obj",
+    shotgun: "shotgun.obj",
+    machinegun: "machinegun.obj",
   },
 
   imageSources: {
@@ -53,8 +55,7 @@ const assets = {
     roomFloor: "stone1.png",
     roomWall: "brick1.png",
     goldenFloor: "brick2_f.png",
-    goldenWall: "brick2.png"
-    timePickup: "timepickup.png",
+    goldenWall: "brick2.png",
   },
 
   textureSettings: {
@@ -74,6 +75,9 @@ const assets = {
     boing: "boing.wav",
     boingFootstep: "boing.wav",
     music: "music1.mp3",
+    pistol: "shoot1.wav",
+    shotgun: "shoot2.wav",
+    machinegun: "shoot3.wav",
   },
 
   sceneSources: {

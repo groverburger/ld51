@@ -14,7 +14,7 @@ import SpatialHash from "./core/spatialhash.js"
 import Player from "./player.js"
 import Enemy from "./enemy.js"
 import Goal from "./goal.js"
-import TimePickup from "./timepickup.js"
+//import TimePickup from "./timepickup.js"
 const utils = u
 
 let cache = {
@@ -724,8 +724,8 @@ export default class Terrain extends Thing {
     // Init the parameterBuilder object
     let parameterBuilder = globals.parameterBuilder
     if (!parameterBuilder) {
-      //parameterBuilder = new proc.GeneratorParams(Math.floor(Math.random() * 100000))
-      parameterBuilder = new proc.GeneratorParams(32577)
+      parameterBuilder = new proc.GeneratorParams(Math.floor(Math.random() * 100000))
+      //parameterBuilder = new proc.GeneratorParams(32577)
       parameterBuilder.advance()
       globals.parameterBuilder = parameterBuilder
     }
@@ -789,13 +789,15 @@ export default class Terrain extends Thing {
     const enemyLocations = getLocations("room")
     for (let i=0; i<5; i++) {
       const coord = enemyLocations.pop()
-      getScene().addThing(new Enemy([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      if (coord != null) {
+        getScene().addThing(new Enemy([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      }
     }
 
     {
       const itemLocations = getLocations("other")
       const coord = itemLocations.pop()
-      getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      //getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
     }
 
     const g = getScene().addThing(new Goal())
