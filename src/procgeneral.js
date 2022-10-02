@@ -8,36 +8,79 @@ const ABSOLUTE_HEIGHT_DIFFERENCE_MAX = 10
 const RANDOM_POINT_ITERATIONS = 50
 const WORLD_HEIGHT = 40
 const CARVE_PROXIMITY_WEIGHT = 30
+const BELL_CURVE_SAMPLES = 8
 
 export class GeneratorParams {
-  constructor(seed) {
-    if (typeof seed != "number") {
-      seed = Math.floor(Math.random() * 1000)
-    }
-    this.random = utils.randomizer(seed)
-    console.log("Level Seed: " + seed)
-  }
-
   // General
   random = () => {return 4}
-  width = 5 // How wide on the x axis to make the structure
-  length = 5 // How long on the y axis to make the structure
-  height = 1 // The height of the floor
+  width = 30 // How wide on the x axis to make the structure
+  length = 70 // How long on the y axis to make the structure
+  height = 20 // The height of the floor
 
   // Caves
-  caveWallHeight = 20 // How tall the bounding walls are
+  caveWallHeight = 40 // How tall the bounding walls are
   caveSteps = 7
-  caveInitialChance = 0.22
-  caveLayers = 3 // How many layers of terrain to make
+  caveInitialChance = 0.3
+  caveLayers = 1 // How many layers of terrain to make
+  caveLayerSpacing = 0 // How far apart should layers be
 
   // Terrain
-  terrainVariance = 9 // How jagged the terrain is
+  terrainVariance = 15 // How jagged the terrain is
   terrainRoughness = 0.4 // How steep the hills can be
 
   // Rooms
   roomMinSize = 4
   roomMaxSize = 10
   roomWallHeight = 8
+
+  constructor(seed) {
+    // Set up randomizer
+    if (typeof seed != "number") {
+      seed = Math.floor(Math.random() * 100000)
+    }
+    this.random = utils.randomizer(seed)
+    console.log("Level Seed: " + seed)
+
+    this.randomize()
+  }
+
+  randomize() {
+    this.width = this.bellRandom(this.width, 10, true)
+    this.length = this.bellRandom(this.length, 10, true)
+
+    this.caveSteps = this.bellRandom(this.caveSteps, 3, true)
+    this.caveInitialChance = this.bellRandom(this.caveInitialChance, 0.1, false)
+
+    this.terrainVariance = this.bellRandom(this.terrainVariance, 10, true)
+
+    this.roomMaxSize = this.bellRandom(this.roomMaxSize, 5, true)
+    this.roomMinSize = this.bellRandom(this.roomMinSize, 3, true)
+    this.roomWallHeight = this.bellRandom(this.roomWallHeight, 7, true)
+  }
+
+  advance() {
+    this.width += 1
+    this.length += 1
+    this.terrainVariance += 1
+    this.roomMaxSize += 1
+
+    if (this.random() < 0.5) {this.caveLayers += 1}
+    if (this.random() < 0.4) {this.caveLayerSpacing += 1}
+  }
+
+  bellRandom(center, radius, truncate) {
+    let total = 0
+    for (let i = 0; i < BELL_CURVE_SAMPLES; i ++) {
+      total += this.random()
+    }
+    let bell = ((total / BELL_CURVE_SAMPLES) * 2) - 1
+    bell *= radius
+    bell += center
+    if (truncate) {
+      bell = Math.floor(bell)
+    }
+    return bell
+  }
 }
 
 export class GeneratorResult {
@@ -47,6 +90,8 @@ export class GeneratorResult {
   startPoint = [0, 0]
   endPoint = [0, 0]
 }
+
+
 
 // Pass in a position in either string format or list format and it will convert it to list format
 export function stringToPosition(p) {

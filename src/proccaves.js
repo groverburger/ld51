@@ -5,7 +5,6 @@ import { add } from "./core/vector2.js"
 
 const BIRTH_LIMIT = 3
 const DEATH_LIMIT = 2
-const LAYER_HEIGHT_DIFFERENCE = 2
 
 export function generateCaves(params) {
   // Get necessary params
@@ -39,7 +38,7 @@ export function generateCaves(params) {
     // Merge the cave-gen with the terrain-gen
     for (const key in spacesLayer) {
       if (spacesLayer[key] == false) {
-        terrain[key] = terrainLayer[key] + (i * LAYER_HEIGHT_DIFFERENCE)
+        terrain[key] = terrainLayer[key] + (i * params.caveLayerSpacing)
       }
     }
   }
