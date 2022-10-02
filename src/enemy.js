@@ -7,6 +7,7 @@ import assets from "./assets.js"
 import * as vec3 from "./core/vector3.js"
 import * as vec2 from "./core/vector2.js"
 import Bullet from "./bullet.js"
+import Player from "./player.js"
 
 export default class Enemy extends Thing {
   height = 64
@@ -41,11 +42,13 @@ export default class Enemy extends Thing {
 
     // move towards player
     const player = game.getThing("player")
-    const accel = vec2.angleToVector(this.angle, 1)
-    this.speed[0] += accel[0]
-    this.speed[1] += accel[1]
+    if (u.distance2d(player.position[0], player.position[1], this.position[0], this.position[1]) < 64*16) {
+      const accel = vec2.angleToVector(this.angle, 0.85)
+      this.speed[0] += accel[0]
+      this.speed[1] += accel[1]
+    }
 
-    const friction = 0.9
+    const friction = 0.85
     this.speed[0] *= friction
     this.speed[1] *= friction
 
@@ -54,6 +57,10 @@ export default class Enemy extends Thing {
         this.dead = true
         thing.dead = true
         break
+      }
+
+      if (thing instanceof Player) {
+        thing.death()
       }
     }
 

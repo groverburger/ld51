@@ -58,6 +58,11 @@ export default class Player extends Thing {
 
     assets.sounds.music.loop = true
     assets.sounds.music.volume = 0.3
+
+    if (!globals.lives) {
+      globals.lives = 3
+      globals.level = 1
+    }
     //assets.sounds.music.play()
     //mouse.setStyle("none")
 
@@ -240,11 +245,12 @@ export default class Player extends Thing {
     }
     if (this.position[2] < 0) {
       assets.sounds.playerSplash.play()
-      resetScene()
+      //resetScene()
+      this.death()
     }
     this.wannaJump = Math.max(this.wannaJump - 1, 0)
     this.coyoteFrames = Math.max(this.coyoteFrames - 1, 0)
-    this.staircaseOffset = Math.max(this.staircaseOffset - 8, 0)
+    this.staircaseOffset = Math.max(this.staircaseOffset - 4, 0)
     this.disableAirControl = Math.max(this.disableAirControl - 1, 0)
 
     // dashing
@@ -276,7 +282,7 @@ export default class Player extends Thing {
     }
 
     if (this.time > 5 && this.inputs.pressed("reset")) {
-      resetScene()
+      this.death()
     }
 
     if (this.time > 5 && keysDown.KeyN) {
@@ -408,12 +414,16 @@ export default class Player extends Thing {
     }
     scene.camera3D.yaw += this.inputs.get("xLook")
     scene.camera3D.pitch += this.inputs.get("yLook")
-    scene.camera3D.position = this.position
+    scene.camera3D.position = [
+      this.position[0],
+      this.position[1],
+      this.position[2] - this.staircaseOffset
+    ]
   }
 
   draw(inter) {
     const scene = getScene()
-    scene.camera3D.position = vec3.lerp(this.lastPosition, this.position, inter)
+    //scene.camera3D.position = vec3.lerp(this.lastPosition, this.position, inter)
 
     gfx.setFramebuffer(this.framebuffer)
     const gl = gfx.gl
@@ -478,5 +488,30 @@ export default class Player extends Thing {
     ctx.lineTo(0, size + 0.5)
     ctx.stroke()
     ctx.restore()
+
+    ctx.save()
+    ctx.translate(32, height-48)
+    ctx.font = "italic 32px Times New Roman"
+    {
+      const str = "Lives: " + globals.lives
+      ctx.fillStyle = "darkBlue"
+      ctx.fillText(str, 0, 0)
+      ctx.fillStyle = "white"
+      ctx.fillText(str, 4, -4)
+    }
+    ctx.translate(0, -48)
+    {
+      const str = "Level: " + globals.level
+      ctx.fillStyle = "darkBlue"
+      ctx.fillText(str, 0, 0)
+      ctx.fillStyle = "white"
+      ctx.fillText(str, 4, -4)
+    }
+    ctx.restore()
+  }
+
+  death() {
+    globals.lives -= 1
+    resetScene()
   }
 }
