@@ -197,7 +197,7 @@ function getAccessibleSpacesRecurse(terrain, pos, backwards, collected) {
       let absoluteHeightDifference = Math.abs(terrain[pos] - terrain[adj])
       if (heightDifference <= PLAYER_JUMP_HEIGHT && absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
         // Make sure we're not navigating past world height
-        if (terrain[adj] < WORLD_HEIGHT) {
+        if (!isExtreme(terrain[adj])) {
           collected.add(adj.toString())
           collected = getAccessibleSpacesRecurse(terrain, adj, backwards, collected)
         }
@@ -267,7 +267,7 @@ export function findPath(terrain, types, start, end) {
         if (heightDifference <= PLAYER_JUMP_HEIGHT) {
           if (absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
             // Make sure we're not navigating past world height
-            if (terrain[adj] < WORLD_HEIGHT) {
+            if (!isExtreme(terrain[adj])) {
               prev[adj] = cur.pos
               queue.push({
                 pos: adj,
@@ -344,6 +344,16 @@ function buildAlongPath(terrain, types, path, params) {
   }
 }
 
+function isExtreme(height) {
+  if (height >= WORLD_HEIGHT) {
+    return true
+  }
+  if (height <= 0) {
+    return true
+  }
+  return false
+}
+
 function makeDoorway(terrain, types, pos) {
   let deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
 
@@ -352,7 +362,7 @@ function makeDoorway(terrain, types, pos) {
   let count = 0
   for (const delta of deltas) {
     let newPos = add(pos, delta)
-    if (types[newPos] != 2 && terrain[newPos] < WORLD_HEIGHT) {
+    if (types[newPos] != 2 && !isExtreme(terrain[newPos])) {
       count += 1
       total += terrain[newPos]
     }
