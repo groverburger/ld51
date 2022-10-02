@@ -32,6 +32,7 @@ export default class Terrain extends Thing {
   types = {}
   startPoint = [0, 0]
   endPoint = [0, 0]
+  parameterBuilder = null
 
   constructor(data) {
     super(data)
@@ -705,9 +706,12 @@ export default class Terrain extends Thing {
   }
 
   generate() {
-    let genParams = new proc.GeneratorParams()
+    if (this.parameterBuilder == null) {
+      this.parameterBuilder = new proc.GeneratorParams()
+    }
 
-    let generated = proc.generateEverything(genParams)
+    let generated = proc.generateEverything(this.parameterBuilder)
+    this.parameterBuilder.advance()
 
     this.startPoint = generated.startPoint
     this.endPoint = generated.endPoint
