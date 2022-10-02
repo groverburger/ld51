@@ -31,6 +31,16 @@ export function insertRoom(terrain, types, pos, params) {
   proc.mergeTerrain(types, roomTerrain.types, pos)
 }
 
+export function insertPlinth(terrain, types, pos, params) {
+  for (let i = -3; i <= 3; i ++) {
+    for (let j = -3; j <= 3; j ++) {
+      let newPos = add([i,j], pos)
+      terrain[newPos] = params.height
+      types[newPos] = 2
+    }
+  }
+}
+
 export function generateRoom(params) {
   let rooms = [[[-3,-3],[3,3]]]
   let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
