@@ -45,11 +45,13 @@ const assets = {
     circle: "circle.png",
     square: "square.png",
     enemy: "enemy1.png",
-    stone: "stone.png",
+    stone: "stone2.png",
     water: "water.png",
     skybox: "skybox.png",
     goal: "flag.png",
-    path: "sand.png",
+    path: "stone.png",
+    roomFloor: "stone1.png",
+    roomWall: "brick1.png",
   },
 
   textureSettings: {

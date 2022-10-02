@@ -180,7 +180,8 @@ function* LevelWinAnim() {
     yield
   }
 
-  setNextScene()
+  //setNextScene()
+  resetScene()
 
   for (let i=0; i<30; i++) {
     ctx.save()
