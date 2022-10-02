@@ -158,8 +158,8 @@ export default class Player extends Thing {
     }
     const yaw = scene.camera3D.yaw - Math.PI/2
     const friction = 0.94
-    const groundSpeed = 0.725 // 0.6
-    const airSpeed = 0.5 // 0.4
+    const groundSpeed = 0.725
+    const airSpeed = 0.5
     const walkSpeed = this.onGround ? groundSpeed : airSpeed
     const maxSpeed = groundSpeed / (1 - friction)
     const xAccel = (Math.cos(yaw)*dx - Math.sin(yaw)*dy)*walkSpeed
@@ -248,7 +248,7 @@ export default class Player extends Thing {
     this.disableAirControl = Math.max(this.disableAirControl - 1, 0)
 
     // dashing
-    if (this.canDash && this.inputs.pressed("dash") && !this.timer("dashCooldown")) {
+    if (false && this.canDash && this.inputs.pressed("dash") && !this.timer("dashCooldown")) {
       const sound = assets.sounds.playerDash
       sound.playbackRate = u.random(1, 1.2)
       sound.currentTime = 0
@@ -264,12 +264,15 @@ export default class Player extends Thing {
     }
 
     if (this.inputs.get("shoot") && !this.timer("shoot")) {
-      this.after(10, () => {}, "shoot")
+      this.after(12, () => {}, "shoot")
       const look = getScene().camera3D.lookVector
       const side = vec3.crossProduct(look, [0, 0, 1])
       let pos = vec3.add(this.position, vec3.multiply(side, 16))
       pos = vec3.add(pos, [0, 0, -14])
       getScene().addThing(new Bullet(pos, look))
+      this.speed[0] += look[0]*3
+      this.speed[1] += look[1]*3
+      this.speed[2] += look[2]*1.5
     }
 
     if (this.time > 5 && this.inputs.pressed("reset")) {
