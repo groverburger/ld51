@@ -87,6 +87,7 @@ function* LevelWinAnim() {
   //setNextScene()
   globals.level += 1
   globals.parameterBuilder.advance()
+  delete globals.generated
   resetScene()
 
   for (let i=0; i<30; i++) {

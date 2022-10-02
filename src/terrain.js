@@ -719,7 +719,11 @@ export default class Terrain extends Thing {
     }
 
     // Generate the world
-    let generated = proc.generateEverything(parameterBuilder)
+    let generated = globals.generated
+    if (!generated) {
+      generated = proc.generateEverything(parameterBuilder)
+      globals.generated = generated
+    }
 
     // Set entity data
     this.startPoint = generated.startPoint
