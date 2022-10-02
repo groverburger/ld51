@@ -7,26 +7,42 @@ import Thing from "./core/thing.js"
 
 function* DeathAnimation() {
   const {ctx, globals} = game
-  globals.lives -= 1
+  let lives = globals.lives + 1
+
+  const subTime = 30
 
   let i = 0
   while (true) {
     ctx.fillStyle = `rgba(0, 0, 0, ${u.map(i, 0, 10, 0, 0.25, true)})`
     ctx.fillRect(0, 0, width, height)
 
-    ctx.save()
-    ctx.translate(width/2, u.lerp(height/2, 0, u.map(i, 8, 24, 1, 0, true)**2))
-    //ctx.fillStyle = "rgba(0, 0, 0, ${u.map(i, 0, 10, 0, 1, true)})"
-    ctx.fillStyle = "red"
-    ctx.font = "italic 64px Times New Roman"
-    ctx.textAlign = "center"
-
-    if (globals.lives) {
-      ctx.fillText("You Died", 0, 0)
+    if (i == subTime) {
+      lives -= 1
     }
+
+    ctx.save()
+    ctx.translate(width - 64, height - 64)
+    ctx.textAlign = "right"
+    ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, subTime+10, subTime+30, 0, 0.5, true)})`
+    //ctx.fillStyle = "rgba(255, 255, 255, 0.5)"
+    console.log(ctx.fillStyle)
+    ctx.font = "32px Times New Roman"
+    ctx.fillText("Press any button to try again...", 0, 0)
     ctx.restore()
 
-    if (Object.keys(game.keysPressed).length || game.mouse.click && i > 10) {
+    ctx.save()
+    ctx.translate(width/2, height/2)
+    ctx.font = "italic 64px Times New Roman"
+    ctx.textAlign = "center"
+    ctx.translate(0, Math.sin(u.map(i, subTime, subTime + 15, 0, Math.PI, true))*-16)
+    const str = "Lives: " + lives
+    ctx.fillStyle = "darkBlue"
+    ctx.fillText(str, 0, 0)
+    ctx.fillStyle = i >= subTime && i <= subTime + 15 ? "red" : "white"
+    ctx.fillText(str, 4, -4)
+    ctx.restore()
+
+    if ((Object.keys(game.keysPressed).length || game.mouse.button) && i > subTime + 10) {
       break
     }
 
@@ -34,12 +50,65 @@ function* DeathAnimation() {
     yield
   }
 
-  if (globals.lives <= 0) {
-    delete globals.level
-    delete globals.lives
-    delete globals.parameterBuilder
-    delete globals.generated
+  game.resetScene()
+}
+
+function* GameOver() {
+  const {ctx, globals} = game
+
+  let i = 0
+  while (true) {
+    ctx.fillStyle = `rgba(0, 0, 0, ${u.map(i, 0, 60, 0, 1, true)})`
+    ctx.fillRect(0, 0, width, height)
+
+    ctx.save()
+    ctx.translate(width/2, height/2 + Math.sin(i/30)*16)
+    const scalar = u.lerp(1, 12, 1 - u.map(i, 0, 30, 0, 1, true)**2)
+    ctx.scale(scalar, scalar)
+    //ctx.fillStyle = "rgba(0, 0, 0, ${u.map(i, 0, 10, 0, 1, true)})"
+    ctx.fillStyle = "black"
+    ctx.font = "italic 80px Times New Roman"
+    ctx.textAlign = "center"
+    const str = "Game Over"
+    ctx.fillText(str, 0, 0)
+    ctx.translate(4, -4)
+    ctx.fillStyle = "red"
+    ctx.fillText(str, 0, 0)
+    ctx.restore()
+
+    const subTime = 30
+    if (true || globals.level > 1) {
+      ctx.save()
+      ctx.translate(width/2, height/2 + 64)
+      ctx.textAlign = "center"
+      ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, subTime, subTime+10, 0, 0.8, true)})`
+      console.log(ctx.fillStyle)
+      ctx.font = "italic 32px Times New Roman"
+      ctx.fillText(`Got to level ${globals.level}`, 0, 0)
+      ctx.restore()
+    }
+
+    ctx.save()
+    ctx.translate(width - 64, height - 64)
+    ctx.textAlign = "right"
+    ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, subTime+10, subTime+30, 0, 0.5, true)})`
+    console.log(ctx.fillStyle)
+    ctx.font = "32px Times New Roman"
+    ctx.fillText("Press any button to try again...", 0, 0)
+    ctx.restore()
+
+    if ((Object.keys(game.keysPressed).length || game.mouse.button) && i > subTime + 10) {
+      break
+    }
+
+    i += 1
+    yield
   }
+
+  delete globals.level
+  delete globals.lives
+  delete globals.parameterBuilder
+  delete globals.generated
   game.resetScene()
 }
 
@@ -50,16 +119,16 @@ export default class DeathAnim extends Thing {
   constructor(data) {
     super(data)
     assets.sounds.music.pause()
-    this.anim = DeathAnimation()
+    game.globals.lives -= 1
+    if (game.globals.lives) {
+      this.anim = DeathAnimation()
+    } else {
+      this.anim = GameOver()
+    }
   }
 
   update() {
     game.getScene().paused = true
-  }
-
-  guiDraw() {
-    if (this.anim.next().value == "dead") {
-      //this.dead = true
-    }
+    this.anim.next()
   }
 }

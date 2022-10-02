@@ -77,7 +77,7 @@ function frame(frameTime) {
   accumulator %= 1
 
   if (times) {
-    draw(0)
+    draw()
     frameCount += 1
   }
 
@@ -115,6 +115,7 @@ function update() {
     }
   }
 
+  scene.clearScreen()
   scene.update()
 
   // update the last keys down
@@ -125,9 +126,9 @@ function update() {
   mouse.click = false
 }
 
-function draw(inter) {
+function draw() {
   if (!document.hasFocus()) { return }
-  scene?.draw(inter)
+  scene?.draw()
 }
 
 function loseFocus() {

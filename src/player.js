@@ -260,7 +260,7 @@ export default class Player extends Thing {
       this.speed[2] /= 2
     }
     if (this.position[2] < 0) {
-      assets.sounds.playerSplash.play()
+      //assets.sounds.playerSplash.play()
       //resetScene()
       this.dead = true
     }
@@ -410,7 +410,7 @@ export default class Player extends Thing {
       const sound = assets.sounds.impact
       sound.playbackRate = u.random(0.9, 1.1)
       sound.currentTime = 0
-      sound.volume = 0.5
+      sound.volume = 0.4
       sound.play()
     }
 
