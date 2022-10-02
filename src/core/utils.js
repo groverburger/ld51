@@ -201,3 +201,21 @@ export function toTimeString(time, precision=1) {
   const minutes = time/60|0
   return minutes + (seconds < 10 ? ":0" : ":") + seconds.toFixed(precision)
 }
+
+export function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}

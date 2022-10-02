@@ -714,7 +714,7 @@ export default class Terrain extends Thing {
     // Init the parameterBuilder object
     let parameterBuilder = globals.parameterBuilder
     if (!parameterBuilder) {
-      parameterBuilder = new proc.GeneratorParams()
+      parameterBuilder = new proc.GeneratorParams(globals.levelSeed)
       globals.parameterBuilder = parameterBuilder
     }
 
@@ -732,31 +732,29 @@ export default class Terrain extends Thing {
     // Write terrain data to map
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
     proc.mergeTerrain(this.types, generated.types, [-1, -1])
-  }
 
-  _generate() {
-    for (let x=0; x<64; x++) {
-      for (let y=0; y<64; y++) {
-        let h = 1
-        //if (x%16 > 1 && x%16 < 15 && y%16 > 1 && y%16 < 15) {
-          //h = 1
-        //}
-        this.map[[x, y]] = h
+    this.enemyLocations = []
+    for (const coord in this.map) {
+      if (this.types[coord] == 1 && this.map[coord] < 30) {
+        const [x, y] = coord.split(",").map(Number)
+        if (u.distance2d(x, y, this.startPoint[0], this.startPoint[1]) > 8) {
+          this.enemyLocations.push([x, y])
+        }
       }
     }
-
-    this.startPoint = [64, 64]
-    this.endPoint = [0, 0,]
   }
 
   populate() {
     const p = getScene().addThing(new Player({
-      position: [this.startPoint[0]*64 - 32, this.startPoint[1]*64 - 32, 10000]
+      position: [this.startPoint[0]*64 - 32, this.startPoint[1]*64 - 32, 10000],
+      angle: this.startAngle
     }))
     // TODO: Start player with rotation specified by startAngle variable
 
-    for (let i=0; i<10; i++) {
-      getScene().addThing(new Enemy([u.random(0, 70*64), u.random(0, 30*64), 0]))
+    u.shuffle(this.enemyLocations)
+    for (let i=0; i<5; i++) {
+      const coord = this.enemyLocations.pop()
+      getScene().addThing(new Enemy([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
     }
 
     const g = getScene().addThing(new Goal())
