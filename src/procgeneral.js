@@ -17,7 +17,6 @@ export class GeneratorParams {
   // General
   random = () => {return 4}
   stage = 0
-  caveWallHeight = 0
   maxPathLength = 73
   caveLayers = 1
   
@@ -44,6 +43,7 @@ export class GeneratorParams {
     this.caveInitialChance = this.bellRandom(0.3, 0.01, false)
     this.caveLayerSpacing = 2
     this.caveInitalChanceAdvanceOdds = this.bellRandom(0.5, 0.4, false)
+    this.caveMode = 0
 
     // Terrain
     this.terrainVariance = this.bellRandom(15, 10, true)
@@ -68,11 +68,11 @@ export class GeneratorParams {
     // Theme-based advancements
     if (this.theme == "cave") {
       if (this.stage >= 2) {
-        this.caveWallHeight = WORLD_HEIGHT
+        this.caveMode = 1
       }
       // Post-story 
-      if (this.stage > CAMPAIGN_LENGTH) {
-        this.caveWallHeight = this.random() < 0.10 ? 0 : WORLD_HEIGHT
+      if (this.stage >= 2) {
+        this.caveMode = this.random() < 1 ? 1 : 2
       }
     }
 

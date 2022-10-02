@@ -749,7 +749,7 @@ export default class Terrain extends Thing {
           break
         }
         catch(e) {
-          console.log("Generation error: ")
+          console.log("Generation error: " + e)
           console.log(e);
           delete globals.generated
           parameterBuilder.randomize()
