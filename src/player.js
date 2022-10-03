@@ -626,7 +626,7 @@ export default class Player extends Thing {
     const time = seconds.toFixed(2)
     ctx.fillStyle = "red"
     if (this.timer("timeWarning")) {
-      ctx.fillStyle = "white"
+      ctx.fillStyle = "black"
     }
     ctx.fillText(time, -4, 4)
     ctx.fillStyle = "white"
