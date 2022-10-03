@@ -85,7 +85,7 @@ function* GameOver() {
       ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, subTime, subTime+10, 0, 0.8, true)})`
       // console.log(ctx.fillStyle)
       ctx.font = "italic 32px Times New Roman"
-      ctx.fillText(`Got to level ${globals.level}`, 0, 0)
+      ctx.fillText(`Made it to level ${globals.level}`, 0, 0)
       ctx.restore()
     }
 

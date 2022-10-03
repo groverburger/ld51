@@ -760,20 +760,6 @@ export default class Terrain extends Thing {
       }
       
       globals.generated = generated
-
-      // Pick the powerups for this level
-      let numberOfPowerups = Math.min(Math.ceil((parameterBuilder.stage-1) / 4), 4) * 2
-
-      // Every fourth stage has extra powerups
-      if (parameterBuilder.stage % 4 == 0) {
-        numberOfPowerups *= 7
-      }
-
-      globals.levelPowerups = []
-      globals.levelPowerups.push(18)
-      for (let i = 0; i < numberOfPowerups; i ++) {
-        globals.levelPowerups.push(Math.floor(parameterBuilder.random() * 20))
-      }
     }
 
     // Set entity data
@@ -840,24 +826,11 @@ export default class Terrain extends Thing {
         getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
       }
 
-      coord = itemLocations.pop()
-      if (coord) {
-        getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
-      }
-
-      for (const selection of globals.levelPowerups) {
-        coord = itemLocations.pop()
-        if (!coord) {
-          break
-        }
-        if (0 <= selection && selection < 9) {
-          getScene().addThing(new ShotgunPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
-        }
-        else if (9 <= selection && selection < 18) {
-          getScene().addThing(new MachinegunPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
-        }
-        else if (18 <= selection && selection < 20) {
-          getScene().addThing(new VisionPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      for (let i=0; i<2; i++) {
+        let coord = itemLocations.pop()
+        const gun = u.choose(ShotgunPickup, MachinegunPickup)
+        if (coord) {
+          getScene().addThing(new gun([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
         }
       }
     }
