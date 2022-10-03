@@ -782,6 +782,7 @@ export default class Terrain extends Thing {
       other: [],
       path: [],
       room: [],
+      gold: [],
     }
     for (const coord in this.map) {
       if (this.map[coord] < 30 && this.map[coord] >= 1) {
@@ -797,6 +798,9 @@ export default class Terrain extends Thing {
           if (this.types[coord] == 3) {
             this.locations.path.push([x, y])
             continue
+          }
+          if (this.types[coord] == 4) {
+            this.locations.gold.push([x,y])
           }
           this.locations.other.push([x, y])
         }
@@ -818,7 +822,7 @@ export default class Terrain extends Thing {
       return u.shuffle(result, u.randomizer())
     }
 
-    const enemyLocations = getLocations("room")
+    const enemyLocations = getLocations("room", "gold")
     for (let i=0; i<5; i++) {
       const coord = enemyLocations.pop()
       if (coord != null) {
