@@ -76,7 +76,7 @@ export class GeneratorParams {
     else if (this.stage == 10) {
       this.caveMode = 13
       this.palaceIndoors = true
-      this.palaceLength = 50
+      this.palaceLength = 65
     }
     else if (this.stage == 15) {
       this.caveMode = 15

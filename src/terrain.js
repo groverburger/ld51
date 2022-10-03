@@ -895,7 +895,7 @@ export default class Terrain extends Thing {
 
     const itemLocations = getLocations("other")
     {
-      let clockList = this.presetClocks.concat([itemLocations.pop()])
+      let clockList = this.presetClocks.length > 0 ? this.presetClocks : itemLocations.pop()
       for (const coord of clockList) {
         if (coord) {
           console.log(clockList)
