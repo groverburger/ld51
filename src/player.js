@@ -601,6 +601,7 @@ export default class Player extends Thing {
   guiDraw() {
     if (!this.showGui) return
 
+    // time
     ctx.save()
     ctx.font = "italic bold 64px Times New Roman"
     ctx.textAlign = "center"
@@ -613,6 +614,7 @@ export default class Player extends Thing {
     ctx.fillText(time, 0, 0)
     ctx.restore()
 
+    // crosshair
     const size = 10
     ctx.save()
     ctx.translate(width/2, height/2)
@@ -625,6 +627,7 @@ export default class Player extends Thing {
     ctx.stroke()
     ctx.restore()
 
+    /*
     ctx.save()
     ctx.translate(32, height-48)
     ctx.font = "italic 32px Times New Roman"
@@ -644,6 +647,7 @@ export default class Player extends Thing {
       ctx.fillText(str, 4, -4)
     }
     ctx.restore()
+    */
   }
 
   onDeath() {

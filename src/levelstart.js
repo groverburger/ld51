@@ -6,10 +6,11 @@ import assets from "./assets.js"
 import Thing from "./core/thing.js"
 
 function* Animation() {
-  const {ctx, globals} = game
+  const {ctx, globals, mouse} = game
 
   const time = globals.fastRestart ? 10 : 30
   for (let i=0; i<time; i++) {
+    mouse.click && mouse.lock()
     ctx.save()
     ctx.fillStyle = `rgba(0, 0, 0, ${u.map(i, 0, time, globals.fastRestart ? 0.25 : 1, 0, true)})`
     ctx.fillRect(0, 0, width, height)

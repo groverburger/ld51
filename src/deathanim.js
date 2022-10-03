@@ -26,8 +26,6 @@ function* DeathAnimation() {
     ctx.translate(width - 64, height - 64)
     ctx.textAlign = "right"
     ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, subTime+10, subTime+30, 0, 0.5, true)})`
-    //ctx.fillStyle = "rgba(255, 255, 255, 0.5)"
-    // console.log(ctx.fillStyle)
     ctx.font = "32px Times New Roman"
     ctx.fillText("Press any button to try again...", 0, 0)
     ctx.restore()

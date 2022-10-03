@@ -121,11 +121,11 @@ export function hsvToRgb(h, s, v) {
   return [ r, g, b ]
 }
 
-export function colorToString(r, g, b) {
+export function colorToString(r, g, b, a=1) {
   r = Math.floor(r*255)
   g = Math.floor(g*255)
   b = Math.floor(b*255)
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+  return `rgba(${r}, ${g}, ${b}, ${a})`
 }
 
 export function stringToColor(hex, mod=[]) {
