@@ -70,11 +70,11 @@ export class GeneratorParams {
     
     // Theme-based advancements
     if (this.theme == "cave") {
-      if (this.stage == 6) {
+      if (this.stage == 5) {
         this.caveMode = 13
         this.palaceIndoors = false
       }
-      else if (this.stage == 11) {
+      else if (this.stage == 10) {
         this.caveMode = 13
         this.palaceIndoors = true
       }

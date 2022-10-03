@@ -897,9 +897,9 @@ export default class Terrain extends Thing {
       if (globals.level > 6) {gunCount = 4}
       if (globals.level > 11) {gunCount = 7}
       // Bonus
-      if (globals.level == 6) {gunCount = 1}
-      if (globals.level == 11) {gunCount = 2}
-      if (globals.level == 5) {gunCount = 12}
+      if (globals.level == 5) {gunCount = 1}
+      if (globals.level == 10) {gunCount = 2}
+      if (globals.level == 4) {gunCount = 12}
 
       for (let i=0; i<gunCount; i++) {
         let coord = gunLocations.pop()
