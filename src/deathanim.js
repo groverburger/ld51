@@ -9,6 +9,12 @@ function* DeathAnimation() {
   const {ctx, globals} = game
   let lives = globals.lives + 1
 
+  for (let i=0; i<15; i++) {
+    ctx.fillStyle = `rgba(255, 0, 0, 0.35)`
+    ctx.fillRect(0, 0, width, height)
+    yield
+  }
+
   const subTime = 30
   globals.powerup = "none"
   globals.fastRestart = true
@@ -56,6 +62,12 @@ function* DeathAnimation() {
 function* GameOver() {
   const {ctx, globals} = game
   delete globals.fastRestart
+
+  for (let i=0; i<15; i++) {
+    ctx.fillStyle = `rgba(255, 0, 0, 0.35)`
+    ctx.fillRect(0, 0, width, height)
+    yield
+  }
 
   let i = 0
   while (true) {

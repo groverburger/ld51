@@ -59,15 +59,31 @@ export default class Player extends Thing {
   constructor(data={}) {
     super(data)
 
-    //assets.sounds.music.loop = true
-    //assets.sounds.music.volume = 0.3
+    const {music1, music2, music3} = assets.sounds
+    for (const music of [music1, music2, music3]) {
+      music.pause()
+    }
+
+    music1.volume = 0.5
+    music2.volume = 0.4
+    music3.volume = 0.5
+
+    let music = music1
+    if (globals.level > 5) {
+      music = music2
+    }
+    if (globals.level > 10) {
+      music = music3
+    }
+    music.loop = true
+    music.volume = 0.5
+    music.play()
 
     if (!globals.level) {
       globals.lives = 3
       globals.level = 1
       globals.powerup = "none"
     }
-    //assets.sounds.music.play()
     //mouse.setStyle("none")
 
     //getScene().addThing(new DemoHelper())
@@ -301,16 +317,16 @@ export default class Player extends Thing {
           const r = 0.15
           let dir = vec3.add(look, [u.random(-r, r), u.random(-r, r), u.random(-r, r)])
           dir = vec3.normalize(dir)
-          getScene().addThing(new Bullet(pos, dir, 28))
+          getScene().addThing(new Bullet(pos, dir, 28, this))
         }
         // Guarantee that one bullet will go straight ahead
-        getScene().addThing(new Bullet(pos, look, 28))
+        getScene().addThing(new Bullet(pos, look, 28, this))
 
         // Sound effect
         const sound = assets.sounds.shotgun
         sound.playbackRate = u.random(1, 1.3)
         sound.currentTime = 0
-        sound.volume = 0.4
+        sound.volume = 0.6
         sound.play()
 
         this.speed[0] -= look[0]*4.5
@@ -325,13 +341,13 @@ export default class Player extends Thing {
         const r = 0.1
         let dir = vec3.add(look, [u.random(-r, r), u.random(-r, r), u.random(-r, r)])
         dir = vec3.normalize(dir)
-        getScene().addThing(new Bullet(pos, dir, 28))
+        getScene().addThing(new Bullet(pos, dir, 28, this))
 
         // Sound effect
         const sound = assets.sounds.machinegun
         sound.playbackRate = u.random(1, 1.3)
         sound.currentTime = 0
-        sound.volume = 0.4
+        sound.volume = 0.6
         sound.play()
 
         this.speed[0] -= look[0]*0.9
@@ -343,12 +359,12 @@ export default class Player extends Thing {
         this.after(12, () => {}, "fire")
 
         // Create bullet
-        getScene().addThing(new Bullet(pos, look, 28))
+        getScene().addThing(new Bullet(pos, look, 28, this))
 
         const sound = assets.sounds.machinegun
         sound.playbackRate = u.random(1, 1.3)
         sound.currentTime = 0
-        sound.volume = 0.4
+        sound.volume = 0.6
         sound.play()
         /*
         const sound = assets.sounds.pistolShoot
@@ -382,34 +398,29 @@ export default class Player extends Thing {
       }
     }
 
-    //if (this.time > 5 && this.inputs.pressed("reset")) {
-      //this.dead = true
-    //}
-
-    //if (this.time > 5 && keysDown.KeyN) {
-      //setNextScene()
-    //}
-
     this.moveAndCollide()
     this.updateTimers()
     this.cameraUpdate()
 
-    if (false && this.time%60 == 0 && this.time > 0 && this.time < 600) {
-      let sound = assets.sounds.tick
-      if (this.time%120 == 0) {
-        sound = assets.sounds.tock
+    // get hit by enemy bullets
+    for (const thing of this.getAllThingCollisions()) {
+      if (
+        thing instanceof Bullet
+        && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 8
+        && !thing.dead
+        && thing.owner != this
+      ) {
+        this.dead = true
+        break
       }
-      sound.playbackRate = u.random(0.9, 1.1)
-      sound.currentTime = 0
-      sound.volume = 1//u.map(this.time, 600-60, 0, 0.3, 1, true)**2
-      sound.play()
     }
 
+    // dramatic sounds at end of timer
     if (this.time%60 == 0 && this.time < 300 - 60 && this.time > 0) {
       const sound = assets.sounds.impact
       sound.playbackRate = u.random(0.9, 1.1)
       sound.currentTime = 0
-      sound.volume = 0.4
+      sound.volume = 0.6
       sound.play()
     }
 
@@ -628,7 +639,6 @@ export default class Player extends Thing {
     ctx.stroke()
     ctx.restore()
 
-    /*
     ctx.save()
     ctx.translate(32, height-48)
     ctx.font = "italic 32px Times New Roman"
@@ -648,7 +658,6 @@ export default class Player extends Thing {
       ctx.fillText(str, 4, -4)
     }
     ctx.restore()
-    */
   }
 
   onDeath() {
