@@ -70,6 +70,7 @@ const assets = {
     woodtile: "woodwalltop.png",
     dirt: "dirt.png",
     finale: "finale.png",
+    crosshair: "crosshair.png",
   },
 
   textureSettings: {},

@@ -637,6 +637,7 @@ export default class Player extends Thing {
     ctx.restore()
 
     // crosshair
+    /*
     const size = 10
     ctx.save()
     ctx.translate(width/2, height/2)
@@ -648,6 +649,8 @@ export default class Player extends Thing {
     ctx.lineTo(0, size + 0.5)
     ctx.stroke()
     ctx.restore()
+    */
+    ctx.drawImage(assets.images.crosshair, width/2 - 16, height/2 - 16)
 
     ctx.save()
     ctx.translate(32, height-48)
