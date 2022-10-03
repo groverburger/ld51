@@ -2,6 +2,7 @@ import Player from "./player.js"
 import Terrain from "./terrain.js"
 import DemoHelper from "./demohelper.js"
 import Goal from "./goal.js"
+import TitleMenu from "./titlemenu.js"
 
 const assets = {
   shaderFileSources: {
@@ -88,10 +89,8 @@ const assets = {
   },
 
   sceneSources: {
-    first: "main.ldtk",
-    first: "3dtest3.ldtk",
-    second: "3dtest2.ldtk",
-    third: "3dtest1.ldtk",
+    title: "title.ldtk",
+    main: "3dtest3.ldtk",
     //first: "empty.ldtk",
   },
 
@@ -100,6 +99,7 @@ const assets = {
     Player,
     DemoHelper,
     Goal,
+    TitleMenu,
   }
 }
 
