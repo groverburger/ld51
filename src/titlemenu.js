@@ -44,7 +44,7 @@ export default class TitleMenu extends Thing {
     ctx.font = "italic bold 96px Times New Roman"
     //ctx.font = "bold 96px Courier New"
     ctx.fillStyle = "black"
-    ctx.translate(100, 150)
+    ctx.translate(120, 200)
     ctx.fillText(name, 0, 0)
     ctx.fillStyle = u.colorToString(...u.hsvToRgb(this.time/300, 1, 1))
     ctx.translate(8, -8)
