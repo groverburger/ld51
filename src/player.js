@@ -65,6 +65,7 @@ export default class Player extends Thing {
     if (!globals.level) {
       globals.lives = 3
       globals.level = 1
+      globals.powerup = "none"
     }
     //assets.sounds.music.play()
     //mouse.setStyle("none")
@@ -305,6 +306,8 @@ export default class Player extends Thing {
           dir = vec3.normalize(dir)
           getScene().addThing(new Bullet(pos, dir, 28))
         }
+        // Guarantee that one bullet will go straight ahead
+        getScene().addThing(new Bullet(pos, look, 28))
 
         // Sound effect
         const sound = assets.sounds.shotgun

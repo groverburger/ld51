@@ -60,6 +60,7 @@ const assets = {
     goldenFloor: "brick2_f.png",
     goldenWall: "brick2.png",
     oneUp: "oneup.png",
+    visionPickup: "eye.png",
   },
 
   textureSettings: {},
@@ -86,6 +87,7 @@ const assets = {
     timePickup: "timepickup.wav",
     oneUp: "oneup.wav",
     weaponPickup: "weapon.wav",
+    magic: "magic.wav",
   },
 
   sceneSources: {

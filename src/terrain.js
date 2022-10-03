@@ -16,7 +16,7 @@ import Enemy from "./enemy.js"
 import Goal from "./goal.js"
 import TimePickup from "./timepickup.js"
 import OneUp from "./oneup.js"
-import { ShotgunPickup, MachinegunPickup } from "./powerups.js"
+import { ShotgunPickup, MachinegunPickup, VisionPickup } from "./powerups.js"
 const utils = u
 
 let cache = {
@@ -763,9 +763,16 @@ export default class Terrain extends Thing {
 
       // Pick the powerups for this level
       let numberOfPowerups = Math.min(Math.ceil((parameterBuilder.stage-1) / 4), 4) * 2
+
+      // Every fourth stage has extra powerups
+      if (parameterBuilder.stage % 4 == 0) {
+        numberOfPowerups *= 7
+      }
+
       globals.levelPowerups = []
+      globals.levelPowerups.push(18)
       for (let i = 0; i < numberOfPowerups; i ++) {
-        globals.levelPowerups.push(Math.floor(parameterBuilder.random() * 2))
+        globals.levelPowerups.push(Math.floor(parameterBuilder.random() * 20))
       }
     }
 
@@ -829,19 +836,28 @@ export default class Terrain extends Thing {
     {
       const itemLocations = getLocations("other")
       let coord = itemLocations.pop()
-      getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      if (coord) {
+        getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      }
 
       coord = itemLocations.pop()
-      getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      if (coord) {
+        getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      }
 
-      for (const powerup in globals.levelPowerups) {
-        console.log(powerup)
+      for (const selection of globals.levelPowerups) {
         coord = itemLocations.pop()
-        if (powerup == 0) {
+        if (!coord) {
+          break
+        }
+        if (0 <= selection && selection < 9) {
           getScene().addThing(new ShotgunPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
         }
-        else if (powerup == 1) {
+        else if (9 <= selection && selection < 18) {
           getScene().addThing(new MachinegunPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+        }
+        else if (18 <= selection && selection < 20) {
+          getScene().addThing(new VisionPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
         }
       }
     }

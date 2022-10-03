@@ -29,3 +29,16 @@ export class MachinegunPickup extends TimePickup {
     globals.powerup = "machinegun"
   }
 }
+
+export class VisionPickup extends TimePickup {
+  texture = assets.textures.visionPickup
+
+  onPickup() {
+    const { globals } = game
+    const sound = assets.sounds.magic
+    sound.currentTime = 0
+    sound.play()
+    sound.volume = 0.7
+    globals.powerup = "vision"
+  }
+}
