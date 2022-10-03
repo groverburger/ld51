@@ -241,7 +241,7 @@ export default class Terrain extends Thing {
     }
 
     const getStage = () => {
-      if (globals.level <= 5) {
+      if (globals.level <= 5 || !globals.level) {
         return 1
       }
       if (globals.level > 10) {
