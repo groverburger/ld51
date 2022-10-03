@@ -47,7 +47,7 @@ function* LevelWinAnim() {
     ctx.font = "italic 32px Times New Roman"
     ctx.fillStyle = u.colorToString(1,1,1,u.map(i,15,30, 0,0.75, true))
     const left = 15 - globals.level
-    ctx.fillText(left + (left > 1 ? " levels remain..." : "level remains..."), 0, 0)
+    ctx.fillText(left + (left > 1 ? " levels remain..." : " level remains..."), 0, 0)
     ctx.restore()
 
     ctx.save()
