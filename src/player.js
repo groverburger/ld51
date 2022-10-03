@@ -78,7 +78,7 @@ export default class Player extends Thing {
     getScene().camera3D.pitch = 0.25
     getScene().camera3D.yaw = data.angle || 0
     getScene().addThing(new LevelStart())
-    getScene().addThing(new DemoHelper())
+    //getScene().addThing(new DemoHelper())
 
     if (data.fieldInstances) {
       for (const {__identifier: id, __value: val} of data.fieldInstances) {
