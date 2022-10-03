@@ -416,19 +416,26 @@ function makeDoorway(terrain, types, pos) {
 export function generateEverything(params) {
   // Bonus levels
   if (params.caveMode == 13) {
+    
     let res = cave.generateCaves(params)
     let res2 = palace.generatePalace(params)
 
-    let pt = [15, 35]
+    let pt = [-15, -35]
 
-    mergeTerrain(res.terrain, res2.terrain, pt)
-    mergeTerrain(res.types, res2.types, pt)
+    let final = new GeneratorResult()
 
-    res.startAngle = res2.startAngle
-    res.startPoint = add(res2.startPoint, pt)
-    res.endPoint = add(res2.endPoint, pt)
+    mergeTerrain(final.terrain, res.terrain, pt)
+    mergeTerrain(final.types, res.types, pt)
 
-    return res
+    mergeTerrain(final.terrain, res2.terrain, [0, 0])
+    mergeTerrain(final.types, res2.types, [0, 0])
+
+    final.startAngle = res2.startAngle
+    final.startPoint = res2.startPoint
+    final.endPoint = res2.endPoint
+    final.presetClocks = res2.presetClocks
+
+    return final
   }
   // Finale level
   if (params.caveMode == 15) {
