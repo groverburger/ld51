@@ -1,7 +1,6 @@
 import { add, scale, subtract } from "./core/vector2.js"
 import { GeneratorResult, stringToPosition } from "./procgeneral.js"
 
-const PALACE_LENGTH = 80
 const TOWARDS_CHANCE = 0.8
 const PALACE_WALL_HEIGHT = 80
 const PALACE_FLOOR_HEIGHT = 20
@@ -173,17 +172,17 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data) {
   }
 
   // Clocks are put at 1/4 and 1/2 points
-  if (depth / PALACE_LENGTH > 0.25 && data.firstClockPlaced == false) {
+  if (depth / params.palaceLength > 0.25 && data.firstClockPlaced == false) {
     data.firstClock = curPos
     data.firstClockPlaced = true
   }
-  if (depth / PALACE_LENGTH > 0.5 && data.secondClockPlaced == false) {
+  if (depth / params.palaceLength > 0.5 && data.secondClockPlaced == false) {
     data.secondClock = curPos
     data.secondClockPlaced = true
   }
 
   // Recurse
-  if (depth + distance < PALACE_LENGTH) {
+  if (depth + distance < params.palaceLength) {
     palaceAlgorithm(terrain, curHeight, curPos, params, curTowards, depth + distance, data)
   }
 }
