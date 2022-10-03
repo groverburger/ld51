@@ -1,6 +1,7 @@
 import * as proc from "./procgeneral.js"
 import * as terr from "./procterrain.js"
 import * as basic from "./procbasics.js"
+import * as palace from "./procpalace.js"
 import { add } from "./core/vector2.js"
 
 const BIRTH_LIMIT = 3

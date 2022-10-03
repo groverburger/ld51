@@ -2,6 +2,7 @@ import { add, lerp, distance } from "./core/vector2.js"
 import * as utils from "./core/utils.js"
 import * as cave from "./proccaves.js"
 import * as room from "./procroom.js"
+import * as palace from "./procpalace.js"
 import * as feature from "./procfeature.js"
 
 const PLAYER_JUMP_HEIGHT = 4
@@ -56,6 +57,9 @@ export class GeneratorParams {
     this.room1Position = this.random()*0.9 + 0.1
     this.room2Position = this.random()*0.9 + 0.1
 
+    // Palace
+    this.palaceIndoors = false
+
     // Misc
     this.favoriteFeature = Math.floor(this.random() * 100)
     this.levelFeature = 0
@@ -64,15 +68,27 @@ export class GeneratorParams {
   advance() {
     // Advance to the next stage
     this.stage ++
+
+    this.maxPathLength = 4
     
     // Theme-based advancements
     if (this.theme == "cave") {
-      if (this.stage >= 2) {
-        this.caveMode = 1
+      if (this.stage == 7) {
+        this.caveMode = 13
+        this.palaceIndoors = false
       }
-      // Post-story 
-      if (this.stage >= 6) {
-        this.caveMode = this.random() < 0.3 ? 2 : 1
+      else if (this.stage == 12) {
+        this.caveMode = 13
+        this.palaceIndoors = true
+      }
+      else if (0 < this.stage && this.stage <= 5) {
+        this.caveMode = 0
+      }
+      else if (5 < this.stage && this.stage <= 10) {
+        this.caveMode = Math.floor(this.random() * 3)
+      }
+      else if (10 < this.stage && this.stage < 12) {
+        this.caveMode = 1
       }
     }
 
@@ -124,6 +140,7 @@ export class GeneratorResult {
   startPoint = [0, 0]
   startAngle = 0
   endPoint = [0, 0]
+  presetClocks = []
 }
 
 // Pass in a position in either string format or list format and it will convert it to list format
@@ -395,6 +412,10 @@ function makeDoorway(terrain, types, pos) {
 }
 
 export function generateEverything(params) {
+  if (params.caveMode == 13) {
+    return palace.generatePalace(params)
+  }
+
   // Generate caves
   let gen = cave.generateCaves(params)
 

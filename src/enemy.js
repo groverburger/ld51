@@ -102,6 +102,14 @@ export default class Enemy extends Thing {
     }))
     gfx.set("color", [1,1,1,1])
     gfx.drawBillboard()
+
+    /*// Render through walls
+    gfx.set("color", [1,1,1,0.5])
+    gfx.gl.disable(gfx.gl.DEPTH_TEST);
+    gfx.gl.depthFunc(gfx.gl.NEVER);
+    gfx.drawBillboard()
+    gfx.gl.enable(gfx.gl.DEPTH_TEST);
+    gfx.gl.depthFunc(gfx.gl.LEQUAL);*/
   }
 
   checkCollision(x=this.position[0], y=this.position[1]) {
