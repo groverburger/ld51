@@ -244,7 +244,7 @@ export default class Terrain extends Thing {
       if (globals.level <= 5) {
         return 1
       }
-      if (globals.level > 15) {
+      if (globals.level > 10) {
         return 3
       }
       return 2
