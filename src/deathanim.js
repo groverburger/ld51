@@ -119,7 +119,6 @@ export default class DeathAnim extends Thing {
 
   constructor(data) {
     super(data)
-    assets.sounds.music.pause()
     game.globals.lives -= 1
     if (game.globals.lives) {
       this.anim = DeathAnimation()

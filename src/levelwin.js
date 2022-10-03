@@ -88,7 +88,6 @@ export default class LevelWin extends Thing {
 
   constructor(data) {
     super(data)
-    assets.sounds.music.pause()
     this.anim = LevelWinAnim()
   }
 

@@ -78,6 +78,7 @@ export default class Player extends Thing {
     getScene().camera3D.pitch = 0.25
     getScene().camera3D.yaw = data.angle || 0
     getScene().addThing(new LevelStart())
+    getScene().addThing(new DemoHelper())
 
     if (data.fieldInstances) {
       for (const {__identifier: id, __value: val} of data.fieldInstances) {
@@ -467,7 +468,7 @@ export default class Player extends Thing {
       ])
 
       let stepHeight = this.onGround ? 48 : 16
-      for (let h=stepHeight; h<=64; h+=8) {
+      for (let h=stepHeight; h<=64; h+=16) {
         let position = [...this.position]
         position[2] += h - this.height
 
