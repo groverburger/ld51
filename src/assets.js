@@ -48,6 +48,7 @@ const assets = {
     circle: "circle.png",
     square: "square.png",
     enemy: "enemy1.png",
+    turret: "enemy3.png",
     stone: "stone2.png",
     water: "water.png",
     skybox1: "skybox1.png",
@@ -86,6 +87,9 @@ const assets = {
     oneUp: "oneup.wav",
     weaponPickup: "weapon.wav",
     magic: "magic.wav",
+    music1: "music1.mp3",
+    music2: "music2.mp3",
+    music3: "music3.mp3",
   },
 
   sceneSources: {
