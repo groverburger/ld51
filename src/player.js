@@ -422,6 +422,7 @@ export default class Player extends Thing {
       sound.currentTime = 0
       sound.volume = 0.75
       sound.play()
+      this.after(10, () => {}, "timeWarning")
     }
 
     this.dead = this.dead || this.time < -10
@@ -618,11 +619,20 @@ export default class Player extends Thing {
     ctx.font = "italic bold 64px Times New Roman"
     ctx.textAlign = "center"
     ctx.translate(width/2, height * 2/3)
+    let scale = this.timer("timeBonus") ? u.map(this.timer("timeBonus")**2, 0,1, 2.5,1, true) : 1
+    scale = Math.max(scale, this.timer("timeWarning") ? u.map(this.timer("timeWarning")**2, 0,1, 1.5,1, true) : 1)
+    ctx.scale(scale, scale)
     const seconds = Math.max(this.time / 60, 0)
     const time = seconds.toFixed(2)
     ctx.fillStyle = "red"
+    if (this.timer("timeWarning")) {
+      ctx.fillStyle = "white"
+    }
     ctx.fillText(time, -4, 4)
     ctx.fillStyle = "white"
+    if (this.timer("timeWarning")) {
+      ctx.fillStyle = "red"
+    }
     ctx.fillText(time, 0, 0)
     ctx.restore()
 

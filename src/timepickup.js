@@ -15,5 +15,6 @@ export default class TimePickup extends Pickup {
     sound.volume = 0.5
     sound.play()
     this.player.time += 5*60
+    this.player.after(15, () => {}, "timeBonus")
   }
 }
