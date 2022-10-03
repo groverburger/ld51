@@ -34,7 +34,6 @@ export class GeneratorParams {
 
   randomize() {
     // General
-    this.theme = "cave"
     this.width = this.bellRandom(40, 10, true)
     this.length = this.bellRandom(70, 10, true)
     this.height = 20
@@ -68,25 +67,27 @@ export class GeneratorParams {
     // Advance to the next stage
     this.stage ++
     
-    // Theme-based advancements
-    if (this.theme == "cave") {
-      if (this.stage == 5) {
-        this.caveMode = 13
-        this.palaceIndoors = false
-      }
-      else if (this.stage == 10) {
-        this.caveMode = 13
-        this.palaceIndoors = true
-      }
-      else if (0 < this.stage && this.stage <= 2) {
-        this.caveMode = 0
-      }
-      else if (2 < this.stage && this.stage <= 7) {
-        this.caveMode = Math.floor(this.random() * 3)
-      }
-      else {
-        this.caveMode = 1
-      }
+    // Level-based advancements
+    if (this.stage == 5) {
+      this.caveMode = 13
+      this.palaceIndoors = false
+    }
+    else if (this.stage == 10) {
+      this.caveMode = 13
+      this.palaceIndoors = true
+    }
+    else if (this.stage == 15) {
+      this.caveMode = 15
+      this.palaceIndoors = false
+    }
+    else if (0 < this.stage && this.stage <= 2) {
+      this.caveMode = 0
+    }
+    else if (2 < this.stage && this.stage <= 7) {
+      this.caveMode = Math.floor(this.random() * 3)
+    }
+    else {
+      this.caveMode = 1
     }
 
     if (this.width < 45) {
@@ -410,8 +411,37 @@ function makeDoorway(terrain, types, pos) {
 }
 
 export function generateEverything(params) {
+  // Bonus levels
   if (params.caveMode == 13) {
-    return palace.generatePalace(params)
+    let res = cave.generateCaves(params)
+    let res2 = palace.generatePalace(params)
+
+    let pt = [15, 35]
+
+    mergeTerrain(res.terrain, res2.terrain, pt)
+    mergeTerrain(res.types, res2.types, pt)
+
+    res.startAngle = res2.startAngle
+    res.startPoint = add(res2.startPoint, pt)
+    res.endPoint = add(res2.endPoint, pt)
+
+    return res
+  }
+  // Finale level
+  if (params.caveMode == 15) {
+    let res = cave.generateCaves(params)
+    let res2 = palace.generatePalace(params)
+
+    let pt = [15, 35]
+
+    mergeTerrain(res.terrain, res2.terrain, pt)
+    mergeTerrain(res.types, res2.types, pt)
+
+    res.startAngle = res2.startAngle
+    res.startPoint = add(res2.startPoint, pt)
+    res.endPoint = add(res2.endPoint, pt)
+
+    return res
   }
 
   // Generate caves

@@ -9,6 +9,7 @@ const PALACE_JUMP_LENGTH = 4
 
 export function generatePalace(params) {
   let terrainSmall = {}
+
   terrainSmall[[0,0]] = PALACE_FLOOR_HEIGHT
   terrainSmall[[0,1]] = PALACE_FLOOR_HEIGHT
   terrainSmall[[0,-1]] = PALACE_FLOOR_HEIGHT
@@ -28,6 +29,8 @@ export function generatePalace(params) {
   }
   palaceAlgorithm(terrainSmall, PALACE_FLOOR_HEIGHT, [0,0], params, false, 0, data)
 
+  
+
   // Scale up terrain by a factor of 2
   let types = {}
   let terrain = scaleTerrain(terrainSmall, types, params)
@@ -35,7 +38,7 @@ export function generatePalace(params) {
   let ret = new GeneratorResult()
   ret.terrain = terrain
   ret.types = types
-  ret.startPoint = [0,0]
+  ret.startPoint = [2,0]
   ret.endPoint = scale(data.endPoint, 2)
   ret.presetClocks = [scale(data.firstClock, 2), scale(data.secondClock, 2)]
   return ret
@@ -74,7 +77,7 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data) {
 
   // Special case: the first carve always goes north
   if (depth == 0) {
-    direction = [-1, 0]
+    direction = [1, 0]
   }
 
   let curTowards = towards

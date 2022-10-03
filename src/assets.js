@@ -69,6 +69,7 @@ const assets = {
     wood: "woodwall.png",
     woodtile: "woodwalltop.png",
     dirt: "dirt.png",
+    finale: "finale.png",
   },
 
   textureSettings: {},
