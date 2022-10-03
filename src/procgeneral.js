@@ -17,7 +17,7 @@ export class GeneratorParams {
   // General
   random = () => {return 4}
   stage = 0
-  maxPathLength = 73
+  maxPathLength = 74
   caveLayers = 1
   
   constructor(seed) {
@@ -100,8 +100,8 @@ export class GeneratorParams {
       this.length += 3
     }
 
-    if (this.maxPathLength < 102) {
-      this.maxPathLength += 3
+    if (this.maxPathLength < 100) {
+      this.maxPathLength += 2
     }
     
     this.terrainVariance += 3

@@ -294,7 +294,7 @@ export default class Terrain extends Thing {
         if (tileType == 4) {return "goldenWall"}
       }
       else if (getStage() == 2) {
-        if (tileType == 1) {return "path"}
+        if (tileType == 1) {return "woodTile"}
         if (tileType == 2) {return "wood"}
         if (tileType == 3) {return "stone"}
         if (tileType == 4) {return "goldenWall"}
@@ -925,10 +925,10 @@ export default class Terrain extends Thing {
       // Bonus
       if (globals.level == 3) {gunCount = 6}
       if (globals.level == 5) {gunCount = 1}
-      if (globals.level == 8) {gunCount = 12}
+      if (globals.level == 8) {gunCount = 10}
       if (globals.level == 10) {gunCount = 2}
-      if (globals.level == 12) {gunCount = 12}
-      if (globals.level == 15) {gunCount = 15}
+      if (globals.level == 12) {gunCount = 10}
+      if (globals.level == 15) {gunCount = 12}
 
       for (let i=0; i<gunCount; i++) {
         let coord = gunLocations.pop()
