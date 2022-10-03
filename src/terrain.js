@@ -37,6 +37,7 @@ export default class Terrain extends Thing {
   startAngle = 0
   endPoint = [0, 0]
   powerup = 0
+  presetClocks = []
 
   constructor(data) {
     super(data)
@@ -262,7 +263,7 @@ export default class Terrain extends Thing {
     }
 
     const getShouldRound = (tileType) => {
-      if (tileType == 1 || tileType == 2) {
+      if (tileType == 1 || tileType == 2 || tileType == 4) {
         return false
       }
       return true
@@ -770,7 +771,7 @@ export default class Terrain extends Thing {
       }
 
       globals.levelPowerups = []
-      globals.levelPowerups.push(18)
+      //globals.levelPowerups.push(18)
       for (let i = 0; i < numberOfPowerups; i ++) {
         globals.levelPowerups.push(Math.floor(parameterBuilder.random() * 20))
       }
@@ -780,6 +781,7 @@ export default class Terrain extends Thing {
     this.startPoint = generated.startPoint
     this.endPoint = generated.endPoint
     this.startAngle = generated.startAngle
+    this.presetClocks = generated.presetClocks
 
     // Write terrain data to map
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
@@ -837,12 +839,18 @@ export default class Terrain extends Thing {
       const itemLocations = getLocations("other")
       let coord = itemLocations.pop()
       if (coord) {
-        getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+        getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
       }
 
-      coord = itemLocations.pop()
-      if (coord) {
-        getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      // Determine where the clocks should go
+      let totalClocks = []
+      totalClocks = totalClocks.concat(itemLocations.pop())
+      totalClocks = totalClocks.concat(this.presetClocks)
+      for (const loc of totalClocks) {
+        console.log(loc)
+        if (loc) {
+          getScene().addThing(new TimePickup([loc[0]*64 + 32, loc[1]*64 + 32, 0]))
+        }
       }
 
       for (const selection of globals.levelPowerups) {
