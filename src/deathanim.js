@@ -11,6 +11,7 @@ function* DeathAnimation() {
 
   const subTime = 30
   globals.powerup = "none"
+  globals.fastRestart = true
 
   let i = 0
   while (true) {
@@ -56,6 +57,7 @@ function* DeathAnimation() {
 
 function* GameOver() {
   const {ctx, globals} = game
+  delete globals.fastRestart
 
   let i = 0
   while (true) {

@@ -21,10 +21,10 @@ import * as vec3 from "./core/vector3.js"
 import * as vec2 from "./core/vector2.js"
 const {angleToVector} = vec2
 import InputHandler from "./core/inputs.js"
-import FadeIn from "./fadein.js"
 import DemoHelper from "./demohelper.js"
 import Bullet from "./bullet.js"
 import DeathAnim from "./deathanim.js"
+import LevelStart from "./levelstart.js"
 
 export default class Player extends Thing {
   height = 56
@@ -73,15 +73,11 @@ export default class Player extends Thing {
     //getScene().addThing(new DemoHelper())
 
     //this.position[2] = 10000
-    this.position[2] = getThing("terrain").getGroundHeight(this.position[0], this.position[1]) + 64
+    this.position[2] = getThing("terrain").getGroundHeight(this.position[0], this.position[1]) + this.height
     getScene().camera3D.position = [...this.position]
     getScene().camera3D.pitch = 0.25
     getScene().camera3D.yaw = data.angle || 0
-
-    if (globals.showLevelIntro) {
-      getScene().addThing(new FadeIn())
-      globals.showLevelIntro = false
-    }
+    getScene().addThing(new LevelStart())
 
     if (data.fieldInstances) {
       for (const {__identifier: id, __value: val} of data.fieldInstances) {
@@ -603,6 +599,8 @@ export default class Player extends Thing {
   }
 
   guiDraw() {
+    if (!this.showGui) return
+
     ctx.save()
     ctx.font = "italic bold 64px Times New Roman"
     ctx.textAlign = "center"

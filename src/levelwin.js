@@ -22,24 +22,32 @@ function* LevelWinAnim() {
   const player = getThing("player")
   if (player) player.showGui = false
   globals.showLevelIntro = true
+  delete globals.fastRestart
 
-  for (let i=0; i<10; i++) {
-    ctx.fillStyle = `rgba(0, 0, 0, ${u.map(i, 0, 10, 0, 0.25, true)})`
+  for (let i=0; i<20; i++) {
+    ctx.fillStyle = `rgba(100, 200, 0, 0.35)`
     ctx.fillRect(0, 0, width, height)
     yield
   }
 
+
+  for (let i=0; i<30; i++) {
+    ctx.fillStyle = `rgba(0, 0, 0, ${u.map(i, 0, 30, 0, 1, true)})`
+    ctx.fillRect(0, 0, width, height)
+    yield
+  }
+
+
   let i = 0
   while (true) {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.25)"
+    ctx.fillStyle = "black"
     ctx.fillRect(0, 0, width, height)
-    /*
-    const string = "Complete!"
+    const string = `Level ${globals.level} Complete`
     ctx.save()
     ctx.fillStyle = "rgba(0, 0, 0, 0.25)"
     ctx.fillRect(0, 0, width, height)
     ctx.textAlign = "center"
-    ctx.font = "italic bold 100px Times New Roman"
+    ctx.font = "italic bold 64px Times New Roman"
     const bob = Math.sin(i/25)*10 - 16
     ctx.translate(width/2, height/2 + bob)
     const scale = u.map(i, 0, 15, 25, 1, true)
@@ -50,7 +58,6 @@ function* LevelWinAnim() {
     ctx.fillStyle = u.colorToString(...u.hsvToRgb(i/300, 1, 1))
     ctx.fillText(string, 0, 0)
     ctx.restore()
-    */
 
 
     const button = gamepads[0]?.buttons[0].pressed || mouse.button
@@ -71,14 +78,6 @@ function* LevelWinAnim() {
     yield
   }
   */
-
-  for (let i=0; i<30; i++) {
-    ctx.save()
-    ctx.fillStyle = "black"
-    ctx.fillRect(0, 0, width, height)
-    ctx.restore()
-    yield
-  }
 
   //setNextScene()
   globals.level += 1
@@ -101,18 +100,12 @@ export default class LevelWin extends Thing {
 
   constructor(data) {
     super(data)
-    
     assets.sounds.music.pause()
     this.anim = LevelWinAnim()
   }
 
   update() {
     getScene().paused = true
-  }
-
-  guiDraw() {
-    if (this.anim.next().value == "dead") {
-      //this.dead = true
-    }
+    this.anim.next()
   }
 }

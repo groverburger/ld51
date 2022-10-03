@@ -83,6 +83,7 @@ export default class Enemy extends Thing {
 
     this.move()
     this.position[2] += this.speed[2]
+    this.dead = this.dead || this.position[2] < 64
   }
 
   draw() {
