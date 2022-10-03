@@ -43,7 +43,6 @@ export class GeneratorParams {
     this.caveSteps = this.bellRandom(7, 1, true)
     this.caveInitialChance = this.bellRandom(0.3, 0.01, false)
     this.caveLayerSpacing = 2
-    this.caveInitalChanceAdvanceOdds = this.bellRandom(0.5, 0.4, false)
     this.caveMode = 0
 
     // Terrain
@@ -90,7 +89,7 @@ export class GeneratorParams {
       }
     }
 
-    if (this.width < 60) {
+    if (this.width < 45) {
       this.width += 3
     }
     if (this.length < 90) {
@@ -110,6 +109,7 @@ export class GeneratorParams {
 
     // Reroll
     if (this.random() < 0.3) { this.caveSteps = this.bellRandom(7, 3, true) }
+    if (this.random() < 0.3) { this.caveInitialChance = this.bellRandom(0.3, 0.01, false) }
     if (this.random() < 0.3) { this.roomWallHeight = this.bellRandom(8, 7, true) }
     if (this.random() < 0.3) { this.favoriteFeature = Math.floor(this.random() * 100) }
     if (this.random() < 0.4) { this.room1Position = this.random() }
