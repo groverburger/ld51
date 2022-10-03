@@ -21,10 +21,10 @@ import * as vec3 from "./core/vector3.js"
 import * as vec2 from "./core/vector2.js"
 const {angleToVector} = vec2
 import InputHandler from "./core/inputs.js"
-import FadeIn from "./fadein.js"
 import DemoHelper from "./demohelper.js"
 import Bullet from "./bullet.js"
 import DeathAnim from "./deathanim.js"
+import LevelStart from "./levelstart.js"
 
 export default class Player extends Thing {
   height = 56
@@ -73,15 +73,12 @@ export default class Player extends Thing {
     //getScene().addThing(new DemoHelper())
 
     //this.position[2] = 10000
-    this.position[2] = getThing("terrain").getGroundHeight(this.position[0], this.position[1]) + 64
+    this.position[2] = getThing("terrain").getGroundHeight(this.position[0], this.position[1]) + this.height
     getScene().camera3D.position = [...this.position]
     getScene().camera3D.pitch = 0.25
     getScene().camera3D.yaw = data.angle || 0
-
-    if (globals.showLevelIntro) {
-      getScene().addThing(new FadeIn())
-      globals.showLevelIntro = false
-    }
+    getScene().addThing(new LevelStart())
+    getScene().addThing(new DemoHelper())
 
     if (data.fieldInstances) {
       for (const {__identifier: id, __value: val} of data.fieldInstances) {
@@ -416,7 +413,7 @@ export default class Player extends Thing {
       sound.play()
     }
 
-    this.dead = this.dead || this.time < 0
+    this.dead = this.dead || this.time < -10
   }
 
   moveAndCollide() {
@@ -471,7 +468,7 @@ export default class Player extends Thing {
       ])
 
       let stepHeight = this.onGround ? 48 : 16
-      for (let h=stepHeight; h<=64; h+=8) {
+      for (let h=stepHeight; h<=64; h+=16) {
         let position = [...this.position]
         position[2] += h - this.height
 
@@ -603,6 +600,9 @@ export default class Player extends Thing {
   }
 
   guiDraw() {
+    if (!this.showGui) return
+
+    // time
     ctx.save()
     ctx.font = "italic bold 64px Times New Roman"
     ctx.textAlign = "center"
@@ -615,6 +615,7 @@ export default class Player extends Thing {
     ctx.fillText(time, 0, 0)
     ctx.restore()
 
+    // crosshair
     const size = 10
     ctx.save()
     ctx.translate(width/2, height/2)
@@ -627,6 +628,7 @@ export default class Player extends Thing {
     ctx.stroke()
     ctx.restore()
 
+    /*
     ctx.save()
     ctx.translate(32, height-48)
     ctx.font = "italic 32px Times New Roman"
@@ -646,6 +648,7 @@ export default class Player extends Thing {
       ctx.fillText(str, 4, -4)
     }
     ctx.restore()
+    */
   }
 
   onDeath() {

@@ -31,10 +31,10 @@ export default class Goal extends Thing {
 
     if (!this.visited && u.distance3d(...this.position, ...player.position) < 80) {
       this.visited = true
-      assets.sounds.delivery.currentTime = 0
-      assets.sounds.delivery.volume = 0.25
-      assets.sounds.delivery.playbackRate = u.random(0.8, 1.2)
-      assets.sounds.delivery.play()
+      assets.sounds.win.currentTime = 0
+      assets.sounds.win.volume = 0.25
+      assets.sounds.win.playbackRate = u.random(0.8, 1.2)
+      assets.sounds.win.play()
       getScene().addThing(new LevelWin())
     }
   }

@@ -5,6 +5,7 @@ import * as game from "./core/game.js"
 import * as u from "./core/utils.js"
 import * as vec3 from "./core/vector3.js"
 import * as mat from "./core/matrices.js"
+import {ItemParticle} from "./particle.js"
 
 export default class Pickup extends Thing {
   time = 0
@@ -22,6 +23,10 @@ export default class Pickup extends Thing {
     super.update()
     this.time += 1
     this.position[2] += Math.sin(this.time/60) / 4
+
+    if (this.time%16 == 0) {
+      game.getScene().addThing(new ItemParticle(this.position))
+    }
 
     const player = game.getThing("player")
     this.player = player

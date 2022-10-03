@@ -11,6 +11,7 @@ function* DeathAnimation() {
 
   const subTime = 30
   globals.powerup = "none"
+  globals.fastRestart = true
 
   let i = 0
   while (true) {
@@ -25,8 +26,6 @@ function* DeathAnimation() {
     ctx.translate(width - 64, height - 64)
     ctx.textAlign = "right"
     ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, subTime+10, subTime+30, 0, 0.5, true)})`
-    //ctx.fillStyle = "rgba(255, 255, 255, 0.5)"
-    // console.log(ctx.fillStyle)
     ctx.font = "32px Times New Roman"
     ctx.fillText("Press any button to try again...", 0, 0)
     ctx.restore()
@@ -56,6 +55,7 @@ function* DeathAnimation() {
 
 function* GameOver() {
   const {ctx, globals} = game
+  delete globals.fastRestart
 
   let i = 0
   while (true) {
@@ -85,7 +85,7 @@ function* GameOver() {
       ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, subTime, subTime+10, 0, 0.8, true)})`
       // console.log(ctx.fillStyle)
       ctx.font = "italic 32px Times New Roman"
-      ctx.fillText(`Got to level ${globals.level}`, 0, 0)
+      ctx.fillText(`Made it to level ${globals.level}`, 0, 0)
       ctx.restore()
     }
 
@@ -119,7 +119,6 @@ export default class DeathAnim extends Thing {
 
   constructor(data) {
     super(data)
-    assets.sounds.music.pause()
     game.globals.lives -= 1
     if (game.globals.lives) {
       this.anim = DeathAnimation()

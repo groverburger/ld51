@@ -12,7 +12,7 @@ export default class Thing {
   spriteOffset = [0, 0]
   rotation = 0
   scale = [1, 1]
-  depth = 0
+  depth = 1
 
   // collision and movement
   position = [0, 0]

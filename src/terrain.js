@@ -584,7 +584,14 @@ export default class Terrain extends Thing {
     gfx.setShader(assets.shaders.default)
     getScene().camera3D.setUniforms()
     gfx.set("color", [1,1,1,1])
-    gfx.setTexture(assets.textures.skybox)
+    let skybox = assets.textures.skybox1
+    if (globals.level > 5) {
+      skybox = assets.textures.skybox2
+    }
+    if (globals.level > 10) {
+      skybox = assets.textures.skybox3
+    }
+    gfx.setTexture(skybox)
     gfx.set("modelMatrix", mat.getTransformation({
       translation: [
         getScene().camera3D.position[0],
@@ -761,20 +768,6 @@ export default class Terrain extends Thing {
       }
       
       globals.generated = generated
-
-      // Pick the powerups for this level
-      let numberOfPowerups = Math.min(Math.ceil((parameterBuilder.stage-1) / 4), 4) * 2
-
-      // Every fourth stage has extra powerups
-      if (parameterBuilder.stage % 4 == 0) {
-        numberOfPowerups *= 7
-      }
-
-      globals.levelPowerups = []
-      //globals.levelPowerups.push(18)
-      for (let i = 0; i < numberOfPowerups; i ++) {
-        globals.levelPowerups.push(Math.floor(parameterBuilder.random() * 20))
-      }
     }
 
     // Set entity data
@@ -791,6 +784,7 @@ export default class Terrain extends Thing {
       other: [],
       path: [],
       room: [],
+      gold: [],
     }
     for (const coord in this.map) {
       if (this.map[coord] < 30 && this.map[coord] >= 1) {
@@ -806,6 +800,9 @@ export default class Terrain extends Thing {
           if (this.types[coord] == 3) {
             this.locations.path.push([x, y])
             continue
+          }
+          if (this.types[coord] == 4) {
+            this.locations.gold.push([x,y])
           }
           this.locations.other.push([x, y])
         }
@@ -827,7 +824,7 @@ export default class Terrain extends Thing {
       return u.shuffle(result, u.randomizer())
     }
 
-    const enemyLocations = getLocations("room")
+    const enemyLocations = getLocations("room", "gold")
     for (let i=0; i<5; i++) {
       const coord = enemyLocations.pop()
       if (coord != null) {
@@ -842,30 +839,12 @@ export default class Terrain extends Thing {
         getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
       }
 
-      // Determine where the clocks should go
-      let totalClocks = []
-      totalClocks = totalClocks.concat(itemLocations.pop())
-      totalClocks = totalClocks.concat(this.presetClocks)
-      for (const loc of totalClocks) {
-        console.log(loc)
-        if (loc) {
-          getScene().addThing(new TimePickup([loc[0]*64 + 32, loc[1]*64 + 32, 0]))
-        }
-      }
-
-      for (const selection of globals.levelPowerups) {
-        coord = itemLocations.pop()
-        if (!coord) {
-          break
-        }
-        if (0 <= selection && selection < 9) {
-          getScene().addThing(new ShotgunPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
-        }
-        else if (9 <= selection && selection < 18) {
-          getScene().addThing(new MachinegunPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
-        }
-        else if (18 <= selection && selection < 20) {
-          getScene().addThing(new VisionPickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      const gunLocations = itemLocations//getLocations("room")
+      for (let i=0; i<1; i++) {
+        let coord = gunLocations.pop()
+        const gun = u.choose(ShotgunPickup, MachinegunPickup)
+        if (coord) {
+          getScene().addThing(new gun([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
         }
       }
     }
