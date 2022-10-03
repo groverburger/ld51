@@ -303,7 +303,7 @@ export default class Terrain extends Thing {
     }
 
     const getShouldRound = (tileType) => {
-      if (tileType == 1 || tileType == 2) {
+      if (tileType == 1 || tileType == 2 || tileType == 4) {
         return false
       }
       return true
@@ -890,8 +890,18 @@ export default class Terrain extends Thing {
     }
 
     {
-      const gunLocations = itemLocations//getLocations("room")
-      for (let i=0; i<1; i++) {
+      const gunLocations = itemLocations
+
+      let gunCount = 0
+      if (globals.level > 1) {gunCount = 2}
+      if (globals.level > 6) {gunCount = 4}
+      if (globals.level > 11) {gunCount = 7}
+      // Bonus
+      if (globals.level == 6) {gunCount = 1}
+      if (globals.level == 11) {gunCount = 2}
+      if (globals.level == 5) {gunCount = 12}
+
+      for (let i=0; i<gunCount; i++) {
         let coord = gunLocations.pop()
         const gun = u.choose(ShotgunPickup, MachinegunPickup)
         if (coord) {
