@@ -40,6 +40,7 @@ export function generatePalace(params) {
   ret.startPoint = [2,0]
   ret.endPoint = scale(data.endPoint, 2)
   ret.presetClocks = [scale(data.firstClock, 2), scale(data.secondClock, 2)]
+  ret.startAngle = Math.PI
   return ret
 }
 
