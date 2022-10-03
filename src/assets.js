@@ -62,6 +62,12 @@ const assets = {
     goldenWall: "brick2.png",
     oneUp: "oneup.png",
     visionPickup: "eye.png",
+    tech1: "tech1.png",
+    techstone: "stone3.png",
+    techfloor: "stone3_tile.png",
+    wood: "woodwall.png",
+    woodtile: "woodwalltop.png",
+    dirt: "dirt.png",
   },
 
   textureSettings: {},

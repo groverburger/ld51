@@ -240,20 +240,60 @@ export default class Terrain extends Thing {
       return [xMin, yMin, xMax, yMax]
     }
 
+    const getStage = () => {
+      if (globals.level <= 5) {
+        return 1
+      }
+      if (globals.level > 15) {
+        return 3
+      }
+      return 2
+    }
+
     const getFloorTexture = (tileType) => {
-      if (tileType == 1) {return "path"}
-      if (tileType == 2) {return "path"}
-      if (tileType == 3) {return "path"}
-      if (tileType == 4) {return "goldenFloor"}
+      if (getStage() == 1) {
+        if (tileType == 1) {return "path"}
+        if (tileType == 2) {return "path"}
+        if (tileType == 3) {return "path"}
+        if (tileType == 4) {return "goldenFloor"}
+      }
+      else if (getStage() == 2) {
+        if (tileType == 1) {return "woodtile"}
+        if (tileType == 2) {return "woodtile"}
+        if (tileType == 3) {return "dirt"}
+        if (tileType == 4) {return "goldenFloor"}
+      }
+      else if (getStage() == 3) {
+        if (tileType == 1) {return "techfloor"}
+        if (tileType == 2) {return "tech1"}
+        if (tileType == 3) {return "techfloor"}
+        if (tileType == 4) {return "goldenFloor"}
+        return "techstone"
+      }
+      
       return "stone"
     }
 
     const getWallTexture = (tileType) => {
-      //return tileType ? (["stone", "sand"])[tileType-1] : "stone"
-      if (tileType == 1) {return "path"}
-      if (tileType == 2) {return "roomWall"}
-      if (tileType == 3) {return "stone"}
-      if (tileType == 4) {return "goldenWall"}
+      if (getStage() == 1) {
+        if (tileType == 1) {return "path"}
+        if (tileType == 2) {return "roomWall"}
+        if (tileType == 3) {return "stone"}
+        if (tileType == 4) {return "goldenWall"}
+      }
+      else if (getStage() == 2) {
+        if (tileType == 1) {return "path"}
+        if (tileType == 2) {return "wood"}
+        if (tileType == 3) {return "stone"}
+        if (tileType == 4) {return "goldenWall"}
+      }
+      else if (getStage() == 3) {
+        if (tileType == 1) {return "path"}
+        if (tileType == 2) {return "tech1"}
+        if (tileType == 3) {return "techstone"}
+        if (tileType == 4) {return "goldenWall"}
+        return "techstone"
+      }
       return "stone"
     }
 
