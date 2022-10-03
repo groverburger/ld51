@@ -78,11 +78,11 @@ export class GeneratorParams {
       this.palaceIndoors = true
       this.palaceLength = 65
     }
-    else if (this.stage == 15) {
-      this.caveMode = 15
+    /*else if (this.stage == 15) {
+      this.caveMode = 13
       this.palaceIndoors = false
-      this.palaceLength = 65
-    }
+      this.palaceLength = 100
+    }*/
     else if (0 < this.stage && this.stage <= 2) {
       this.caveMode = 0
     }
@@ -90,7 +90,7 @@ export class GeneratorParams {
       this.caveMode = Math.floor(this.random() * 3)
     }
     else {
-      this.caveMode = 1
+      this.caveMode = Math.floor(this.random() * 2) + 1
     }
 
     if (this.width < 45) {
@@ -437,34 +437,9 @@ export function generateEverything(params) {
 
     return final
   }
-  // Finale level
-  if (params.caveMode == 15) {
-    let res = cave.generateCaves(params)
-    let res2 = palace.generatePalace(params)
-
-    let pt = [15, 35]
-
-    mergeTerrain(res.terrain, res2.terrain, pt)
-    mergeTerrain(res.types, res2.types, pt)
-
-    res.startAngle = res2.startAngle
-    res.startPoint = add(res2.startPoint, pt)
-    res.endPoint = add(res2.endPoint, pt)
-
-    return res
-  }
 
   // Generate caves
   let gen = cave.generateCaves(params)
-
-  // Maybe spawn the player on a plinth
-  if (params.random() < 0.05) {
-    room.insertPlinth(gen.terrain, gen.types, gen.startPoint, {
-      ...params,
-      height: gen.terrain[gen.startPoint] + params.bellRandom(10, 7, true),
-      roomWallHeight: 0
-    })
-  }
 
   // Make sure it is possible to complete the level
   guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
