@@ -839,7 +839,7 @@ export default class Terrain extends Thing {
         getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
       }
 
-      const gunLocations = itemLocations//getLocations("room")
+      const gunLocations = itemLocations
       for (let i=0; i<1; i++) {
         let coord = gunLocations.pop()
         const gun = u.choose(ShotgunPickup, MachinegunPickup)
