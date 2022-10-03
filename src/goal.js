@@ -22,6 +22,7 @@ export default class Goal extends Thing {
   constructor(data) {
     super(data)
     this.position[2] = getThing("terrain").getGroundHeight(this.position[0], this.position[1]) + 64
+    this.setName("goal")
   }
 
   update() {
