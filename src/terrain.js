@@ -832,6 +832,7 @@ export default class Terrain extends Thing {
     this.startPoint = generated.startPoint
     this.endPoint = generated.endPoint
     this.startAngle = generated.startAngle
+    this.presetClocks = generated.presetClocks
 
     // Write terrain data to map
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
@@ -894,9 +895,12 @@ export default class Terrain extends Thing {
 
     const itemLocations = getLocations("other")
     {
-      let coord = itemLocations.pop()
-      if (coord) {
-        getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+      let clockList = this.presetClocks.length > 0 ? this.presetClocks : itemLocations.pop()
+      for (const coord of clockList) {
+        if (coord) {
+          console.log(clockList)
+          getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+        }
       }
     }
 
