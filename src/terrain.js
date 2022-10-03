@@ -242,8 +242,12 @@ export default class Terrain extends Thing {
     }
 
     const getStage = () => {
+      // return 4
       if (globals.level <= 5 || !globals.level) {
         return 1
+      }
+      if (globals.level == 15) {
+        return 4
       }
       if (globals.level > 10) {
         return 3
@@ -271,6 +275,13 @@ export default class Terrain extends Thing {
         if (tileType == 4) {return "goldenFloor"}
         return "techstone"
       }
+      else if (getStage() == 4) {
+        if (tileType == 1) {return "techfloor"}
+        if (tileType == 2) {return "finale"}
+        if (tileType == 3) {return "finale"}
+        if (tileType == 4) {return "goldenFloor"}
+        return "techstone"
+      }
       
       return "stone"
     }
@@ -289,9 +300,16 @@ export default class Terrain extends Thing {
         if (tileType == 4) {return "goldenWall"}
       }
       else if (getStage() == 3) {
-        if (tileType == 1) {return "path"}
-        if (tileType == 2) {return "tech1"}
+        if (tileType == 1) {return "techstone"}
+        if (tileType == 2) {return "finale"}
         if (tileType == 3) {return "techstone"}
+        if (tileType == 4) {return "goldenWall"}
+        return "techstone"
+      }
+      else if (getStage() == 4) {
+        if (tileType == 1) {return "techfloor"}
+        if (tileType == 2) {return "finale"}
+        if (tileType == 3) {return "finale"}
         if (tileType == 4) {return "goldenWall"}
         return "techstone"
       }
@@ -897,9 +915,12 @@ export default class Terrain extends Thing {
       if (globals.level > 6) {gunCount = 4}
       if (globals.level > 11) {gunCount = 7}
       // Bonus
-      if (globals.level == 6) {gunCount = 1}
-      if (globals.level == 11) {gunCount = 2}
-      if (globals.level == 5) {gunCount = 12}
+      if (globals.level == 3) {gunCount = 12}
+      if (globals.level == 5) {gunCount = 1}
+      if (globals.level == 8) {gunCount = 12}
+      if (globals.level == 10) {gunCount = 2}
+      if (globals.level == 12) {gunCount = 12}
+      if (globals.level == 15) {gunCount = 15}
 
       for (let i=0; i<gunCount; i++) {
         let coord = gunLocations.pop()
