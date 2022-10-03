@@ -924,7 +924,7 @@ export default class Terrain extends Thing {
 
       for (let i=0; i<gunCount; i++) {
         let coord = gunLocations.pop()
-        const gun = u.choose(ShotgunPickup, MachinegunPickup)
+        const gun = [ShotgunPickup, MachinegunPickup][globals.level%2]
         if (coord) {
           getScene().addThing(new gun([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
         }
