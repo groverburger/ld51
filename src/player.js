@@ -420,7 +420,7 @@ export default class Player extends Thing {
       const sound = assets.sounds.impact
       sound.playbackRate = u.random(0.9, 1.1)
       sound.currentTime = 0
-      sound.volume = 0.6
+      sound.volume = 0.75
       sound.play()
     }
 

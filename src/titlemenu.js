@@ -15,6 +15,7 @@ export default class TitleMenu extends Thing {
     super(data)
     this.setName("title")
     game.getScene().addThing(new Terrain())
+    game.globals.tutorial = true
   }
 
   update() {
@@ -28,7 +29,7 @@ export default class TitleMenu extends Thing {
     cam.yaw = -a + Math.PI/2
     //game.getScene().camera3D.pitch += 0.02
 
-    if ((Object.keys(game.keysPressed).length || game.mouse.button)) {
+    if (this.time > 30 && (Object.keys(game.keysPressed).length || game.mouse.button)) {
       delete game.globals.generated
       game.mouse.lock()
       game.setNextScene()
@@ -43,15 +44,17 @@ export default class TitleMenu extends Thing {
     ctx.font = "italic bold 96px Times New Roman"
     //ctx.font = "bold 96px Courier New"
     ctx.fillStyle = "black"
-    ctx.fillText(name, 100, 150)
+    ctx.translate(100, 150)
+    ctx.fillText(name, 0, 0)
     ctx.fillStyle = u.colorToString(...u.hsvToRgb(this.time/300, 1, 1))
-    ctx.fillText(name, 100+8, 150-8)
+    ctx.translate(8, -8)
+    ctx.fillText(name, 0, 0)
     ctx.restore()
 
     ctx.save()
-    ctx.fillStyle = "white"
+    ctx.fillStyle = u.colorToString(1,1,1, u.map(this.time, 60,90, 0,1, true))
     ctx.font = "32px Times New Roman"
-    ctx.fillText("Press any button to start!", 100, height - 96)
+    ctx.fillText("Press any button to start!", 120, height - 120)
     ctx.restore()
   }
 }
