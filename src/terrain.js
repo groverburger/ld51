@@ -294,7 +294,7 @@ export default class Terrain extends Thing {
         if (tileType == 4) {return "goldenWall"}
       }
       else if (getStage() == 2) {
-        if (tileType == 1) {return "woodTile"}
+        if (tileType == 1) {return "woodtile"}
         if (tileType == 2) {return "wood"}
         if (tileType == 3) {return "stone"}
         if (tileType == 4) {return "goldenWall"}
