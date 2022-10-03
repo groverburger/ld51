@@ -81,6 +81,8 @@ function frame(frameTime) {
     frameCount += 1
   }
 
+  mouse.delta[0] = 0
+  mouse.delta[1] = 0
   requestAnimationFrame(frame)
 }
 
@@ -121,8 +123,6 @@ function update() {
   // update the last keys down
   for (const key in lastKeysDown) delete lastKeysDown[key]
   for (const key in keysDown) lastKeysDown[key] = true
-  mouse.delta[0] = 0
-  mouse.delta[1] = 0
   mouse.click = false
 }
 
