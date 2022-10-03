@@ -826,8 +826,9 @@ export default class Terrain extends Thing {
         getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
       }
 
-      for (let i=0; i<2; i++) {
-        let coord = itemLocations.pop()
+      const gunLocations = itemLocations//getLocations("room")
+      for (let i=0; i<1; i++) {
+        let coord = gunLocations.pop()
         const gun = u.choose(ShotgunPickup, MachinegunPickup)
         if (coord) {
           getScene().addThing(new gun([coord[0]*64 + 32, coord[1]*64 + 32, 0]))

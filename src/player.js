@@ -416,7 +416,7 @@ export default class Player extends Thing {
       sound.play()
     }
 
-    this.dead = this.dead || this.time < 0
+    this.dead = this.dead || this.time < -10
   }
 
   moveAndCollide() {
