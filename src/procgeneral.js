@@ -68,8 +68,6 @@ export class GeneratorParams {
   advance() {
     // Advance to the next stage
     this.stage ++
-
-    this.maxPathLength = 4
     
     // Theme-based advancements
     if (this.theme == "cave") {
