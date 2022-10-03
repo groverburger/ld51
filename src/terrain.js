@@ -632,10 +632,14 @@ export default class Terrain extends Thing {
     gfx.drawMesh(this.walls)
     */
 
+    const {gl} = gfx
+    gl.enable(gl.CULL_FACE)
+    gl.cullFace(gl.FRONT)
     for (const texture in this.texturedMeshes) {
       gfx.setTexture(assets.textures[texture])
       gfx.drawMesh(this.texturedMeshes[texture])
     }
+    gl.disable(gl.CULL_FACE)
 
     // draw skybox without writing to depth buffer
     gfx.gl.depthMask(false)
