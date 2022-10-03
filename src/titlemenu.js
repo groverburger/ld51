@@ -21,9 +21,11 @@ export default class TitleMenu extends Thing {
     super.update()
     this.time += 1
     const cam = game.getScene().camera3D
-    cam.yaw = Math.PI*2 * 5/8
     cam.pitch = 0.2
-    cam.position = [0, 0, 64*18]
+    const a = this.time/200 + Math.PI*2 * 5/8
+    const r = 30*64
+    cam.position = [Math.sin(a)*r + 15*64, Math.cos(a)*r + 35*64, 64*18]
+    cam.yaw = -a + Math.PI/2
     //game.getScene().camera3D.pitch += 0.02
 
     if ((Object.keys(game.keysPressed).length || game.mouse.button)) {
@@ -36,12 +38,14 @@ export default class TitleMenu extends Thing {
   draw() {
     const {ctx} = game
     ctx.save()
+    const name = "Starshot"
     //ctx.fillStyle = "white"
     ctx.font = "italic bold 96px Times New Roman"
+    //ctx.font = "bold 96px Courier New"
     ctx.fillStyle = "black"
-    ctx.fillText("Space Escape", 100, 150)
+    ctx.fillText(name, 100, 150)
     ctx.fillStyle = u.colorToString(...u.hsvToRgb(this.time/300, 1, 1))
-    ctx.fillText("Space Escape", 100+8, 150-8)
+    ctx.fillText(name, 100+8, 150-8)
     ctx.restore()
 
     ctx.save()
