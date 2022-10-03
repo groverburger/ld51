@@ -68,26 +68,27 @@ export class GeneratorParams {
   advance() {
     // Advance to the next stage
     this.stage ++
+
+    this.maxPathLength = 4
     
     // Theme-based advancements
     if (this.theme == "cave") {
-      if (0 < this.stage && this.stage <= 4) {
+      if (this.stage == 7) {
+        this.caveMode = 13
+        this.palaceIndoors = false
+      }
+      else if (this.stage == 12) {
+        this.caveMode = 13
+        this.palaceIndoors = true
+      }
+      else if (0 < this.stage && this.stage <= 5) {
         this.caveMode = 0
       }
-      else if (4 < this.stage && this.stage <= 8) {
+      else if (5 < this.stage && this.stage <= 10) {
+        this.caveMode = Math.floor(this.random() * 3)
+      }
+      else if (10 < this.stage && this.stage < 12) {
         this.caveMode = 1
-      }
-      else if (8 <= this.stage && this.stage < 12) {
-        this.caveMode = Math.floor(this.random() * 3)
-      }
-      else if (this.stage == 13) {
-        this.caveMode = 13
-      }
-      else if (12 <= this.stage && this.stage < 16) {
-        this.caveMode = Math.floor(this.random() * 3)
-      }
-      else {
-        this.caveMode = Math.floor(this.random() * 3)
       }
     }
 
@@ -411,9 +412,9 @@ function makeDoorway(terrain, types, pos) {
 }
 
 export function generateEverything(params) {
-  //if (params.caveMode == 13) {
+  if (params.caveMode == 13) {
     return palace.generatePalace(params)
-  //}
+  }
 
   // Generate caves
   let gen = cave.generateCaves(params)

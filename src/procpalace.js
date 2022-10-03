@@ -1,10 +1,10 @@
 import { add, scale, subtract } from "./core/vector2.js"
 import { GeneratorResult, stringToPosition } from "./procgeneral.js"
 
-const PALACE_LENGTH = 130
+const PALACE_LENGTH = 80
 const TOWARDS_CHANCE = 0.8
-const PALACE_WALL_HEIGHT = 160
-const PALACE_FLOOR_HEIGHT = 80
+const PALACE_WALL_HEIGHT = 80
+const PALACE_FLOOR_HEIGHT = 20
 const PALACE_JUMP_LENGTH = 4
 
 export function generatePalace(params) {
@@ -49,6 +49,10 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data) {
   if (7 <= actionNumber && actionNumber <= 12) {action = "stair"} // staircase upwards, stopping at chasm
 
   let distance = Math.floor(params.random() * 4) + 2
+
+  if (action == "stair") {
+    distance += 3
+  }
 
   // Determine which direction we're going
   let deltas = [[1,0],[0,1],[-1,0],[0,-1]]

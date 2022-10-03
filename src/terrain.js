@@ -803,6 +803,7 @@ export default class Terrain extends Thing {
           }
           if (this.types[coord] == 4) {
             this.locations.gold.push([x,y])
+            continue
           }
           this.locations.other.push([x, y])
         }
@@ -832,13 +833,21 @@ export default class Terrain extends Thing {
       }
     }
 
-    {
-      const itemLocations = getLocations("other")
-      let coord = itemLocations.pop()
-      if (coord) {
-        getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
-      }
+    const itemLocations = getLocations("other")
+    let coord = itemLocations.pop()
+    if (coord) {
+      getScene().addThing(new OneUp([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
+    }
 
+    let clockPlaces = this.presetClocks.concat([itemLocations.pop()])
+    for (const place of clockPlaces) {
+      if (place) {
+        getScene().addThing(new TimePickup([place[0]*64 + 32, place[1]*64 + 32, 0]))
+      }
+    }
+    
+
+    {
       const gunLocations = itemLocations
       for (let i=0; i<1; i++) {
         let coord = gunLocations.pop()
