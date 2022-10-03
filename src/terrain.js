@@ -915,7 +915,7 @@ export default class Terrain extends Thing {
       if (globals.level > 6) {gunCount = 4}
       if (globals.level > 11) {gunCount = 7}
       // Bonus
-      if (globals.level == 3) {gunCount = 12}
+      if (globals.level == 3) {gunCount = 6}
       if (globals.level == 5) {gunCount = 1}
       if (globals.level == 8) {gunCount = 12}
       if (globals.level == 10) {gunCount = 2}

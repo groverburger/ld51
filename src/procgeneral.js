@@ -12,7 +12,6 @@ const WORLD_HEIGHT = 40
 const CARVE_PROXIMITY_WEIGHT = 30
 const BELL_CURVE_SAMPLES = 8
 const PATH_LOOK = 5
-const CAMPAIGN_LENGTH = 10
 
 export class GeneratorParams {
   // General
@@ -57,6 +56,7 @@ export class GeneratorParams {
 
     // Palace
     this.palaceIndoors = false
+    this.palaceLength = 80
 
     // Misc
     this.favoriteFeature = Math.floor(this.random() * 100)
@@ -71,14 +71,17 @@ export class GeneratorParams {
     if (this.stage == 5) {
       this.caveMode = 13
       this.palaceIndoors = false
+      this.palaceLength = 80
     }
     else if (this.stage == 10) {
       this.caveMode = 13
       this.palaceIndoors = true
+      this.palaceLength = 50
     }
     else if (this.stage == 15) {
       this.caveMode = 15
       this.palaceIndoors = false
+      this.palaceLength = 65
     }
     else if (0 < this.stage && this.stage <= 2) {
       this.caveMode = 0
