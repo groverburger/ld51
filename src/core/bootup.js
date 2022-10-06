@@ -1,7 +1,8 @@
 import {
   width,
   height,
-  isWebglEnabled
+  isWebglEnabled,
+  playButton
 } from "../config.js"
 import {
   start,
@@ -160,7 +161,7 @@ function loadText(shaders) {
     /*
        when in nwjs we already have these priviledges so skip this step
     */
-    if (window.process?.__nwjs) {
+    if (window.process?.__nwjs || !playButton) {
       startup()
     }
   })()
