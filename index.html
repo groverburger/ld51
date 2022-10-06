@@ -1,16 +1,20 @@
 <!DOCTYPE html>
-<html style="">
+<html>
   <style>
    body {
+     background-color: black;
      background-image: url("grid-background.png");
+     margin: 0;
    }
 
    canvas {
-     position: absolute;
-     object-fit: contain;
      image-rendering: pixelated;
+     position: absolute;
+     /*
+     object-fit: contain;
      width: 100vw;
      height: 100vh;
+     */
    }
 
    .startButton {
@@ -38,6 +42,6 @@
   <style id="cursorStyle"></style>
 
   <title>Game</title>
-  <body style="margin: 0; background-color: black"></body>
+  <body />
   <script src="src/core/bootup.js" type="module"></script>
 </html>
