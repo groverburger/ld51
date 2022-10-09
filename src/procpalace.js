@@ -3,21 +3,20 @@ import { GeneratorResult, stringToPosition } from "./procgeneral.js"
 
 const TOWARDS_CHANCE = 0.8
 const PALACE_WALL_HEIGHT = 80
-const PALACE_FLOOR_HEIGHT = 20
 const PALACE_JUMP_LENGTH = 4
 
 export function generatePalace(params, pathData) {
   let terrainSmall = {}
 
-  terrainSmall[[0,0]] = PALACE_FLOOR_HEIGHT
-  terrainSmall[[0,1]] = PALACE_FLOOR_HEIGHT
-  terrainSmall[[0,-1]] = PALACE_FLOOR_HEIGHT
-  terrainSmall[[1,0]] = PALACE_FLOOR_HEIGHT
-  terrainSmall[[1,1]] = PALACE_FLOOR_HEIGHT
-  terrainSmall[[1,-1]] = PALACE_FLOOR_HEIGHT
-  terrainSmall[[-1,0]] = PALACE_FLOOR_HEIGHT
-  terrainSmall[[-1,1]] = PALACE_FLOOR_HEIGHT
-  terrainSmall[[-1,-1]] = PALACE_FLOOR_HEIGHT
+  terrainSmall[[0,0]] = params.palaceFloorHeight
+  terrainSmall[[0,1]] = params.palaceFloorHeight
+  terrainSmall[[0,-1]] = params.palaceFloorHeight
+  terrainSmall[[1,0]] = params.palaceFloorHeight
+  terrainSmall[[1,1]] = params.palaceFloorHeight
+  terrainSmall[[1,-1]] = params.palaceFloorHeight
+  terrainSmall[[-1,0]] = params.palaceFloorHeight
+  terrainSmall[[-1,1]] = params.palaceFloorHeight
+  terrainSmall[[-1,-1]] = params.palaceFloorHeight
 
   let data = {
     endPoint: [0, 1],
@@ -26,7 +25,7 @@ export function generatePalace(params, pathData) {
     secondClock: [1, 0],
     secondClockPlaced: false,
   }
-  palaceAlgorithm(terrainSmall, PALACE_FLOOR_HEIGHT, [0,0], params, false, 0, data, pathData)
+  palaceAlgorithm(terrainSmall, params.palaceFloorHeight, [0,0], params, false, 0, data, pathData)
 
   // Scale up terrain by a factor of 2
   let types = {}

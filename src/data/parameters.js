@@ -112,4 +112,11 @@ export let data = {
     "rerollChance": "0.4",
     "truncate": false
   },
+
+  // Palace
+  "palaceFloorHeight": {
+    "randomMode": "constant",
+    "value": 20,
+    "truncate": true
+  },
 }

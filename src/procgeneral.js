@@ -25,8 +25,6 @@ export class GeneratorParams {
     this.random = utils.randomizer(seed)
     console.log("Level Seed: " + seed)
 
-    console.log(parameters.data)
-
     this.initParameters()
   }
 
@@ -59,13 +57,18 @@ export class GeneratorParams {
   }
 
   setParameterForLevel(key, level) {
+    let param = parameters.data[key]
+
+    // Protect against null
     if (!level) {
       level = 1
     }
+    let aa = param.advanceAmount
+    if (!aa) {
+      aa = 0
+    }
 
-    let param = parameters.data[key]
-
-    this[key + "_FINAL"] = this[key + "_BASE"] + (level * param.advanceAmount)
+    this[key + "_ADVANCED"] = this[key + "_BASE"] + (level * aa)
   }
 
   setParametersForLevel(level) {
@@ -129,7 +132,7 @@ export class GeneratorParams {
     // Final steps done on each parameter
     for (const key in parameters.data) {
       let param = parameters.data[key]
-      let v = this[key + "_BASE"]
+      let v = this[key + "_ADVANCED"]
 
       // Truncate the value to an integer
       if (param.truncate) {
@@ -193,6 +196,12 @@ export function mergeTerrain(terrain, merge, position) {
     let x = parseInt(coords[0])
     let y = parseInt(coords[1])
     terrain[[x + p[0], y + position[1]]] = value
+  }
+}
+
+export function adjustTerrain(terrain, amt) {
+  for (const key in terrain) {
+    terrain[key] = terrain[key] + amt
   }
 }
 
@@ -513,12 +522,14 @@ export function generateEverything(params) {
       path: path,
       offset: pt,
     }
+    let heightDelta = gen.terrain[pt] - params.palaceFloorHeight - 1
+
 
     // Generate
-    console.log()
     let res = palace.generatePalace(params, pathData)
 
     // Place palace into the world
+    adjustTerrain(res.terrain, heightDelta)
     mergeTerrain(gen.terrain, res.terrain, pt)
     mergeTerrain(gen.types, res.types, pt)
 
