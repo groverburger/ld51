@@ -57,6 +57,7 @@ export default class Player extends Thing {
   lastPosition = [0, 0, 0]
   walkFrames = 0
   walkFrameAccel = 0
+  slowTime = 0
 
   constructor(data={}) {
     super(data)
@@ -192,13 +193,15 @@ export default class Player extends Thing {
       [dx, dy] = vec2.normalize([dx, dy])
     }
     const yaw = scene.camera3D.yaw - Math.PI/2
-    const friction = 0.94
+    const friction = this.slowTime > 0 ? 0.89 : 0.94
     const groundSpeed = 0.725
     const airSpeed = 0.5
     const walkSpeed = this.onGround ? groundSpeed : airSpeed
     const maxSpeed = groundSpeed / (1 - friction)
     const xAccel = (Math.cos(yaw)*dx - Math.sin(yaw)*dy)*walkSpeed
     const yAccel = (Math.sin(yaw)*dx + Math.cos(yaw)*dy)*walkSpeed
+
+    this.slowTime --
 
     this.moveDirection = vec3.normalize([xAccel, yAccel, 0])
     this.forward = vec3.normalize([Math.sin(yaw), Math.cos(yaw), 0])
@@ -217,7 +220,12 @@ export default class Player extends Thing {
 
       //scene.camera3D.yaw += dx*0.025
     }
-    this.speed[2] -= this.speed[2] < 0 ? 0.6 : 0.35
+
+    let grav = this.speed[2] < 0 ? 0.6 : 0.35
+    if (this.slowTime > 0) {
+      grav *= 1.7
+    }
+    this.speed[2] -= grav
 
     if (this.onGround) {
       this.speed[0] *= friction
@@ -409,12 +417,13 @@ export default class Player extends Thing {
     // get hit by enemy bullets
     for (const thing of this.getAllThingCollisions()) {
       if (
-        thing instanceof Bullet
+        thing.canDamagePlayers
         && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 8
         && !thing.dead
         && thing.owner != this
       ) {
-        this.dead = true
+        thing.onHit(this)
+  
         break
       }
     }

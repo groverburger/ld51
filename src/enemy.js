@@ -15,6 +15,8 @@ export default class Enemy extends Thing {
   time = 0
   health = 1
   texture = assets.textures.enemy
+  friction = 0.85
+  attackActive = false
 
   constructor(position) {
     super()
@@ -36,15 +38,13 @@ export default class Enemy extends Thing {
     this.dead = this.dead || (!this.timer("hurt") && this.health <= 0)
     for (const thing of this.getAllThingCollisions()) {
       if (
-        thing instanceof Bullet
+        thing.canDamageEnemies
         && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 32
         && !thing.dead
         && !this.timer("hurt")
         && thing.owner != this
       ) {
-        this.health -= 1
-        thing.dead = true
-        this.after(15, () => {}, "hurt")
+        thing.onHit(this)
 
         const sound = u.choose(assets.sounds.enemyHurt1, assets.sounds.enemyHurt2)
         sound.playbackRate = u.random(0.9, 1.1)
@@ -83,9 +83,9 @@ export default class Enemy extends Thing {
       this.speed[1] += accel[1]
     }
 
-    const friction = 0.85
-    this.speed[0] *= friction
-    this.speed[1] *= friction
+    
+    this.speed[0] *= this.friction
+    this.speed[1] *= this.friction
 
     this.move()
     this.position[2] += this.speed[2]
@@ -94,9 +94,11 @@ export default class Enemy extends Thing {
 
   draw() {
     gfx.setShader(assets.shaders.animatedBillboard)
-    gfx.set("cellSize", [1/4, 1])
+    gfx.set("cellSize", [1/4, 1/2])
     if (this.timer("hurt")) {
       gfx.set("cellIndex", [2, 0])
+    } else if (this.attackActive) {
+      gfx.set("cellIndex", [0, 1])
     } else {
       gfx.set("cellIndex", [this.time%60 < 30 ? 0 : 1, 0])
     }
