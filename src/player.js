@@ -33,6 +33,8 @@ export default class Player extends Thing {
   aabb = [-16, -16, 16, 16]
   cameraTarget = [0, 0, 0]
   cameraLookAhead = 64
+  moveDirection = [1, 0, 0]
+  forward = [1, 0, 0]
   color = u.stringToColor("#cbdbfc")
   legColor = u.stringToColor("#5b6e99")
   ears = []
@@ -177,7 +179,6 @@ export default class Player extends Thing {
     let dx = this.inputs.get("xMove")
     let dy = this.inputs.get("yMove")
 
-
     if (Math.abs(dx) + Math.abs(dy) > 0) {
       this.walkFrameAccel = 0.08
     }
@@ -198,6 +199,9 @@ export default class Player extends Thing {
     const maxSpeed = groundSpeed / (1 - friction)
     const xAccel = (Math.cos(yaw)*dx - Math.sin(yaw)*dy)*walkSpeed
     const yAccel = (Math.sin(yaw)*dx + Math.cos(yaw)*dy)*walkSpeed
+
+    this.moveDirection = vec3.normalize([xAccel, yAccel, 0])
+    this.forward = vec3.normalize([Math.sin(yaw), Math.cos(yaw), 0])
 
     // can't move if diving
     if (this.onGround || !this.timer("disableAirControl")) {
@@ -508,10 +512,10 @@ export default class Player extends Thing {
 
   getClosestWall() {
     let closest = null
-    let closestDistance = Infinity
+    let closestDistance = 0
     const position = [...this.position]
     position[2] -= this.height/2
-
+    
     for (const collider of getThing("terrain").query(this.position[0] - 64, this.position[1] - 64, 128, 128)) {
       const {normal, points} = collider
       if (normal[2] >= 0.7) continue
@@ -524,8 +528,12 @@ export default class Player extends Thing {
       if (distance > this.width*1.25) continue
       if (distance < -1 * this.width) continue
 
-      if (distance < closestDistance) {
-        closestDistance = distance
+      let dot = Math.abs(vec3.dotProduct(this.moveDirection, normal))
+      if (vec3.magnitude(this.moveDirection) == 0) {
+        dot = Math.abs(vec3.dotProduct(this.forward, normal))
+      }
+      if (dot > closestDistance) {
+        closestDistance = dot
         closest = collider
       }
     }

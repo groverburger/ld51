@@ -357,7 +357,7 @@ export function getDistances(terrain, startPoint, invert) {
       }
     }
   }
-  console.log(distances)
+  
   return distances
 }
 
