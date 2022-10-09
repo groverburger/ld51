@@ -212,16 +212,16 @@ export function adjustTerrain(terrain, amt) {
 
 export function guaranteePath(terrain, startPoint, endPoint, params) {
   // Create the list of accessible points from start
-  let startAccessibleSet = getAccessibleSpaces(terrain, startPoint, false)
+  let startAccessibleMap = getDistances(terrain, startPoint)
 
   // Exit out if end point is already accessible from end
-  if (startAccessibleSet.has(endPoint.toString())) {
+  if (!endPoint in startAccessibleMap) {
     return
   }
 
   // Create a list of accessible points from end
-  let startAccessible = [...startAccessibleSet]
-  let endAccessible = [...getAccessibleSpaces(terrain, endPoint, true)]
+  let startAccessible = Object.keys(startAccessibleMap)
+  let endAccessible = Object.keys(getDistances(terrain, endPoint, true))
 
   // Find a random point from startAccessible and from endAccessible who are somewhat close
   let closestDist = 1000000
@@ -261,34 +261,6 @@ export function guaranteePath(terrain, startPoint, endPoint, params) {
   carveHallway(terrain, closestPoint1, closestPoint2)
 }
 
-function getAccessibleSpaces(terrain, startPoint, backwards) {
-  let result = getAccessibleSpacesRecurse(terrain, startPoint, backwards, new Set())
-  return result
-}
-
-function getAccessibleSpacesRecurse(terrain, pos, backwards, collected) {
-  let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0]]
-
-  for (const delta of deltas) {
-    // Get the adjacent space
-    let adj = add(pos, delta)
-    // Make sure this space hasn't already been collected
-    if (!collected.has(adj.toString())) {
-      // check if the height difference of the adjacent space is at most jump height
-      let heightDifference = backwards ? (terrain[pos] - terrain[adj]) : (terrain[adj] - terrain[pos])
-      let absoluteHeightDifference = Math.abs(terrain[pos] - terrain[adj])
-      if (heightDifference <= PLAYER_JUMP_HEIGHT && absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
-        // Make sure we're not navigating past world height
-        if (!isExtreme(terrain[adj])) {
-          collected.add(adj.toString())
-          collected = getAccessibleSpacesRecurse(terrain, adj, backwards, collected)
-        }
-      }
-    }
-  }
-  return collected
-}
-
 export function carveHallway(terrain, pos1, pos2) {
   pos1 = stringToPosition(pos1)
   pos2 = stringToPosition(pos2)
@@ -314,7 +286,7 @@ export function carveHallway(terrain, pos1, pos2) {
   }
 }
 
-export function getDistances(terrain, startPoint) {
+export function getDistances(terrain, startPoint, invert) {
   let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0]]
   startPoint = stringToPosition(startPoint)
 
@@ -355,6 +327,12 @@ export function getDistances(terrain, startPoint) {
       if (!(adj in distances)) {
         // Check if the height difference of the adjacent space is at most jump height
         let heightDifference = (terrain[adj] - terrain[cur.pos])
+
+        // Invert is used to search backwards from the endpoint
+        if (invert) {
+          heightDifference *= -1
+        }
+
         let absoluteHeightDifference = Math.abs(terrain[cur.pos] - terrain[adj])
         if (heightDifference <= PLAYER_JUMP_HEIGHT && absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
           // Make sure we're not navigating past world height
