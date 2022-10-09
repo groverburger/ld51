@@ -1,9 +1,11 @@
 import { add, lerp, distance } from "./core/vector2.js"
 import * as utils from "./core/utils.js"
 import * as cave from "./proccaves.js"
+import { generateTerrain } from "./procterrain.js"
 import * as room from "./procroom.js"
 import * as palace from "./procpalace.js"
 import * as parameters from "./data/parameters.js"
+import { PriorityQueue } from "./core/pqueue.js"
 
 const PLAYER_JUMP_HEIGHT = 4
 const ABSOLUTE_HEIGHT_DIFFERENCE_MAX = 10
@@ -12,6 +14,9 @@ const WORLD_HEIGHT = 40
 const CARVE_PROXIMITY_WEIGHT = 30
 const BELL_CURVE_SAMPLES = 8
 const PATH_LOOK = 5
+const JUMP_WEIGHT_2 = 3
+const JUMP_WEIGHT_3 = 7
+const JUMP_WEIGHT_4 = 11
 
 export class GeneratorParams {
   // General
@@ -309,62 +314,95 @@ export function carveHallway(terrain, pos1, pos2) {
   }
 }
 
-export function findPath(terrain, types, start, end) {
-  start = stringToPosition(start)
-  end = stringToPosition(end)
+export function getDistances(terrain, startPoint) {
   let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0]]
-  let queue = [{
-    pos: start,
-    dist: 0
-  }]
-  let prev = {}
-  prev[start] = start
+  startPoint = stringToPosition(startPoint)
+
+  // Set up the priority queue
+  let queue = new PriorityQueue((a, b) => a.dist < b.dist);
+  let firstEntry = {
+    pos: startPoint,
+    prev: startPoint,
+    dist: 0,
+  }
+  queue.push(firstEntry)
+
+  // Results go here
+  let distances = {}
 
   // Run search algorithm to find shortest path to the flag
-  while (queue.length > 0) {
-    let cur = queue.shift()
+  while (!queue.isEmpty()) {
+    let cur = queue.pop()
+
+    // If we've already visited this node, don't visit it again. This can happen if we
+    // find multiple paths to a space, since we leave the old copy in the pqueue
+    if (cur.pos in distances) {
+      continue
+    }
+
+    // Put node data into result
+    distances[cur.pos] = {
+      prev: cur.prev,
+      dist: cur.dist,
+    }
+
+    // Look through the four adjacent spaces
     for (const delta of deltas) {
       // Get the adjacent space
       let adj = add(cur.pos, delta)
-      cur.pos = stringToPosition(cur.pos)
-      adj = stringToPosition(adj)
-      // Make sure this space hasn't already been collected
-      if (!(adj in prev)) {
-        // check if the height difference of the adjacent space is at most jump height
+
+      // Make sure this space hasn't already been visited
+      if (!(adj in distances)) {
+        // Check if the height difference of the adjacent space is at most jump height
         let heightDifference = (terrain[adj] - terrain[cur.pos])
         let absoluteHeightDifference = Math.abs(terrain[cur.pos] - terrain[adj])
-        absoluteHeightDifference = 0
-        if (heightDifference <= PLAYER_JUMP_HEIGHT) {
-          if (absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
-            // Make sure we're not navigating past world height
-            if (!isExtreme(terrain[adj])) {
-              prev[adj] = cur.pos
-              queue.push({
-                pos: adj,
-                dist: cur.dist + 1
-              })
+        if (heightDifference <= PLAYER_JUMP_HEIGHT && absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
+          // Make sure we're not navigating past world height
+          if (!isExtreme(terrain[adj])) {
+            // Determine the weight based on the height differences between the two spaces
+            let weight = 1
+            if (heightDifference == 2) {weight = JUMP_WEIGHT_2}
+            if (heightDifference == 3) {weight = JUMP_WEIGHT_3}
+            if (heightDifference == 4) {weight = JUMP_WEIGHT_4}
+            if (heightDifference < -3) {
+              weight = Math.floor(Math.abs(heightDifference / 3))
             }
+            
+            // Push to the priority queue
+            queue.push({
+              pos: adj,
+              prev: cur.pos,
+              dist: cur.dist + weight,
+            })
           }
         }
       }
     }
   }
+  console.log(distances)
+  return distances
+}
 
-  // Retrace shortest path
-  if (!(end in prev)) {
+export function findPath(distances, endPoint) {
+  endPoint = stringToPosition(endPoint)
+
+  // No path to this point
+  if (!(endPoint in distances)) {
     // debug
     let ret = []
 
-    for (const reached in prev) {
+    for (const reached in distances) {
       ret.push(stringToPosition(reached))
     }
 
     return ret
   }
-  let retrace = end;
-  let path = [end]
-  while (prev[retrace].toString() != retrace.toString()) {
-    retrace = prev[retrace]
+
+  // Retrace the path
+  let retrace = endPoint
+  let path = [endPoint]
+  while (distances[retrace].dist > 0) {
+    retrace = distances[retrace].prev
     path.push(retrace)
   }
   return path
@@ -484,7 +522,8 @@ export function generateEverything(params) {
   guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
 
   // Create the path
-  let path = findPath(gen.terrain, gen.types, gen.startPoint, gen.endPoint)
+  let distances = getDistances(gen.terrain, gen.startPoint)
+  let path = findPath(distances, gen.endPoint)
 
   // If the path is too long, shorten it
   if (path.length > params.maxPathLength) {

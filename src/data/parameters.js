@@ -73,7 +73,7 @@ export let data = {
   "terrainRoughness": {
     "randomMode": "constant",
     "value": 0.4,
-    "truncate": true
+    "truncate": false
   },
 
   // Rooms

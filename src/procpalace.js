@@ -161,7 +161,7 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, pat
           curTowards = false
           distance = i
 
-          for (let j = 0; i < PALACE_JUMP_LENGTH + 1; j ++) {
+          for (let j = 0; j < PALACE_JUMP_LENGTH + 1; j ++) {
             // Track distance
             distance ++
 
@@ -170,13 +170,12 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, pat
 
             // Stop once we get to the other side
             if (canBuild(curPos, terrain, pathData)) {
-              break
+              terrain[curPos] = curHeight
+              data.endPoint = curPos
             }
           }
 
           // End this step
-          terrain[curPos] = curHeight
-          data.endPoint = curPos
           break
         }
         // Jump
