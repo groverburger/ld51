@@ -806,7 +806,7 @@ export default class Terrain extends Thing {
     let parameterBuilder = globals.parameterBuilder
     if (!parameterBuilder) {
       parameterBuilder = new proc.GeneratorParams(seed)
-      parameterBuilder.advance()
+      parameterBuilder.setParametersForLevel(globals.level)
       globals.parameterBuilder = parameterBuilder
     }
 
@@ -815,7 +815,7 @@ export default class Terrain extends Thing {
     if (!generated) {
 
       // WARNING: Do not try this at home!
-      while (true) {
+      for (let i = 0; i < 10; i ++) {
         try {
           // Generate the world
           generated = proc.generateEverything(parameterBuilder)
@@ -823,9 +823,10 @@ export default class Terrain extends Thing {
         }
         catch(e) {
           console.log("Generation error: " + e)
-          console.log(e);
+          console.log(e)
+          console.log(parameterBuilder)
           delete globals.generated
-          parameterBuilder.randomize()
+          parameterBuilder.setParametersForLevel(globals.level)
         }
       }
       

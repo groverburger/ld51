@@ -3,7 +3,7 @@ import * as utils from "./core/utils.js"
 import * as cave from "./proccaves.js"
 import * as room from "./procroom.js"
 import * as palace from "./procpalace.js"
-import * as feature from "./procfeature.js"
+import * as parameters from "./data/parameters.js"
 
 const PLAYER_JUMP_HEIGHT = 4
 const ABSOLUTE_HEIGHT_DIFFERENCE_MAX = 10
@@ -16,10 +16,7 @@ const PATH_LOOK = 5
 export class GeneratorParams {
   // General
   random = () => {return 4}
-  stage = 0
-  maxPathLength = 74
-  caveLayers = 1
-  
+
   constructor(seed) {
     // Set up randomizer
     if (typeof seed != "number") {
@@ -28,70 +25,97 @@ export class GeneratorParams {
     this.random = utils.randomizer(seed)
     console.log("Level Seed: " + seed)
 
-    this.randomize()
+    console.log(parameters.data)
+
+    this.initParameters()
   }
 
-  randomize() {
-    // General
-    this.width = this.bellRandom(40, 10, true)
-    this.length = this.bellRandom(70, 10, true)
-    this.height = 20
-
-    // Caves
-    this.caveSteps = this.bellRandom(7, 1, true)
-    this.caveInitialChance = this.bellRandom(0.3, 0.01, false)
-    this.caveLayerSpacing = 2
-    this.caveMode = 0
-
-    // Terrain
-    this.terrainVariance = this.bellRandom(15, 10, true)
-    this.terrainRoughness = 0.4
-
-    // Rooms
-    this.roomMaxSize = this.bellRandom(7, 5, true)
-    this.roomMinSize = this.bellRandom(3, 2, true)
-    this.roomWallHeight = this.bellRandom(8, 7, true)
-    this.room1Position = this.random()*0.9 + 0.1
-    this.room2Position = this.random()*0.9 + 0.1
-
-    // Palace
-    this.palaceIndoors = false
-    this.palaceLength = 80
-
-    // Misc
-    this.favoriteFeature = Math.floor(this.random() * 100)
-    this.levelFeature = 0
-  }
-
-  advance() {
-    // Advance to the next stage
-    this.stage ++
+  initParameters() {
+    // Randomize each parameter
+    for (const key in parameters.data) {
+      this.randomizeParameter(key)
+    }
     
+    this.setParametersForLevel(1)
+  }
+
+  randomizeParameter(key) {
+    let param = parameters.data[key]
+
+    // Set the parameter's base
+    if (param.randomMode == "bell") {
+      this[key + "_BASE"] = this.bellRandom(param.bellCenter, param.bellRadius)
+    }
+    else if (param.randomMode == "linear") {
+      this[key + "_BASE"] = (this.random() * (param.linearMax - param.linearMin)) + param.linearMin
+    }
+    else if (param.randomMode == "constant") {
+      this[key + "_BASE"] = param.value
+    }
+    else {
+      console.error("Error initializing param [" + key + "]. Invalid randomMode [" + param.randomMode + "]")
+      return
+    }
+  }
+
+  setParameterForLevel(key, level) {
+    if (!level) {
+      level = 1
+    }
+
+    let param = parameters.data[key]
+
+    this[key + "_FINAL"] = this[key + "_BASE"] + (level * param.advanceAmount)
+  }
+
+  setParametersForLevel(level) {
+    if (!level) {
+      level = 1
+    }
+
+    // Go through params
+    for (const key in parameters.data) {
+      let param = parameters.data[key]
+
+      // Set the parameter based on the level
+      this.setParameterForLevel(key, level)
+
+      // Maybe reroll the parameter's base value
+      if (param.rerollChance && this.random() < param.rerollChance) {
+        this.randomizeParameter(key)
+      }
+    }
+
+    // Final processing on params
+    this.finalizeParameters()
+
+    // Other special logic for the parameters
+
     // Level-based advancements
-    if (this.stage == 5) {
+    if (level == 5) {
       this.caveMode = 13
       this.palaceIndoors = false
       this.palaceLength = 80
     }
-    else if (this.stage == 10) {
+    else if (level == 10) {
       this.caveMode = 13
       this.palaceIndoors = true
       this.palaceLength = 65
     }
-    else if (this.stage == 15) {
+    else if (level == 15) {
       this.caveMode = 15
       this.palaceIndoors = false
-      this.palaceLength = 100
+      this.palaceLength = 115
     }
-    else if (0 < this.stage && this.stage <= 2) {
+    else if (0 < level && level <= 2) {
       // Type Island
       this.caveMode = 0
     }
-    else if (2 < this.stage && this.stage <= 7) {
+    else if (2 < level && level <= 7) {
       // Types Island and Cave
       this.caveMode = Math.floor(this.random() * 2)
     }
-    else if (7 < this.stage && this.stage <= 12) {
+    else if (7 < level && level <= 12) {
       // Types Island, Cave, and Void
       this.caveMode = Math.floor(this.random() * 3)
     }
@@ -99,35 +123,33 @@ export class GeneratorParams {
       // Types Cave and Void
       this.caveMode = Math.floor(this.random() * 2) + 1
     }
-
-    if (this.width < 45) {
-      this.width += 3
-    }
-    if (this.length < 90) {
-      this.length += 3
-    }
-
-    if (this.maxPathLength < 100) {
-      this.maxPathLength += 2
-    }
-    
-    this.terrainVariance += 3
-    this.roomMaxSize += 1
-    this.levelFeature = Math.floor(this.random() * 100)
-
-    // Increase number of layers
-    if (this.stage %2 == 0 && this.caveLayers < 15) {this.caveLayers += 1;}
-
-    // Reroll
-    if (this.random() < 0.3) { this.caveSteps = this.bellRandom(7, 3, true) }
-    if (this.random() < 0.3) { this.caveInitialChance = this.bellRandom(0.3, 0.01, false) }
-    if (this.random() < 0.3) { this.roomWallHeight = this.bellRandom(8, 7, true) }
-    if (this.random() < 0.3) { this.favoriteFeature = Math.floor(this.random() * 100) }
-    if (this.random() < 0.4) { this.room1Position = this.random() }
-    if (this.random() < 0.4) { this.room2Position = this.random() }
   }
 
-  bellRandom(center, radius, truncate) {
+  finalizeParameters() {
+    // Final steps done on each parameter
+    for (const key in parameters.data) {
+      let param = parameters.data[key]
+      let v = this[key + "_BASE"]
+
+      // Truncate the value to an integer
+      if (param.truncate) {
+        v = Math.floor(v)
+      }
+
+      // Bind it to minimum and maximum
+      if (param.max) {
+        v = Math.min(v, param.max)
+      }
+      if (param.min) {
+        v = Math.max(v, param.min)
+      }
+
+      // Set the final value
+      this[key] = v
+    }
+  }
+
+  bellRandom(center, radius) {
     let total = 0
     for (let i = 0; i < BELL_CURVE_SAMPLES; i ++) {
       total += this.random()
@@ -135,9 +157,7 @@ export class GeneratorParams {
     let bell = ((total / BELL_CURVE_SAMPLES) * 2) - 1
     bell *= radius
     bell += center
-    if (truncate) {
-      bell = Math.floor(bell)
-    }
+
     return bell
   }
 }
