@@ -68,7 +68,7 @@ function* LevelWinAnim() {
 
   //setNextScene()
   globals.level += 1
-  globals.parameterBuilder.advance()
+  globals.parameterBuilder.setParametersForLevel(globals.level)
   delete globals.generated
   game.resetScene()
 

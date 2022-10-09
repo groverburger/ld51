@@ -1,9 +1,11 @@
 import { add, lerp, distance } from "./core/vector2.js"
 import * as utils from "./core/utils.js"
 import * as cave from "./proccaves.js"
+import { generateTerrain } from "./procterrain.js"
 import * as room from "./procroom.js"
 import * as palace from "./procpalace.js"
-import * as feature from "./procfeature.js"
+import * as parameters from "./data/parameters.js"
+import { PriorityQueue } from "./core/pqueue.js"
 
 const PLAYER_JUMP_HEIGHT = 4
 const ABSOLUTE_HEIGHT_DIFFERENCE_MAX = 10
@@ -12,14 +14,14 @@ const WORLD_HEIGHT = 40
 const CARVE_PROXIMITY_WEIGHT = 30
 const BELL_CURVE_SAMPLES = 8
 const PATH_LOOK = 5
+const JUMP_WEIGHT_2 = 3
+const JUMP_WEIGHT_3 = 7
+const JUMP_WEIGHT_4 = 11
 
 export class GeneratorParams {
   // General
   random = () => {return 4}
-  stage = 0
-  maxPathLength = 74
-  caveLayers = 1
-  
+
   constructor(seed) {
     // Set up randomizer
     if (typeof seed != "number") {
@@ -28,70 +30,100 @@ export class GeneratorParams {
     this.random = utils.randomizer(seed)
     console.log("Level Seed: " + seed)
 
-    this.randomize()
+    this.initParameters()
   }
 
-  randomize() {
-    // General
-    this.width = this.bellRandom(40, 10, true)
-    this.length = this.bellRandom(70, 10, true)
-    this.height = 20
-
-    // Caves
-    this.caveSteps = this.bellRandom(7, 1, true)
-    this.caveInitialChance = this.bellRandom(0.3, 0.01, false)
-    this.caveLayerSpacing = 2
-    this.caveMode = 0
-
-    // Terrain
-    this.terrainVariance = this.bellRandom(15, 10, true)
-    this.terrainRoughness = 0.4
-
-    // Rooms
-    this.roomMaxSize = this.bellRandom(7, 5, true)
-    this.roomMinSize = this.bellRandom(3, 2, true)
-    this.roomWallHeight = this.bellRandom(8, 7, true)
-    this.room1Position = this.random()*0.9 + 0.1
-    this.room2Position = this.random()*0.9 + 0.1
-
-    // Palace
-    this.palaceIndoors = false
-    this.palaceLength = 80
-
-    // Misc
-    this.favoriteFeature = Math.floor(this.random() * 100)
-    this.levelFeature = 0
-  }
-
-  advance() {
-    // Advance to the next stage
-    this.stage ++
+  initParameters() {
+    // Randomize each parameter
+    for (const key in parameters.data) {
+      this.randomizeParameter(key)
+    }
     
+    this.setParametersForLevel(1)
+  }
+
+  randomizeParameter(key) {
+    let param = parameters.data[key]
+
+    // Set the parameter's base
+    if (param.randomMode == "bell") {
+      this[key + "_BASE"] = this.bellRandom(param.bellCenter, param.bellRadius)
+    }
+    else if (param.randomMode == "linear") {
+      this[key + "_BASE"] = (this.random() * (param.linearMax - param.linearMin)) + param.linearMin
+    }
+    else if (param.randomMode == "constant") {
+      this[key + "_BASE"] = param.value
+    }
+    else {
+      console.error("Error initializing param [" + key + "]. Invalid randomMode [" + param.randomMode + "]")
+      return
+    }
+  }
+
+  setParameterForLevel(key, level) {
+    let param = parameters.data[key]
+
+    // Protect against null
+    if (!level) {
+      level = 1
+    }
+    let aa = param.advanceAmount
+    if (!aa) {
+      aa = 0
+    }
+
+    this[key + "_ADVANCED"] = this[key + "_BASE"] + (level * aa)
+  }
+
+  setParametersForLevel(level) {
+    if (!level) {
+      level = 1
+    }
+
+    // Go through params
+    for (const key in parameters.data) {
+      let param = parameters.data[key]
+
+      // Set the parameter based on the level
+      this.setParameterForLevel(key, level)
+
+      // Maybe reroll the parameter's base value
+      if (param.rerollChance && this.random() < param.rerollChance) {
+        this.randomizeParameter(key)
+      }
+    }
+
+    // Final processing on params
+    this.finalizeParameters()
+
+    // Other special logic for the parameters
+
     // Level-based advancements
-    if (this.stage == 5) {
+    if (level == 5) {
       this.caveMode = 13
       this.palaceIndoors = false
       this.palaceLength = 80
     }
-    else if (this.stage == 10) {
+    else if (level == 10) {
       this.caveMode = 13
       this.palaceIndoors = true
       this.palaceLength = 65
     }
-    else if (this.stage == 15) {
+    else if (level == 15) {
       this.caveMode = 15
       this.palaceIndoors = false
-      this.palaceLength = 100
+      this.palaceLength = 115
     }
-    else if (0 < this.stage && this.stage <= 2) {
+    else if (0 < level && level <= 2) {
       // Type Island
       this.caveMode = 0
     }
-    else if (2 < this.stage && this.stage <= 7) {
+    else if (2 < level && level <= 7) {
       // Types Island and Cave
       this.caveMode = Math.floor(this.random() * 2)
     }
-    else if (7 < this.stage && this.stage <= 12) {
+    else if (7 < level && level <= 12) {
       // Types Island, Cave, and Void
       this.caveMode = Math.floor(this.random() * 3)
     }
@@ -99,35 +131,33 @@ export class GeneratorParams {
       // Types Cave and Void
       this.caveMode = Math.floor(this.random() * 2) + 1
     }
-
-    if (this.width < 45) {
-      this.width += 3
-    }
-    if (this.length < 90) {
-      this.length += 3
-    }
-
-    if (this.maxPathLength < 100) {
-      this.maxPathLength += 2
-    }
-    
-    this.terrainVariance += 3
-    this.roomMaxSize += 1
-    this.levelFeature = Math.floor(this.random() * 100)
-
-    // Increase number of layers
-    if (this.stage %2 == 0 && this.caveLayers < 15) {this.caveLayers += 1;}
-
-    // Reroll
-    if (this.random() < 0.3) { this.caveSteps = this.bellRandom(7, 3, true) }
-    if (this.random() < 0.3) { this.caveInitialChance = this.bellRandom(0.3, 0.01, false) }
-    if (this.random() < 0.3) { this.roomWallHeight = this.bellRandom(8, 7, true) }
-    if (this.random() < 0.3) { this.favoriteFeature = Math.floor(this.random() * 100) }
-    if (this.random() < 0.4) { this.room1Position = this.random() }
-    if (this.random() < 0.4) { this.room2Position = this.random() }
   }
 
-  bellRandom(center, radius, truncate) {
+  finalizeParameters() {
+    // Final steps done on each parameter
+    for (const key in parameters.data) {
+      let param = parameters.data[key]
+      let v = this[key + "_ADVANCED"]
+
+      // Truncate the value to an integer
+      if (param.truncate) {
+        v = Math.floor(v)
+      }
+
+      // Bind it to minimum and maximum
+      if (param.max) {
+        v = Math.min(v, param.max)
+      }
+      if (param.min) {
+        v = Math.max(v, param.min)
+      }
+
+      // Set the final value
+      this[key] = v
+    }
+  }
+
+  bellRandom(center, radius) {
     let total = 0
     for (let i = 0; i < BELL_CURVE_SAMPLES; i ++) {
       total += this.random()
@@ -135,9 +165,7 @@ export class GeneratorParams {
     let bell = ((total / BELL_CURVE_SAMPLES) * 2) - 1
     bell *= radius
     bell += center
-    if (truncate) {
-      bell = Math.floor(bell)
-    }
+
     return bell
   }
 }
@@ -176,18 +204,24 @@ export function mergeTerrain(terrain, merge, position) {
   }
 }
 
+export function adjustTerrain(terrain, amt) {
+  for (const key in terrain) {
+    terrain[key] = terrain[key] + amt
+  }
+}
+
 export function guaranteePath(terrain, startPoint, endPoint, params) {
   // Create the list of accessible points from start
-  let startAccessibleSet = getAccessibleSpaces(terrain, startPoint, false)
+  let startAccessibleMap = getDistances(terrain, startPoint)
 
   // Exit out if end point is already accessible from end
-  if (startAccessibleSet.has(endPoint.toString())) {
+  if (!endPoint in startAccessibleMap) {
     return
   }
 
   // Create a list of accessible points from end
-  let startAccessible = [...startAccessibleSet]
-  let endAccessible = [...getAccessibleSpaces(terrain, endPoint, true)]
+  let startAccessible = Object.keys(startAccessibleMap)
+  let endAccessible = Object.keys(getDistances(terrain, endPoint, true))
 
   // Find a random point from startAccessible and from endAccessible who are somewhat close
   let closestDist = 1000000
@@ -227,34 +261,6 @@ export function guaranteePath(terrain, startPoint, endPoint, params) {
   carveHallway(terrain, closestPoint1, closestPoint2)
 }
 
-function getAccessibleSpaces(terrain, startPoint, backwards) {
-  let result = getAccessibleSpacesRecurse(terrain, startPoint, backwards, new Set())
-  return result
-}
-
-function getAccessibleSpacesRecurse(terrain, pos, backwards, collected) {
-  let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0]]
-
-  for (const delta of deltas) {
-    // Get the adjacent space
-    let adj = add(pos, delta)
-    // Make sure this space hasn't already been collected
-    if (!collected.has(adj.toString())) {
-      // check if the height difference of the adjacent space is at most jump height
-      let heightDifference = backwards ? (terrain[pos] - terrain[adj]) : (terrain[adj] - terrain[pos])
-      let absoluteHeightDifference = Math.abs(terrain[pos] - terrain[adj])
-      if (heightDifference <= PLAYER_JUMP_HEIGHT && absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
-        // Make sure we're not navigating past world height
-        if (!isExtreme(terrain[adj])) {
-          collected.add(adj.toString())
-          collected = getAccessibleSpacesRecurse(terrain, adj, backwards, collected)
-        }
-      }
-    }
-  }
-  return collected
-}
-
 export function carveHallway(terrain, pos1, pos2) {
   pos1 = stringToPosition(pos1)
   pos2 = stringToPosition(pos2)
@@ -280,62 +286,101 @@ export function carveHallway(terrain, pos1, pos2) {
   }
 }
 
-export function findPath(terrain, types, start, end) {
-  start = stringToPosition(start)
-  end = stringToPosition(end)
+export function getDistances(terrain, startPoint, invert) {
   let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0]]
-  let queue = [{
-    pos: start,
-    dist: 0
-  }]
-  let prev = {}
-  prev[start] = start
+  startPoint = stringToPosition(startPoint)
+
+  // Set up the priority queue
+  let queue = new PriorityQueue((a, b) => a.dist < b.dist);
+  let firstEntry = {
+    pos: startPoint,
+    prev: startPoint,
+    dist: 0,
+  }
+  queue.push(firstEntry)
+
+  // Results go here
+  let distances = {}
 
   // Run search algorithm to find shortest path to the flag
-  while (queue.length > 0) {
-    let cur = queue.shift()
+  while (!queue.isEmpty()) {
+    let cur = queue.pop()
+
+    // If we've already visited this node, don't visit it again. This can happen if we
+    // find multiple paths to a space, since we leave the old copy in the pqueue
+    if (cur.pos in distances) {
+      continue
+    }
+
+    // Put node data into result
+    distances[cur.pos] = {
+      prev: cur.prev,
+      dist: cur.dist,
+    }
+
+    // Look through the four adjacent spaces
     for (const delta of deltas) {
       // Get the adjacent space
       let adj = add(cur.pos, delta)
-      cur.pos = stringToPosition(cur.pos)
-      adj = stringToPosition(adj)
-      // Make sure this space hasn't already been collected
-      if (!(adj in prev)) {
-        // check if the height difference of the adjacent space is at most jump height
+
+      // Make sure this space hasn't already been visited
+      if (!(adj in distances)) {
+        // Check if the height difference of the adjacent space is at most jump height
         let heightDifference = (terrain[adj] - terrain[cur.pos])
+
+        // Invert is used to search backwards from the endpoint
+        if (invert) {
+          heightDifference *= -1
+        }
+
         let absoluteHeightDifference = Math.abs(terrain[cur.pos] - terrain[adj])
-        absoluteHeightDifference = 0
-        if (heightDifference <= PLAYER_JUMP_HEIGHT) {
-          if (absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
-            // Make sure we're not navigating past world height
-            if (!isExtreme(terrain[adj])) {
-              prev[adj] = cur.pos
-              queue.push({
-                pos: adj,
-                dist: cur.dist + 1
-              })
+        if (heightDifference <= PLAYER_JUMP_HEIGHT && absoluteHeightDifference <= ABSOLUTE_HEIGHT_DIFFERENCE_MAX) {
+          // Make sure we're not navigating past world height
+          if (!isExtreme(terrain[adj])) {
+            // Determine the weight based on the height differences between the two spaces
+            let weight = 1
+            if (heightDifference == 2) {weight = JUMP_WEIGHT_2}
+            if (heightDifference == 3) {weight = JUMP_WEIGHT_3}
+            if (heightDifference == 4) {weight = JUMP_WEIGHT_4}
+            if (heightDifference < -3) {
+              weight = Math.floor(Math.abs(heightDifference / 3))
             }
+            
+            // Push to the priority queue
+            queue.push({
+              pos: adj,
+              prev: cur.pos,
+              dist: cur.dist + weight,
+            })
           }
         }
       }
     }
   }
+  
+  return distances
+}
 
-  // Retrace shortest path
-  if (!(end in prev)) {
+export function findPath(distances, endPoint) {
+  endPoint = stringToPosition(endPoint)
+
+  // No path to this point
+  if (!(endPoint in distances)) {
     // debug
     let ret = []
 
-    for (const reached in prev) {
+    for (const reached in distances) {
       ret.push(stringToPosition(reached))
     }
 
     return ret
   }
-  let retrace = end;
-  let path = [end]
-  while (prev[retrace].toString() != retrace.toString()) {
-    retrace = prev[retrace]
+
+  // Retrace the path
+  let retrace = endPoint
+  let path = [endPoint]
+  while (distances[retrace].dist > 0) {
+    retrace = distances[retrace].prev
     path.push(retrace)
   }
   return path
@@ -388,7 +433,10 @@ function buildAlongPath(terrain, types, path, params) {
   }
 }
 
-function isExtreme(height) {
+export function isExtreme(height) {
+  if (!height) {
+    return true
+  }
   if (height >= WORLD_HEIGHT) {
     return true
   }
@@ -455,7 +503,8 @@ export function generateEverything(params) {
   guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
 
   // Create the path
-  let path = findPath(gen.terrain, gen.types, gen.startPoint, gen.endPoint)
+  let distances = getDistances(gen.terrain, gen.startPoint)
+  let path = findPath(distances, gen.endPoint)
 
   // If the path is too long, shorten it
   if (path.length > params.maxPathLength) {
@@ -485,6 +534,9 @@ export function generateEverything(params) {
   // Do another guarantee pass
   guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
 
+  // Remove tiny holes from the map (frustrating for the player)
+  cave.removeHoles(gen.terrain)
+
   // If finale level, put a palace at the end
   if (params.caveMode == 15) {
     // Build params
@@ -493,12 +545,14 @@ export function generateEverything(params) {
       path: path,
       offset: pt,
     }
+    let heightDelta = gen.terrain[pt] - params.palaceFloorHeight - 1
+
 
     // Generate
-    console.log()
     let res = palace.generatePalace(params, pathData)
 
     // Place palace into the world
+    adjustTerrain(res.terrain, heightDelta)
     mergeTerrain(gen.terrain, res.terrain, pt)
     mergeTerrain(gen.types, res.types, pt)
 

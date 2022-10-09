@@ -3,6 +3,7 @@ import * as terr from "./procterrain.js"
 import * as basic from "./procbasics.js"
 import * as palace from "./procpalace.js"
 import { add } from "./core/vector2.js"
+import { isExtreme } from "./procgeneral.js"
 
 const BIRTH_LIMIT = 3
 const DEATH_LIMIT = 2
@@ -229,6 +230,43 @@ function determineStartAndEndPoint(spaces, params) {
 
   // Return
   return [maxPos1, maxPos2]
+}
+
+const HOLE_NEARBY_MAX = 5
+const HOLE_RADIUS = 2
+export function removeHoles(terrain) {
+  let deltas = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+
+  for (const tileStr in terrain) {
+    let tile = proc.stringToPosition(tileStr)
+    // If this is a hole
+    if (!terrain[tile]) {
+      // Check neighbors to estimate how small this hole is
+      let count = 0
+      for (let i = -HOLE_RADIUS; i <= HOLE_RADIUS; i ++) {
+        for (let j = -HOLE_RADIUS; j <= HOLE_RADIUS; j ++) {
+          let neighbor = add(tile, [i, j])
+          if (!terrain[neighbor]) {
+            count ++
+          }
+        }
+      }
+
+      // If we have decided to fill in this hole, set its height to the average of its neighbors
+      if (count <= HOLE_NEARBY_MAX) {
+        let total = 0
+        let count = 0
+        for (const delta of deltas) {
+          let neighbor = add(tile, delta)
+          if (!isExtreme(terrain[neighbor])) {
+            count ++
+            total += terrain[neighbor]
+          }
+        }
+        terrain[tile] = Math.floor(total/count)
+      }
+    }
+  }
 }
 
 export function carvePoint(terrain, startPoint) {
