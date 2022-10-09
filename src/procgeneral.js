@@ -433,7 +433,10 @@ function buildAlongPath(terrain, types, path, params) {
   }
 }
 
-function isExtreme(height) {
+export function isExtreme(height) {
+  if (!height) {
+    return true
+  }
   if (height >= WORLD_HEIGHT) {
     return true
   }
@@ -530,6 +533,9 @@ export function generateEverything(params) {
 
   // Do another guarantee pass
   guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
+
+  // Remove tiny holes from the map (frustrating for the player)
+  cave.removeHoles(gen.terrain)
 
   // If finale level, put a palace at the end
   if (params.caveMode == 15) {
