@@ -78,18 +78,25 @@ export class GeneratorParams {
       this.palaceIndoors = true
       this.palaceLength = 65
     }
-    /*else if (this.stage == 15) {
-      this.caveMode = 13
+    else if (this.stage == 15) {
+      this.caveMode = 15
       this.palaceIndoors = false
       this.palaceLength = 100
-    }*/
+    }
     else if (0 < this.stage && this.stage <= 2) {
+      // Type Island
       this.caveMode = 0
     }
     else if (2 < this.stage && this.stage <= 7) {
+      // Types Island and Cave
+      this.caveMode = Math.floor(this.random() * 2)
+    }
+    else if (7 < this.stage && this.stage <= 12) {
+      // Types Island, Cave, and Void
       this.caveMode = Math.floor(this.random() * 3)
     }
     else {
+      // Types Cave and Void
       this.caveMode = Math.floor(this.random() * 2) + 1
     }
 
@@ -416,12 +423,14 @@ function makeDoorway(terrain, types, pos) {
 export function generateEverything(params) {
   // Bonus levels
   if (params.caveMode == 13) {
-    
+    // Generate the terrain
     let res = cave.generateCaves(params)
     let res2 = palace.generatePalace(params)
 
+    // Offset
     let pt = [-15, -35]
 
+    // Merge the generator data together
     let final = new GeneratorResult()
 
     mergeTerrain(final.terrain, res.terrain, pt)
@@ -435,6 +444,7 @@ export function generateEverything(params) {
     final.endPoint = res2.endPoint
     final.presetClocks = res2.presetClocks
 
+    // Return result
     return final
   }
 
@@ -444,21 +454,24 @@ export function generateEverything(params) {
   // Make sure it is possible to complete the level
   guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
 
-  // Create the path and the buildings on it
+  // Create the path
   let path = findPath(gen.terrain, gen.types, gen.startPoint, gen.endPoint)
-  paintPath(gen.types, path, params)
-  buildAlongPath(gen.terrain, gen.types, path, params)
 
   // If the path is too long, shorten it
   if (path.length > params.maxPathLength) {
     gen.endPoint = path[path.length - params.maxPathLength]
     cave.carvePoint(gen.terrain, gen.endPoint)
+    path = path.slice(path.length - params.maxPathLength - 1, path.length)
 
     console.log("Path length: " + params.maxPathLength)
   }
   else {
     console.log("Path length: " + path.length)
   }
+
+  // Paint the path and put buildings on it
+  paintPath(gen.types, path, params)
+  buildAlongPath(gen.terrain, gen.types, path, params)
 
   // Set the player's starting rotation so that they look towards the path
   if (path.length > PATH_LOOK + 2) {
@@ -472,6 +485,35 @@ export function generateEverything(params) {
   // Do another guarantee pass
   guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
 
+  // If finale level, put a palace at the end
+  if (params.caveMode == 15) {
+    // Build params
+    let pt = gen.endPoint
+    let pathData = {
+      path: path,
+      offset: pt,
+    }
+
+    // Generate
+    console.log()
+    let res = palace.generatePalace(params, pathData)
+
+    // Place palace into the world
+    mergeTerrain(gen.terrain, res.terrain, pt)
+    mergeTerrain(gen.types, res.types, pt)
+
+    gen.endPoint = add(res.endPoint, pt)
+
+    // Add preset clocks
+    gen.presetClocks = []
+    for (const clockPos of res.presetClocks) {
+      gen.presetClocks.push(add(clockPos, pt))
+    }
+    gen.presetClocks.push(path[40])
+    gen.presetClocks.push(add(res.startPoint, pt))
+  }
+
+  // Return
   return gen
 
 }

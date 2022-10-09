@@ -902,7 +902,6 @@ export default class Terrain extends Thing {
       let clockList = this.presetClocks.length > 0 ? this.presetClocks : [itemLocations.pop()]
       for (const coord of clockList) {
         if (coord) {
-          console.log(clockList)
           getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
         }
       }

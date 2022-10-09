@@ -1,4 +1,4 @@
-import { add, scale, subtract } from "./core/vector2.js"
+import { add, scale, subtract, equals } from "./core/vector2.js"
 import { GeneratorResult, stringToPosition } from "./procgeneral.js"
 
 const TOWARDS_CHANCE = 0.8
@@ -6,7 +6,7 @@ const PALACE_WALL_HEIGHT = 80
 const PALACE_FLOOR_HEIGHT = 20
 const PALACE_JUMP_LENGTH = 4
 
-export function generatePalace(params) {
+export function generatePalace(params, pathData) {
   let terrainSmall = {}
 
   terrainSmall[[0,0]] = PALACE_FLOOR_HEIGHT
@@ -26,9 +26,7 @@ export function generatePalace(params) {
     secondClock: [1, 0],
     secondClockPlaced: false,
   }
-  palaceAlgorithm(terrainSmall, PALACE_FLOOR_HEIGHT, [0,0], params, false, 0, data)
-
-  
+  palaceAlgorithm(terrainSmall, PALACE_FLOOR_HEIGHT, [0,0], params, false, 0, data, pathData)
 
   // Scale up terrain by a factor of 2
   let types = {}
@@ -44,11 +42,11 @@ export function generatePalace(params) {
   return ret
 }
 
-function palaceAlgorithm(terrain, height, pos, params, towards, depth, data) {
+function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, pathData) {
   // Take an action
   let actionNumber = Math.floor(params.random() * 13)
   let action = "turn" // move forward, turning at a chasm
-  if (5 <= actionNumber && actionNumber <= 6) {action = "jump"} // move forward, jumping over chasm
+  if (4 <= actionNumber && actionNumber <= 6) {action = "jump"} // move forward, jumping over chasm
   if (7 <= actionNumber && actionNumber <= 12) {action = "stair"} // staircase upwards, stopping at chasm
 
   let distance = Math.floor(params.random() * 4) + 2
@@ -131,7 +129,7 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data) {
     }
 
     // Check if this space was already carved
-    if (curPos in terrain) {
+    if (!canBuild(curPos, terrain, pathData)) {
       // If this is a ledge, start following 
       if (action == "turn" && terrain[curPos] < curHeight) {
         // Turn and follow the ledge
@@ -139,11 +137,17 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data) {
         distance += 3
         curPos = subtract(curPos, direction)
         direction = [direction[1], direction[0]]
+        curTowards = false
       }
       else if (action == "stair") {
         // Stairs end here
+        curTowards = false
+        
+        // Backpedal by one space
         curPos = subtract(curPos, direction)
         curHeight -= 1
+
+        // End action and set distance to the distance we actually traveled
         distance = i
         break
       }
@@ -152,12 +156,41 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data) {
 
         // Make sure there is a place we can go a certain distance ahead
         let jumpPos = add(curPos, scale(direction, PALACE_JUMP_LENGTH))
-        if (jumpPos in terrain) {
-          curPos = subtract(curPos, direction)
+        
+        // No space to jump
+        if (canBuild(jumpPos, terrain, pathData)) {
+          curTowards = false
           distance = i
+
+          for (let j = 0; i < PALACE_JUMP_LENGTH + 1; j ++) {
+            // Track distance
+            distance ++
+
+            // Move forward
+            curPos = add(curPos, direction)
+
+            // Stop once we get to the other side
+            if (canBuild(curPos, terrain, pathData)) {
+              break
+            }
+          }
+
+          // End this step
+          terrain[curPos] = curHeight
+          data.endPoint = curPos
           break
         }
-        curTowards = false
+        // Jump
+        else {
+          // Backpedal by one space
+          curPos = subtract(curPos, direction)
+
+          // End action and set distance to the distance we actually traveled
+          distance = i
+          data.endPoint = curPos
+          break
+        }
+       
       }
     } else {
       // Carve
@@ -184,7 +217,7 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data) {
 
   // Recurse
   if (depth + distance < params.palaceLength) {
-    palaceAlgorithm(terrain, curHeight, curPos, params, curTowards, depth + distance, data)
+    palaceAlgorithm(terrain, curHeight, curPos, params, curTowards, depth + distance, data, pathData)
   }
 }
 
@@ -222,3 +255,27 @@ function scaleTerrain(terrain, types, params) {
   return terrainRet
 }
 
+function canBuild(pos, terrain, pathData) {
+  // Don't build over lower parts of the structure
+  if (pos in terrain) {
+    return false
+  }
+  // Don't build over the path
+  if (pathData) {
+    for (const tile of pathData.path) {
+      // Get position of the tile relative to the tower
+      let newTile = subtract(tile, pathData.offset)
+
+      // Divide tile position by 2 to get position after scaling
+      let nx = Math.floor(newTile[0]/2)
+      let ny = Math.floor(newTile[1]/2)
+      let divTile = [nx, ny]
+
+      // Check if they overlap
+      if (equals(pos, divTile)) {
+        return false
+      }
+    }
+  }
+  return true
+}
