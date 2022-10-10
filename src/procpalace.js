@@ -81,6 +81,8 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
     direction = [1, 0]
   }
 
+  // console.log("Iteration: " + action + " for " + distance + " spaces in direction " + direction)
+
   let curTowards = towards
   let curPos = pos
   let curHeight = height
@@ -143,6 +145,7 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
         curPos = subtract(curPos, direction)
         direction = [direction[1], direction[0]]
         curTowards = false
+        // console.log("Turned after distance " + distance)
       }
       else if (action == "stair") {
         // Stairs end here
@@ -154,6 +157,7 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
 
         // End action and set distance to the distance we actually traveled
         distance = i
+        // console.log("Stairs end after distance " + distance)
         break
       }
       else {
@@ -161,6 +165,8 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
 
         // Make sure there is a place we can go a certain distance ahead
         let jumpPos = add(curPos, scale(direction, PALACE_JUMP_LENGTH))
+
+        // console.log("Jump!")
         
         // No space to jump
         if (canBuild(jumpPos, terrain, pathData)) {
@@ -195,6 +201,8 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
         else {
           // Backpedal by one space
           curPos = subtract(curPos, direction)
+
+          // console.log("Failed jump")
 
           // End action and set distance to the distance we actually traveled
           distance = i

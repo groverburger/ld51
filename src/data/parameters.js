@@ -1,5 +1,11 @@
 export let data = {
   // General
+  "level": {
+    "randomMode": "constant",
+    "value": 0,
+    "advanceAmount": 1,
+    "truncate": true
+  },
   "width": {
     "randomMode": "bell",
     "bellCenter": 40,

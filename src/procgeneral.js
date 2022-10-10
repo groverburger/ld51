@@ -27,10 +27,17 @@ export class GeneratorParams {
     if (typeof seed != "number") {
       seed = Math.floor(Math.random() * 100000)
     }
-    this.random = utils.randomizer(seed)
-    console.log("Level Seed: " + seed)
+    this.seed = seed
+    this.resetRandom(0)
+
+    console.log("Random Seed: " + seed)
 
     this.initParameters()
+  }
+
+  resetRandom(offset) {
+    console.log("Resetting random for level " + offset)
+    this.random = utils.randomizer(this.seed + offset)
   }
 
   initParameters() {
@@ -80,6 +87,9 @@ export class GeneratorParams {
     if (!level) {
       level = 1
     }
+
+    // Reset the random seed
+    this.resetRandom(level)
 
     // Go through params
     for (const key in parameters.data) {
@@ -215,8 +225,8 @@ export function guaranteePath(terrain, startPoint, endPoint, params) {
   let startAccessibleMap = getDistances(terrain, startPoint)
 
   // Exit out if end point is already accessible from end
-  if (!endPoint in startAccessibleMap) {
-    return
+  if (endPoint in startAccessibleMap) {
+    return false
   }
 
   // Create a list of accessible points from end
@@ -259,6 +269,9 @@ export function guaranteePath(terrain, startPoint, endPoint, params) {
 
   // Carve linear hallway between the two points
   carveHallway(terrain, closestPoint1, closestPoint2)
+
+  // Return true, indicating that we did create a path
+  return true
 }
 
 export function carveHallway(terrain, pos1, pos2) {
@@ -386,6 +399,19 @@ export function findPath(distances, endPoint) {
   return path
 }
 
+export function shortenPath(path, length) {
+  // If the path is too long, shorten it
+  if (path.length > length) {
+    path = path.slice(path.length - length - 1, path.length)
+
+    console.log("Path length: " + length)
+  }
+  else {
+    console.log("Path length: " + path.length)
+  }
+  return path
+}
+
 export function paintPath(types, path, params) {
   let deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
   
@@ -505,21 +531,11 @@ export function generateEverything(params) {
   // Create the path
   let distances = getDistances(gen.terrain, gen.startPoint)
   let path = findPath(distances, gen.endPoint)
-
-  // If the path is too long, shorten it
-  if (path.length > params.maxPathLength) {
-    gen.endPoint = path[path.length - params.maxPathLength]
-    cave.carvePoint(gen.terrain, gen.endPoint)
-    path = path.slice(path.length - params.maxPathLength - 1, path.length)
-
-    console.log("Path length: " + params.maxPathLength)
-  }
-  else {
-    console.log("Path length: " + path.length)
-  }
+  path = shortenPath(path, params.maxPathLength)
+  gen.endPoint = path[0]
+  cave.carvePoint(gen.terrain, gen.endPoint)
 
   // Paint the path and put buildings on it
-  paintPath(gen.types, path, params)
   buildAlongPath(gen.terrain, gen.types, path, params)
 
   // Set the player's starting rotation so that they look towards the path
@@ -532,7 +548,21 @@ export function generateEverything(params) {
   }
 
   // Do another guarantee pass
-  guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
+  if (guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)) {
+    // If we had to carve another path, mark this as the one true path
+    distances = getDistances(gen.terrain, gen.startPoint)
+    path = findPath(distances, gen.endPoint)
+    path = shortenPath(path, params.maxPathLength)
+    gen.endPoint = path[0]
+    cave.carvePoint(gen.terrain, gen.endPoint)
+    if (guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)) {
+      // If we have to carve the path a third time, this may be uncompletable, so just throw an error so we can restart
+      throw "Uncompletable terrain"
+    }
+  }
+
+  // TODO: Move path painting here
+  paintPath(gen.types, path, params)
 
   // Remove tiny holes from the map (frustrating for the player)
   cave.removeHoles(gen.terrain)
