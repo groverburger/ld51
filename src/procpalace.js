@@ -25,11 +25,12 @@ export function generatePalace(params, pathData) {
     secondClock: [1, 0],
     secondClockPlaced: false,
   }
-  palaceAlgorithm(terrainSmall, params.palaceFloorHeight, [0,0], params, false, 0, data, pathData)
+  let tileData = {}
+  palaceAlgorithm(terrainSmall, params.palaceFloorHeight, [0,0], params, false, 0, data, tileData, pathData)
 
   // Scale up terrain by a factor of 2
   let types = {}
-  let terrain = scaleTerrain(terrainSmall, types, params)
+  let terrain = scaleTerrain(terrainSmall, types, params, tileData)
 
   let ret = new GeneratorResult()
   ret.terrain = terrain
@@ -41,7 +42,7 @@ export function generatePalace(params, pathData) {
   return ret
 }
 
-function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, pathData) {
+function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, tileData, pathData) {
   // Take an action
   let actionNumber = Math.floor(params.random() * 13)
   let action = "turn" // move forward, turning at a chasm
@@ -125,6 +126,8 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, pat
     // Move upwards
     if (action == "stair") {
       curHeight += 1
+
+      tileData[curPos] = { ...tileData[curPos], stair: true }
     }
 
     // Check if this space was already carved
@@ -215,11 +218,12 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, pat
 
   // Recurse
   if (depth + distance < params.palaceLength) {
-    palaceAlgorithm(terrain, curHeight, curPos, params, curTowards, depth + distance, data, pathData)
+    palaceAlgorithm(terrain, curHeight, curPos, params, curTowards, depth + distance, data, tileData, pathData)
   }
 }
 
-function scaleTerrain(terrain, types, params) {
+function scaleTerrain(terrain, types, params, tileData) {
+  let deltas = [[1,0],[0,1],[-1,0],[0,-1]]
   let floorDeltas = [[0,0],[0,1],[1,0],[1,1]]
   let wallDeltas = [
     [-1,-1],[-1,0],[-1,1],[-1,2],
@@ -239,12 +243,26 @@ function scaleTerrain(terrain, types, params) {
       types[pf] = 4
     }
 
-    if (params.palaceIndoors) {
-      for (const delta of wallDeltas) {
-        let pf = add(delta, p2)
-        if (!(pf in terrainRet)) {
+    for (const delta of wallDeltas) {
+      let pf = add(delta, p2)
+      if (!(pf in terrainRet)) {
+        if (params.palaceIndoors) {
           terrainRet[pf] = PALACE_WALL_HEIGHT
           types[pf] = 4
+        }
+        else {
+          // Determine if this is a junction
+          let xPaths = 0
+          let yPaths = 0
+          if (Math.abs(terrain[add(p, [1, 0])] - terrain[p]) <= 1) {xPaths ++}
+          if (Math.abs(terrain[add(p, [-1, 0])] - terrain[p]) <= 1) {xPaths ++}
+          if (Math.abs(terrain[add(p, [0, 1])] - terrain[p]) <= 1) {yPaths ++}
+          if (Math.abs(terrain[add(p, [0, -1])] - terrain[p]) <= 1) {yPaths ++}
+
+          if (xPaths == 1 || yPaths == 1) {
+            terrainRet[pf] = terrain[p] + 2
+            types[pf] = 1
+          }
         }
       }
     }
