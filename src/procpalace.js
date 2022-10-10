@@ -3,7 +3,8 @@ import { GeneratorResult, stringToPosition } from "./procgeneral.js"
 
 const TOWARDS_CHANCE = 0.8
 const PALACE_WALL_HEIGHT = 80
-const PALACE_JUMP_LENGTH = 4
+const PALACE_JUMP_LENGTH = 3
+const PALACE_SCALE = 3
 
 export function generatePalace(params, pathData) {
   let terrainSmall = {}
@@ -24,6 +25,8 @@ export function generatePalace(params, pathData) {
     firstClockPlaced: false,
     secondClock: [1, 0],
     secondClockPlaced: false,
+    thirdClock: [1, 0],
+    thirdClockPlaced: false,
   }
   let tileData = {}
   palaceAlgorithm(terrainSmall, params.palaceFloorHeight, [0,0], params, false, 0, data, tileData, pathData)
@@ -36,8 +39,8 @@ export function generatePalace(params, pathData) {
   ret.terrain = terrain
   ret.types = types
   ret.startPoint = [2,0]
-  ret.endPoint = scale(data.endPoint, 2)
-  ret.presetClocks = [scale(data.firstClock, 2), scale(data.secondClock, 2)]
+  ret.endPoint = add(scale(data.endPoint, PALACE_SCALE), [1,1])
+  ret.presetClocks = [scale(data.firstClock, PALACE_SCALE), scale(data.secondClock, PALACE_SCALE), scale(data.thirdClock, PALACE_SCALE)]
   ret.startAngle = Math.PI
   return ret
 }
@@ -164,9 +167,16 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
           curTowards = false
           distance = i
 
+          // No retaining wall on space before either
+          let prev = subtract(curPos, direction)
+          tileData[prev] = { ...tileData[prev], noRetainingWall: true }
+
           for (let j = 0; j < PALACE_JUMP_LENGTH + 1; j ++) {
             // Track distance
             distance ++
+
+            // Make sure there is no retaining wall on this tile
+            tileData[curPos] = { ...tileData[curPos], noRetainingWall: true }
 
             // Move forward
             curPos = add(curPos, direction)
@@ -206,7 +216,7 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
     curTowards = true
   }
 
-  // Clocks are put at 1/4 and 1/2 points
+  // Clocks are put into the palace at specific points
   if (depth / params.palaceLength > 0.25 && data.firstClockPlaced == false) {
     data.firstClock = curPos
     data.firstClockPlaced = true
@@ -214,6 +224,10 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
   if (depth / params.palaceLength > 0.5 && data.secondClockPlaced == false) {
     data.secondClock = curPos
     data.secondClockPlaced = true
+  }
+  if (depth / params.palaceLength > 0.68 && data.thirdClockPlaced == false) {
+    data.thirdClock = curPos
+    data.thirdClockPlaced = true
   }
 
   // Recurse
@@ -224,18 +238,22 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
 
 function scaleTerrain(terrain, types, params, tileData) {
   let deltas = [[1,0],[0,1],[-1,0],[0,-1]]
-  let floorDeltas = [[0,0],[0,1],[1,0],[1,1]]
+  let floorDeltas = [
+    [0,0],[0,1],[0,2],
+    [1,0],[1,1],[1,2],
+    [2,0],[2,1],[2,2],
+  ]
   let wallDeltas = [
-    [-1,-1],[-1,0],[-1,1],[-1,2],
-    [0,2],[1,2],[2,2],
-    [2,1],[2,0],[2,-1],
-    [1,-1],[0,-1]
+    [-1,-1],[-1,0],[-1,1],[-1,2],[-1,3],
+    [0,3],[1,3],[2,3],[3,3],
+    [3,2],[3,1],[3,0],[3,-1],
+    [2,-1],[1,-1],[0,-1]
   ]
   let terrainRet = {}
 
   for (const pos in terrain) {
     let p = stringToPosition(pos)
-    let p2 = scale(p, 2)
+    let p2 = scale(p, PALACE_SCALE)
 
     for (const delta of floorDeltas) {
       let pf = add(delta, p2)
@@ -251,17 +269,20 @@ function scaleTerrain(terrain, types, params, tileData) {
           types[pf] = 4
         }
         else {
-          // Determine if this is a junction
-          let xPaths = 0
-          let yPaths = 0
-          if (Math.abs(terrain[add(p, [1, 0])] - terrain[p]) <= 1) {xPaths ++}
-          if (Math.abs(terrain[add(p, [-1, 0])] - terrain[p]) <= 1) {xPaths ++}
-          if (Math.abs(terrain[add(p, [0, 1])] - terrain[p]) <= 1) {yPaths ++}
-          if (Math.abs(terrain[add(p, [0, -1])] - terrain[p]) <= 1) {yPaths ++}
+          // Make sure this space wasn't marked as not having a retaining wall
+          if (!(tileData[p] && tileData[p].noRetainingWall)) {
+            // Determine if this is a junction
+            let xPaths = 0
+            let yPaths = 0
+            if (Math.abs(terrain[add(p, [1, 0])] - terrain[p]) <= 1) {xPaths ++}
+            if (Math.abs(terrain[add(p, [-1, 0])] - terrain[p]) <= 1) {xPaths ++}
+            if (Math.abs(terrain[add(p, [0, 1])] - terrain[p]) <= 1) {yPaths ++}
+            if (Math.abs(terrain[add(p, [0, -1])] - terrain[p]) <= 1) {yPaths ++}
 
-          if (xPaths == 1 || yPaths == 1) {
-            terrainRet[pf] = terrain[p] + 2
-            types[pf] = 1
+            if (xPaths == 1 || yPaths == 1) {
+              terrainRet[pf] = terrain[p] + 2
+              types[pf] = 1
+            }
           }
         }
       }

@@ -113,7 +113,7 @@ export class GeneratorParams {
     else if (level == 15) {
       this.caveMode = 15
       this.palaceIndoors = false
-      this.palaceLength = 115
+      this.palaceLength = 110
     }
     else if (0 < level && level <= 2) {
       // Type Island
@@ -563,7 +563,8 @@ export function generateEverything(params) {
     for (const clockPos of res.presetClocks) {
       gen.presetClocks.push(add(clockPos, pt))
     }
-    gen.presetClocks.push(path[40])
+    gen.presetClocks.push(path[Math.floor(path.length * 0.75)])
+    gen.presetClocks.push(path[Math.floor(path.length * 0.5)])
     gen.presetClocks.push(add(res.startPoint, pt))
   }
 
