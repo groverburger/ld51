@@ -174,7 +174,7 @@ export default class Player extends Thing {
   update() {
     this.inputs.update()
     const scene = getScene()
-    this.time -= 1
+    // this.time -= 1
 
     // walking and friction
     let dx = this.inputs.get("xMove")

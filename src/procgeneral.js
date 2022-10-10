@@ -149,9 +149,9 @@ export class GeneratorParams {
       let param = parameters.data[key]
       let v = this[key + "_ADVANCED"]
 
-      // Truncate the value to an integer
-      if (param.truncate) {
-        v = Math.floor(v)
+      // Round the value to an integer
+      if (param.round) {
+        v = Math.round(v)
       }
 
       // Bind it to minimum and maximum
@@ -494,6 +494,56 @@ function makeDoorway(terrain, types, pos) {
   }
 }
 
+export function smoothTile(terrain, pos) {
+  let deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+
+  let total = 0
+  let count = 0
+  for (const delta of deltas) {
+    let newPos = add(pos, delta)
+
+    // Make sure the tile we're checking isn't too much of a height difference
+    if (!isExtreme(terrain[newPos])) {
+      let heightDifference = Math.abs(terrain[newPos] - terrain[pos])
+      if (heightDifference <= 9) {
+        // Count this for the average
+        total += terrain[newPos]
+        count ++
+      }
+    }
+  }
+
+  // Average it out
+  if (count > 0) {
+    terrain[pos] = Math.floor(total/count)
+  }
+}
+
+export function smoothArea(terrain, pos) {
+  let deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+
+  // Iterate over the surrounding tiles
+  for (const delta of deltas) {
+    let newPos = add(pos, delta)
+
+    // Smooth it
+    smoothTile(terrain, newPos)
+  }
+}
+
+export function smoothPath(terrain, path, params) {
+  for (let i = 0; i < path.length-2; i ++) {
+    let p0 = stringToPosition(path[i])
+    let p1 = stringToPosition(path[i+2])
+
+    // See if there is a big height difference in the path
+    let heightDifference = Math.abs(terrain[p0] - terrain[p1])
+    if (heightDifference > params.pathSmoothingLedgeMax) {
+      smoothArea(terrain, p1)
+    }
+  }
+}
+
 export function generateEverything(params) {
   // Bonus levels
   if (params.caveMode == 13) {
@@ -531,7 +581,7 @@ export function generateEverything(params) {
   // Create the path
   let distances = getDistances(gen.terrain, gen.startPoint)
   let path = findPath(distances, gen.endPoint)
-  path = shortenPath(path, params.maxPathLength)
+  path = shortenPath(path, params.pathLength)
   gen.endPoint = path[0]
   cave.carvePoint(gen.terrain, gen.endPoint)
 
@@ -552,11 +602,11 @@ export function generateEverything(params) {
     // If we had to carve another path, mark this as the one true path
     distances = getDistances(gen.terrain, gen.startPoint)
     path = findPath(distances, gen.endPoint)
-    path = shortenPath(path, params.maxPathLength)
+    path = shortenPath(path, params.pathLength)
     gen.endPoint = path[0]
     cave.carvePoint(gen.terrain, gen.endPoint)
     if (guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)) {
-      // If we have to carve the path a third time, this may be uncompletable, so just throw an error so we can restart
+      // If we have to carve the path a third time, this may be uncompletable. Just throw an error so we can restart
       throw "Uncompletable terrain"
     }
   }
@@ -566,6 +616,11 @@ export function generateEverything(params) {
 
   // Remove tiny holes from the map (frustrating for the player)
   cave.removeHoles(gen.terrain)
+
+  // Smoothing layer over the path
+  for (let i = 0; i < params.pathSmoothingIterations; i ++) {
+    smoothPath(gen.terrain, path, params)
+  }
 
   // If finale level, put a palace at the end
   if (params.caveMode == 15) {

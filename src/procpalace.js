@@ -147,20 +147,7 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
         curTowards = false
         // console.log("Turned after distance " + distance)
       }
-      else if (action == "stair") {
-        // Stairs end here
-        curTowards = false
-        
-        // Backpedal by one space
-        curPos = subtract(curPos, direction)
-        curHeight -= 1
-
-        // End action and set distance to the distance we actually traveled
-        distance = i
-        // console.log("Stairs end after distance " + distance)
-        break
-      }
-      else {
+      else if (action == "jump") {
         // Attempt to jump over the ledge
 
         // Make sure there is a place we can go a certain distance ahead
@@ -209,7 +196,21 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
           data.endPoint = curPos
           break
         }
-       
+      }
+      else {
+        // End here
+        curTowards = false
+        
+        // Backpedal by one space
+        curPos = subtract(curPos, direction)
+        if (action == "stair") {
+          curHeight -= 1
+        }
+
+        // End action and set distance to the distance we actually traveled
+        distance = i
+        // console.log("End after distance " + distance)
+        break
       }
     } else {
       // Carve
@@ -288,7 +289,8 @@ function scaleTerrain(terrain, types, params, tileData) {
             if (Math.abs(terrain[add(p, [0, -1])] - terrain[p]) <= 1) {yPaths ++}
 
             if (xPaths == 1 || yPaths == 1) {
-              terrainRet[pf] = terrain[p] + 2
+              const isStair = tileData[p] && tileData[p].stair
+              terrainRet[pf] = terrain[p] + (isStair ? 3 : 2)
               types[pf] = 1
             }
           }
