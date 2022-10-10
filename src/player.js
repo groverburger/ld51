@@ -33,6 +33,8 @@ export default class Player extends Thing {
   aabb = [-16, -16, 16, 16]
   cameraTarget = [0, 0, 0]
   cameraLookAhead = 64
+  moveDirection = [1, 0, 0]
+  forward = [1, 0, 0]
   color = u.stringToColor("#cbdbfc")
   legColor = u.stringToColor("#5b6e99")
   ears = []
@@ -55,6 +57,7 @@ export default class Player extends Thing {
   lastPosition = [0, 0, 0]
   walkFrames = 0
   walkFrameAccel = 0
+  slowTime = 0
 
   constructor(data={}) {
     super(data)
@@ -177,7 +180,6 @@ export default class Player extends Thing {
     let dx = this.inputs.get("xMove")
     let dy = this.inputs.get("yMove")
 
-
     if (Math.abs(dx) + Math.abs(dy) > 0) {
       this.walkFrameAccel = 0.08
     }
@@ -191,13 +193,18 @@ export default class Player extends Thing {
       [dx, dy] = vec2.normalize([dx, dy])
     }
     const yaw = scene.camera3D.yaw - Math.PI/2
-    const friction = 0.94
+    const friction = this.slowTime > 0 ? 0.89 : 0.94
     const groundSpeed = 0.725
     const airSpeed = 0.5
     const walkSpeed = this.onGround ? groundSpeed : airSpeed
     const maxSpeed = groundSpeed / (1 - friction)
     const xAccel = (Math.cos(yaw)*dx - Math.sin(yaw)*dy)*walkSpeed
     const yAccel = (Math.sin(yaw)*dx + Math.cos(yaw)*dy)*walkSpeed
+
+    this.slowTime --
+
+    this.moveDirection = vec3.normalize([xAccel, yAccel, 0])
+    this.forward = vec3.normalize([Math.sin(yaw), Math.cos(yaw), 0])
 
     // can't move if diving
     if (this.onGround || !this.timer("disableAirControl")) {
@@ -213,7 +220,12 @@ export default class Player extends Thing {
 
       //scene.camera3D.yaw += dx*0.025
     }
-    this.speed[2] -= this.speed[2] < 0 ? 0.6 : 0.35
+
+    let grav = this.speed[2] < 0 ? 0.6 : 0.35
+    if (this.slowTime > 0) {
+      grav *= 1.7
+    }
+    this.speed[2] -= grav
 
     if (this.onGround) {
       this.speed[0] *= friction
@@ -405,12 +417,13 @@ export default class Player extends Thing {
     // get hit by enemy bullets
     for (const thing of this.getAllThingCollisions()) {
       if (
-        thing instanceof Bullet
+        thing.canDamagePlayers
         && Math.abs(thing.position[2] - this.position[2]) <= this.height/2 + 8
         && !thing.dead
         && thing.owner != this
       ) {
-        this.dead = true
+        thing.onHit(this)
+  
         break
       }
     }
@@ -508,10 +521,10 @@ export default class Player extends Thing {
 
   getClosestWall() {
     let closest = null
-    let closestDistance = Infinity
+    let closestDistance = 0
     const position = [...this.position]
     position[2] -= this.height/2
-
+    
     for (const collider of getThing("terrain").query(this.position[0] - 64, this.position[1] - 64, 128, 128)) {
       const {normal, points} = collider
       if (normal[2] >= 0.7) continue
@@ -524,8 +537,12 @@ export default class Player extends Thing {
       if (distance > this.width*1.25) continue
       if (distance < -1 * this.width) continue
 
-      if (distance < closestDistance) {
-        closestDistance = distance
+      let dot = Math.abs(vec3.dotProduct(this.moveDirection, normal))
+      if (vec3.magnitude(this.moveDirection) == 0) {
+        dot = Math.abs(vec3.dotProduct(this.forward, normal))
+      }
+      if (dot > closestDistance) {
+        closestDistance = dot
         closest = collider
       }
     }

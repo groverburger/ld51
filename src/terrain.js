@@ -13,6 +13,7 @@ import assets from "./assets.js"
 import SpatialHash from "./core/spatialhash.js"
 import Player from "./player.js"
 import Enemy from "./enemy.js"
+import EnemyTurret from "./turret.js"
 import Turret from "./turret.js"
 import Goal from "./goal.js"
 import TimePickup from "./timepickup.js"
@@ -800,13 +801,13 @@ export default class Terrain extends Thing {
   generate() {
     // Generate seed
     let seed = Math.floor(Math.random() * 100000)
-    //seed = 12873
+    // seed = 19204
 
     // Init the parameterBuilder object
     let parameterBuilder = globals.parameterBuilder
     if (!parameterBuilder) {
       parameterBuilder = new proc.GeneratorParams(seed)
-      parameterBuilder.advance()
+      parameterBuilder.setParametersForLevel(globals.level)
       globals.parameterBuilder = parameterBuilder
     }
 
@@ -815,7 +816,7 @@ export default class Terrain extends Thing {
     if (!generated) {
 
       // WARNING: Do not try this at home!
-      while (true) {
+      for (let i = 0; i < 10; i ++) {
         try {
           // Generate the world
           generated = proc.generateEverything(parameterBuilder)
@@ -823,9 +824,10 @@ export default class Terrain extends Thing {
         }
         catch(e) {
           console.log("Generation error: " + e)
-          console.log(e);
+          console.log(e)
+          console.log(parameterBuilder)
           delete globals.generated
-          parameterBuilder.randomize()
+          parameterBuilder.setParametersForLevel(globals.level)
         }
       }
       
@@ -902,7 +904,6 @@ export default class Terrain extends Thing {
       let clockList = this.presetClocks.length > 0 ? this.presetClocks : [itemLocations.pop()]
       for (const coord of clockList) {
         if (coord) {
-          console.log(clockList)
           getScene().addThing(new TimePickup([coord[0]*64 + 32, coord[1]*64 + 32, 0]))
         }
       }

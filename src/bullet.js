@@ -7,6 +7,8 @@ import * as vec3 from "./core/vector3.js"
 import * as mat from "./core/matrices.js"
 
 export default class Bullet extends Thing {
+  canDamagePlayers = true
+  canDamageEnemies = true
   aabb = [-24, -24, 24, 24]
 
   constructor(position, direction, speed, owner) {
@@ -61,5 +63,11 @@ export default class Bullet extends Thing {
       gfx.set("color", i == 0 ? [1,1,1,1] : [1,0,0,1])
       gfx.drawBillboard()
     }
+  }
+
+  onHit(other) {
+    other.health -= 1
+    this.dead = true
+    other.after(15, () => {}, "hurt")
   }
 }
