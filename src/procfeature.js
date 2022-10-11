@@ -1,9 +1,8 @@
-import * as proc from "./procgeneral.js"
+import * as proc from './procgeneral.js'
 
-export function insertFeature(terrain, types, pos, params) {
-  
+export function insertFeature (terrain, types, pos, params) {
   let selection = 0
-  let r = params.random()
+  const r = params.random()
   // Random structure
   if (r < 0.04) {
     selection = Math.floor(params.random() * 100)
@@ -18,13 +17,12 @@ export function insertFeature(terrain, types, pos, params) {
   }
 
   // Pick feature
-  let featureTerrain = {}
-  let featureTypes = {}
+  const featureTerrain = {}
+  const featureTypes = {}
   selection = selection % 2
   if (selection == 1) {
     cube(terrain[pos], featureTerrain, featureTypes)
-  }
-  else {
+  } else {
     pyramid(terrain[pos], featureTerrain, featureTypes)
   }
 
@@ -33,27 +31,27 @@ export function insertFeature(terrain, types, pos, params) {
   proc.mergeTerrain(types, featureTypes, pos)
 }
 
-function pyramid(height, terrain, types) {
-  for (let i = 3; i >= 1; i --) {
-    let h = 8 - (i*2)
-    for (let x = -i + 1; x <= i - 1; x ++) {
-      for (let y = -i + 1; y <= i - 1; y ++) {
-        terrain[[x,y]] = height + h
-        types[[x,y]] = 4
+function pyramid (height, terrain, types) {
+  for (let i = 3; i >= 1; i--) {
+    const h = 8 - (i * 2)
+    for (let x = -i + 1; x <= i - 1; x++) {
+      for (let y = -i + 1; y <= i - 1; y++) {
+        terrain[[x, y]] = height + h
+        types[[x, y]] = 4
       }
     }
   }
 }
 
-function cube(height, terrain, types) {
-  for (let x = -2; x <= 2; x ++) {
-    for (let y = -2; y <= 2; y ++) {
-      terrain[[x,y]] = height + 6
-      types[[x,y]] = 1
+function cube (height, terrain, types) {
+  for (let x = -2; x <= 2; x++) {
+    for (let y = -2; y <= 2; y++) {
+      terrain[[x, y]] = height + 6
+      types[[x, y]] = 1
     }
   }
-  types[[2,2]] = 4
-  types[[-2,2]] = 4
-  types[[2,-2]] = 4
-  types[[-2,-2]] = 4
+  types[[2, 2]] = 4
+  types[[-2, 2]] = 4
+  types[[2, -2]] = 4
+  types[[-2, -2]] = 4
 }

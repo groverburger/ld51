@@ -1,18 +1,18 @@
-import * as proc from "./procgeneral.js"
-import { add, scale } from "./core/vector2.js"
+import * as proc from './procgeneral.js'
+import { add, scale } from './core/vector2.js'
 
 const ROUGHNESS_CONSTANT = 0.5
 const BELL_ITERATIONS = 9
 const SMOOTHING_ITERATIONS = 3
 
-export function generateTerrain(params) {
-  let width = params.width
-  let length = params.length
-  let height = params.height
-  let roughness = params.terrainRoughness
-  let variance = params.terrainVariance
+export function generateTerrain (params) {
+  const width = params.width
+  const length = params.length
+  const height = params.height
+  const roughness = params.terrainRoughness
+  const variance = params.terrainVariance
   // Determine how big of a grid we'll need for the requested size
-  let greater = Math.max(width, length)
+  const greater = Math.max(width, length)
   let size = 2
   while (size + 1 < greater) {
     size *= 2
@@ -22,12 +22,12 @@ export function generateTerrain(params) {
   // Build the initial object
   let terrain = {}
   terrain[[0, 0]] = diamondSquareRandomize(variance, params)
-  terrain[[0, size-1]] = diamondSquareRandomize(variance, params)
-  terrain[[size-1, 0]] = diamondSquareRandomize(variance, params)
-  terrain[[size-1, size-1]] = diamondSquareRandomize(variance, params)
-  
+  terrain[[0, size - 1]] = diamondSquareRandomize(variance, params)
+  terrain[[size - 1, 0]] = diamondSquareRandomize(variance, params)
+  terrain[[size - 1, size - 1]] = diamondSquareRandomize(variance, params)
+
   // Run the algorithm
-  let moveDistance = (size-1)/2
+  let moveDistance = (size - 1) / 2
   let varianceFactor = variance
   while (moveDistance > 1) {
     diamondSquareIterate(terrain, size, moveDistance, varianceFactor, 1, params)
@@ -37,11 +37,11 @@ export function generateTerrain(params) {
   }
 
   // Cut the terrain down to size
-  let cutTerrain = {}
-  for (let i = 0; i < width; i ++) {
-    for (let j = 0; j < length; j ++) {
-      if ([i,j] in terrain) {
-        cutTerrain[[i,j]] = terrain[[i,j]]
+  const cutTerrain = {}
+  for (let i = 0; i < width; i++) {
+    for (let j = 0; j < length; j++) {
+      if ([i, j] in terrain) {
+        cutTerrain[[i, j]] = terrain[[i, j]]
       }
     }
   }
@@ -56,32 +56,32 @@ export function generateTerrain(params) {
   smooth(terrain, SMOOTHING_ITERATIONS)
 
   // Return
-  let ret = new proc.GeneratorResult()
+  const ret = new proc.GeneratorResult()
   ret.terrain = terrain
   return ret
 }
 
-function smooth(terrain, iterations) {
-  for (let i = 0; i < iterations; i ++) {
+function smooth (terrain, iterations) {
+  for (let i = 0; i < iterations; i++) {
     smoothIteration(terrain)
   }
 }
 
-function smoothIteration(terrain) {
-  let deltas = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+function smoothIteration (terrain) {
+  const deltas = [[0, 1], [1, 0], [0, -1], [-1, 0]]
 
   for (const key in terrain) {
     // Count the number of adjacent spaces with greater height
     let count = 0
     let lowest = 0
-    let pos = proc.stringToPosition(key);
+    const pos = proc.stringToPosition(key)
     for (const delta of deltas) {
-      let samplePos = add(pos, delta)
-      
+      const samplePos = add(pos, delta)
+
       if (samplePos in terrain) {
-        let here = terrain[pos];
-        let there = terrain[samplePos];
-        
+        const here = terrain[pos]
+        const there = terrain[samplePos]
+
         if (there > here) {
           // Count spaces
           count += 1
@@ -100,10 +100,10 @@ function smoothIteration(terrain) {
   }
 }
 
-function diamondSquareIterate(terrain, size, moveDistance, variance, mode, params) {
+function diamondSquareIterate (terrain, size, moveDistance, variance, mode, params) {
   // Create delta pattern
   let deltas = []
-  let deltaScale = 0;
+  let deltaScale = 0
   // diamond
   if (mode == 0) {
     deltas = [[0, 1], [1, 0], [0, -1], [-1, 0]]
@@ -112,30 +112,30 @@ function diamondSquareIterate(terrain, size, moveDistance, variance, mode, param
   // square
   else {
     deltas = [[1, 1], [-1, 1], [1, -1], [-1, -1]]
-    deltaScale = Math.floor(moveDistance/2)
+    deltaScale = Math.floor(moveDistance / 2)
   }
 
   // Loop over the terrain pattern
-  for (let i = 0; i < size-1; i += moveDistance) {
-    for (let j = 0; j < size-1; j += moveDistance) {
-      let pos = [i + deltaScale, j + deltaScale]
+  for (let i = 0; i < size - 1; i += moveDistance) {
+    for (let j = 0; j < size - 1; j += moveDistance) {
+      const pos = [i + deltaScale, j + deltaScale]
       // Make sure this point hasn't already been set
       if (!(pos in terrain)) {
         let count = 0
         let total = 0
-        
+
         // Collect the four parent points for the average
         for (const delta of deltas) {
-          let samplePos = add(pos, scale(delta, deltaScale))
+          const samplePos = add(pos, scale(delta, deltaScale))
           if (samplePos in terrain) {
             count += 1
             total += terrain[samplePos]
           }
         }
-        
+
         // Average the four (or fewer) samples and add the random value
         if (count > 0) {
-          let value = total/count + diamondSquareRandomize(variance, params)
+          const value = total / count + diamondSquareRandomize(variance, params)
           terrain[pos] = value
         }
       }
@@ -143,6 +143,6 @@ function diamondSquareIterate(terrain, size, moveDistance, variance, mode, param
   }
 }
 
-function diamondSquareRandomize(variance, params) {
+function diamondSquareRandomize (variance, params) {
   return (params.random() - 0.5) * variance * ROUGHNESS_CONSTANT
 }
