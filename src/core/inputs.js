@@ -1,26 +1,25 @@
 import {
   keysDown,
-  keysPressed,
   mouse,
   gamepads
-} from "./game.js"
+} from './game.js'
 
 export default class InputHandler {
   inputs = {}
   active = {}
   lastActive = {}
 
-  constructor(data={}) {
+  constructor (data = {}) {
     for (const [name, listener] of Object.entries(data)) {
       this.addInput(name, listener)
     }
   }
 
-  addInput(name, listener) {
+  addInput (name, listener) {
     this.inputs[name] = listener
   }
 
-  update() {
+  update () {
     // replace last active with active, and empty active
     for (const input in this.lastActive) delete this.lastActive[input]
     for (const input in this.active) {
@@ -34,11 +33,11 @@ export default class InputHandler {
     }
   }
 
-  get(input) {
+  get (input) {
     return this.active[input]
   }
 
-  pressed(input) {
+  pressed (input) {
     return this.active[input] && !this.lastActive[input]
   }
 }
