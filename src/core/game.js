@@ -1,7 +1,7 @@
-import * as config from "../config.js"
-import assets from "../assets.js"
-import { map } from "./utils.js"
-import Scene from "./scene.js"
+import * as config from '../config.js'
+import assets from '../assets.js'
+import { map } from './utils.js'
+import Scene from './scene.js'
 
 const { width, height } = config
 export const gamepads = []
@@ -13,42 +13,42 @@ export const mouse = {
   delta: [0, 0],
   button: false,
   click: false,
-  lock() {
+  lock () {
     canvas2d.requestPointerLock()
   },
-  unlock() {
+  unlock () {
     document.exitPointerLock()
   },
-  isLocked() {
+  isLocked () {
     return document.pointerLockElement == canvas2d
   },
-  setStyle(style="default") {
-    document.querySelector("#cursorStyle").innerHTML = `canvas {cursor: ${style};}`
-  },
+  setStyle (style = 'default') {
+    document.querySelector('#cursorStyle').innerHTML = `canvas {cursor: ${style};}`
+  }
 }
 
 let scene
 let nextScene
 let previousFrameTime = null
 let accumulator = 0
-let frameAccumulator = 0
+const frameAccumulator = 0
 let frameCount = 0
 let isFocused = true
 let frameRate = 0
-const refreshRate = 1/60
-export const canvas3d = document.createElement("canvas")
+const refreshRate = 1 / 60
+export const canvas3d = document.createElement('canvas')
 canvas3d.width = width
 canvas3d.height = height
-canvas3d.id = "canvas3d"
-export const canvas2d = document.createElement("canvas")
+canvas3d.id = 'canvas3d'
+export const canvas2d = document.createElement('canvas')
 canvas2d.width = width
 canvas2d.height = height
-canvas2d.id = "canvas2d"
-export const ctx = canvas2d.getContext("2d")
+canvas2d.id = 'canvas2d'
+export const ctx = canvas2d.getContext('2d')
 ctx.imageSmoothingEnabled = false
 export const globals = {}
 
-export function start() {
+export function start () {
   setScene(assets.sceneOrder[0])
   requestAnimationFrame(frame)
   setInterval(() => {
@@ -57,7 +57,7 @@ export function start() {
   }, 1000)
 }
 
-function frame(frameTime) {
+function frame (frameTime) {
   let delta = previousFrameTime == null ? 0 : (frameTime - previousFrameTime) / 1000
   previousFrameTime = frameTime
 
@@ -86,7 +86,7 @@ function frame(frameTime) {
   requestAnimationFrame(frame)
 }
 
-function update() {
+function update () {
   if (nextScene) {
     scene = nextScene
     nextScene = null
@@ -126,12 +126,12 @@ function update() {
   mouse.click = false
 }
 
-function draw() {
+function draw () {
   if (!document.hasFocus()) { return }
   scene?.draw()
 }
 
-function loseFocus() {
+function loseFocus () {
   for (const key in keysDown) delete keysDown[key]
   for (const [name, sound] of Object.entries(assets.sounds)) {
     sound.wasPlayingWhenFocused = !sound.paused
@@ -139,7 +139,7 @@ function loseFocus() {
   }
 }
 
-function gainFocus() {
+function gainFocus () {
   for (const [name, sound] of Object.entries(assets.sounds)) {
     if (sound.wasPlayingWhenFocused) {
       sound.play()
@@ -153,17 +153,17 @@ function gainFocus() {
 
 document.onkeydown = (event) => {
   keysDown[event.code] = true
-  //event.preventDefault()
-  //event.returnValue = "Something"
-  //return false
+  // event.preventDefault()
+  // event.returnValue = "Something"
+  // return false
   return true
 }
 
 document.onkeyup = (event) => {
   delete keysDown[event.code]
-  //event.preventDefault()
-  //event.returnValue = "Something"
-  //return false
+  // event.preventDefault()
+  // event.returnValue = "Something"
+  // return false
   return true
 }
 
@@ -177,26 +177,26 @@ document.onmousedown = () => {
 }
 
 window.onbeforeunload = (event) => {
-  //event.preventDefault()
+  // event.preventDefault()
 
   // chrome requires returnValue to be set
-  //event.returnValue = "Really want to quit the game?"
+  // event.returnValue = "Really want to quit the game?"
 }
 
 canvas2d.onmousemove = (e) => {
   const aspect = Math.min(canvas2d.offsetWidth / width, canvas2d.offsetHeight / height)
   mouse.position[0] = map(
     e.offsetX,
-    canvas2d.offsetWidth/2 - aspect*width/2,
-    canvas2d.offsetWidth/2 + aspect*width/2,
+    canvas2d.offsetWidth / 2 - aspect * width / 2,
+    canvas2d.offsetWidth / 2 + aspect * width / 2,
     0,
     width,
     true
   )
   mouse.position[1] = map(
     e.offsetY,
-    canvas2d.offsetHeight/2 - aspect*height/2,
-    canvas2d.offsetHeight/2 + aspect*height/2,
+    canvas2d.offsetHeight / 2 - aspect * height / 2,
+    canvas2d.offsetHeight / 2 + aspect * height / 2,
     0,
     height,
     true
@@ -210,29 +210,29 @@ canvas2d.onmousemove = (e) => {
    scene managing
  ********************************************************************************/
 
-export function setScene(name) {
+export function setScene (name) {
   nextScene = new Scene(name)
 }
 
-export function getScene() {
+export function getScene () {
   return scene
 }
 
-export function resetScene() {
+export function resetScene () {
   nextScene = new Scene(scene.name)
 }
 
-export function setNextScene() {
+export function setNextScene () {
   const index = assets.sceneOrder.indexOf(scene.name)
   const nextName = assets.sceneOrder[index + 1]
   return setScene(nextName)
 }
 
-export function getThing(thing) {
+export function getThing (thing) {
   return scene.namedThings[thing]
 }
 
-export function getFramerate() {
+export function getFramerate () {
   return frameRate
 }
 
@@ -241,15 +241,15 @@ export function getFramerate() {
  ********************************************************************************/
 
 export const saveData = new Proxy({}, {
-  set(obj, prop, value) {
+  set (obj, prop, value) {
     localStorage.setItem(prop, value)
   },
 
-  get(obj, prop) {
+  get (obj, prop) {
     return localStorage.getItem(prop, value)
   },
 
-  delete(obj, prop) {
+  delete (obj, prop) {
     localStorage.removeItem(prop)
-  },
+  }
 })

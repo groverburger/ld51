@@ -1,9 +1,9 @@
-import { loadObj } from "./modelloader.js"
-import { width, height } from "../config.js"
-import { getScene, canvas3d } from "./game.js"
-import * as vec3 from "./vector3.js"
-import * as mat from "./matrices.js"
-import assets from "../assets.js"
+import { loadObj } from './modelloader.js'
+import { width, height } from '../config.js'
+import { getScene, canvas3d } from './game.js'
+import * as vec3 from './vector3.js'
+import * as mat from './matrices.js'
+import assets from '../assets.js'
 
 export let canvas
 export let gl
@@ -12,28 +12,28 @@ let currentShader
 // the vertex format used for .obj files
 const defaultVertexFormat = [
   {
-    name: "vertexPosition",
-    count: 3,
+    name: 'vertexPosition',
+    count: 3
   },
 
   {
-    name: "vertexTexture",
-    count: 2,
+    name: 'vertexTexture',
+    count: 2
   },
 
   {
-    name: "vertexNormal",
-    count: 3,
-  },
+    name: 'vertexNormal',
+    count: 3
+  }
 ]
 
-export function init() {
-  gl = canvas3d.getContext("webgl", {antialias: false})
+export function init () {
+  gl = canvas3d.getContext('webgl', { antialias: false })
 }
 
 // returns how many bytes there are in a form
 // based off of what data type the form is
-function byteOffset(form) {
+function byteOffset (form) {
   let bytes = 1
   if (!form.what) form.what = gl.FLOAT
   if (form.what == gl.FLOAT) {
@@ -46,7 +46,7 @@ function byteOffset(form) {
    set and draw graphics primitives
  ********************************************************************************/
 
-export function set(name, value, kind="float") {
+export function set (name, value, kind = 'float') {
   if (Array.isArray(value)) {
     if (value.length == 16) {
       gl.uniformMatrix4fv(gl.getUniformLocation(currentShader, name), false, value)
@@ -69,7 +69,7 @@ export function set(name, value, kind="float") {
     }
   }
 
-  if (kind == "int") {
+  if (kind == 'int') {
     gl.uniform1i(gl.getUniformLocation(currentShader, name), value)
     return
   }
@@ -77,26 +77,26 @@ export function set(name, value, kind="float") {
   gl.uniform1f(gl.getUniformLocation(currentShader, name), value)
 }
 
-export function setShader(shader) {
+export function setShader (shader) {
   currentShader = shader
   gl.useProgram(shader)
 }
 
-export function setTexture(texture, index=0) {
-  gl.activeTexture(gl["TEXTURE" + index])
+export function setTexture (texture, index = 0) {
+  gl.activeTexture(gl['TEXTURE' + index])
   gl.bindTexture(gl.TEXTURE_2D, texture)
   gl.activeTexture(gl.TEXTURE0)
 }
 
-export function setFramebuffer(fb=null) {
+export function setFramebuffer (fb = null) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, fb?.framebuffer ? fb.framebuffer : fb)
 }
 
-export function drawMesh(mesh, drawType="triangles") {
+export function drawMesh (mesh, drawType = 'triangles') {
   const {
     buffer,
     format,
-    verts,
+    verts
   } = mesh
   const shader = currentShader
   let offset = 0
@@ -127,30 +127,30 @@ export function drawMesh(mesh, drawType="triangles") {
 }
 
 let billboardMesh
-export function drawBillboard() {
+export function drawBillboard () {
   billboardMesh = billboardMesh || createMesh([
-    0,0,0, 0,0, 1,0,0,
-    0,0,0, 1,0, 1,0,0,
-    0,0,0, 0,1, 1,0,0,
-    0,0,0, 1,1, 1,0,0,
+    0, 0, 0, 0, 0, 1, 0, 0,
+    0, 0, 0, 1, 0, 1, 0, 0,
+    0, 0, 0, 0, 1, 1, 0, 0,
+    0, 0, 0, 1, 1, 1, 0, 0
   ])
-  drawMesh(billboardMesh, "triangle_strip")
+  drawMesh(billboardMesh, 'triangle_strip')
 }
 
-let triVerts = new Float32Array([
-  0,0,0, 0,0, 1,0,0,
-  0,0,1, 0,1, 1,0,0,
-  1,0,0, 1,0, 1,0,0,
+const triVerts = new Float32Array([
+  0, 0, 0, 0, 0, 1, 0, 0,
+  0, 0, 1, 0, 1, 1, 0, 0,
+  1, 0, 0, 1, 0, 1, 0, 0
 ])
 let triMesh
-export function drawTri(...points) {
-  triMesh = triMesh || createMesh(triVerts, {isStreamed: true});
+export function drawTri (...points) {
+  triMesh = triMesh || createMesh(triVerts, { isStreamed: true })
   if (points) {
     let i = 0
-    for (let p=0; p<points.length; p+=3) {
+    for (let p = 0; p < points.length; p += 3) {
       triVerts[i] = points[p]
-      triVerts[i+1] = points[p+1]
-      triVerts[i+2] = points[p+2]
+      triVerts[i + 1] = points[p + 1]
+      triVerts[i + 2] = points[p + 2]
       i += 8
     }
     modifyMesh(triMesh, triVerts)
@@ -158,29 +158,29 @@ export function drawTri(...points) {
   drawMesh(triMesh)
 }
 
-let quadVerts = new Float32Array([
-  0,0,0, 0,0, 1,0,0,
-  0,0,1, 0,1, 1,0,0,
-  1,0,0, 1,0, 1,0,0,
-  1,0,1, 1,1, 1,0,0,
+const quadVerts = new Float32Array([
+  0, 0, 0, 0, 0, 1, 0, 0,
+  0, 0, 1, 0, 1, 1, 0, 0,
+  1, 0, 0, 1, 0, 1, 0, 0,
+  1, 0, 1, 1, 1, 1, 0, 0
 ])
 let quadMesh
-export function drawQuad(...points) {
-  quadMesh = quadMesh || createMesh(quadVerts, {isStreamed: true});
+export function drawQuad (...points) {
+  quadMesh = quadMesh || createMesh(quadVerts, { isStreamed: true })
   if (points) {
     let i = 0
-    for (let p=0; p<points.length; p+=3) {
+    for (let p = 0; p < points.length; p += 3) {
       quadVerts[i] = points[p]
-      quadVerts[i+1] = points[p+1]
-      quadVerts[i+2] = points[p+2]
+      quadVerts[i + 1] = points[p + 1]
+      quadVerts[i + 2] = points[p + 2]
       i += 8
     }
     modifyMesh(quadMesh, quadVerts)
   }
-  drawMesh(quadMesh, "triangle_strip")
+  drawMesh(quadMesh, 'triangle_strip')
 }
 
-export function drawLine(p1, p2, w=1) {
+export function drawLine (p1, p2, w = 1) {
   const vector = vec3.normalize(vec3.subtract(p1, p2))
   const cross = vec3.crossProduct(vector, getScene().camera3D.lookVector)
   cross[0] *= w
@@ -191,7 +191,7 @@ export function drawLine(p1, p2, w=1) {
     p1[0] - cross[0], p1[1] - cross[1], p1[2] - cross[2],
     p1[0] + cross[0], p1[1] + cross[1], p1[2] + cross[2],
     p2[0] - cross[0], p2[1] - cross[1], p2[2] - cross[2],
-    p2[0] + cross[0], p2[1] + cross[1], p2[2] + cross[2],
+    p2[0] + cross[0], p2[1] + cross[1], p2[2] + cross[2]
   )
 
   return cross
@@ -201,8 +201,8 @@ export function drawLine(p1, p2, w=1) {
    graphics primitives creation functions
  ********************************************************************************/
 
-export function createShader(vsSource, fsSource) {
-  function compileShader(what, source) {
+export function createShader (vsSource, fsSource) {
+  function compileShader (what, source) {
     const shader = gl.createShader(what)
     gl.shaderSource(shader, source)
     gl.compileShader(shader)
@@ -233,11 +233,11 @@ export function createShader(vsSource, fsSource) {
   return shaderProgram
 }
 
-export function createTexture(image, filter="nearest", edgeClamp=false) {
-  if (typeof filter == "string") {
+export function createTexture (image, filter = 'nearest', edgeClamp = false) {
+  if (typeof filter === 'string') {
     filter = {
       min: filter,
-      mag: filter,
+      mag: filter
     }
   }
 
@@ -268,8 +268,8 @@ export function createTexture(image, filter="nearest", edgeClamp=false) {
   return texture
 }
 
-export function createMesh(verts, {isStreamed=false, format=defaultVertexFormat}={}) {
-  if (typeof verts == "string") {
+export function createMesh (verts, { isStreamed = false, format = defaultVertexFormat } = {}) {
+  if (typeof verts === 'string') {
     verts = loadObj(verts, true)
   }
 
@@ -292,7 +292,7 @@ export function createMesh(verts, {isStreamed=false, format=defaultVertexFormat}
   }
 }
 
-export function modifyMesh(mesh, verts) {
+export function modifyMesh (mesh, verts) {
   verts = verts.constructor == Float32Array ? verts : new Float32Array(verts)
   mesh.verts = verts
 
@@ -304,7 +304,7 @@ export function modifyMesh(mesh, verts) {
   )
 }
 
-export function createFramebuffer() {
+export function createFramebuffer () {
   // create the texture that the framebuffer renders to
   const texture = gl.createTexture()
   gl.bindTexture(gl.TEXTURE_2D, texture)
@@ -320,7 +320,7 @@ export function createFramebuffer() {
     gl.UNSIGNED_BYTE,
     null
   )
-  //gl.generateMipmap(gl.TEXTURE_2D)
+  // gl.generateMipmap(gl.TEXTURE_2D)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
@@ -339,6 +339,6 @@ export function createFramebuffer() {
 
   return {
     framebuffer,
-    texture,
+    texture
   }
 }

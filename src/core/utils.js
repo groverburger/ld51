@@ -1,8 +1,8 @@
-export function lerp(a, b, t) {
-  return (1-t)*a + t*b
+export function lerp (a, b, t) {
+  return (1 - t) * a + t * b
 }
 
-export function clamp(n, min, max) {
+export function clamp (n, min, max) {
   if (min < max) {
     return Math.min(Math.max(n, min), max)
   }
@@ -10,7 +10,7 @@ export function clamp(n, min, max) {
   return Math.min(Math.max(n, max), min)
 }
 
-export function map(n, start1, stop1, start2, stop2, withinBounds = false) {
+export function map (n, start1, stop1, start2, stop2, withinBounds = false) {
   const newval = (n - start1) / (stop1 - start1) * (stop2 - start2) + start2
 
   if (!withinBounds) {
@@ -20,31 +20,31 @@ export function map(n, start1, stop1, start2, stop2, withinBounds = false) {
   return clamp(newval, start2, stop2)
 }
 
-export function distance2d(x1, y1, x2, y2) {
-  return Math.sqrt((x1-x2)**2 + (y1-y2)**2)
+export function distance2d (x1, y1, x2, y2) {
+  return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 }
 
-export function distance3d(x1, y1, z1, x2, y2, z2) {
-  return Math.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)
+export function distance3d (x1, y1, z1, x2, y2, z2) {
+  return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 }
 
-export function sign(x) {
+export function sign (x) {
   return x && (x > 0 ? 1 : -1)
 }
 
-export function angleTowards(x1, y1, x2, y2) {
+export function angleTowards (x1, y1, x2, y2) {
   return Math.atan2(y2 - y1, x2 - x1)
 }
 
-export function range(start, end, iter=1) {
+export function range (start, end, iter = 1) {
   const array = []
-  for (let i=start; i<=end; i+=iter) {
+  for (let i = start; i <= end; i += iter) {
     array.push(i)
   }
   return array
 }
 
-export function randomizer(startIndex=0) {
+export function randomizer (startIndex = 0) {
   let total = 0
   const primes = [
     2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
@@ -57,13 +57,13 @@ export function randomizer(startIndex=0) {
     523, 541
   ]
   const pseudoRandom = []
-  for (let i=0; i<1048576; i++) {
-    total += primes[(i * 721)%primes.length]
+  for (let i = 0; i < 1048576; i++) {
+    total += primes[(i * 721) % primes.length]
     pseudoRandom.push((total % 100) / 100)
   }
 
   let randomIndex = startIndex
-  return function(low=0, high=1) {
+  return function (low = 0, high = 1) {
     randomIndex += 1
     randomIndex %= pseudoRandom.length
     return pseudoRandom[randomIndex] * (high - low) + low
@@ -72,21 +72,21 @@ export function randomizer(startIndex=0) {
 
 export const random = randomizer()
 
-export function choose(...things) {
-  const index = Math.floor(random(0, things.length-0.001))
+export function choose (...things) {
+  const index = Math.floor(random(0, things.length - 0.001))
   const result = things[index]
   return result
 }
 
-export function rgbToHsv(r, g, b) {
-  let max = Math.max(r, g, b), min = Math.min(r, g, b)
-  let h, s, v = max
+export function rgbToHsv (r, g, b) {
+  const max = Math.max(r, g, b); const min = Math.min(r, g, b)
+  let h; let s; const v = max
 
-  let d = max - min
+  const d = max - min
   s = max == 0 ? 0 : d / max
 
   if (max == min) {
-    h = 0; // achromatic
+    h = 0 // achromatic
   } else {
     switch (max) {
       case r: h = (g - b) / d + (g < b ? 6 : 0); break
@@ -97,17 +97,17 @@ export function rgbToHsv(r, g, b) {
     h /= 6
   }
 
-  return [ h, s, v ]
+  return [h, s, v]
 }
 
-export function hsvToRgb(h, s, v) {
+export function hsvToRgb (h, s, v) {
   let r, g, b
 
-  let i = Math.floor(h * 6)
-  let f = h * 6 - i
-  let p = v * (1 - s)
-  let q = v * (1 - f * s)
-  let t = v * (1 - (1 - f) * s)
+  const i = Math.floor(h * 6)
+  const f = h * 6 - i
+  const p = v * (1 - s)
+  const q = v * (1 - f * s)
+  const t = v * (1 - (1 - f) * s)
 
   switch (i % 6) {
     case 0: r = v, g = t, b = p; break
@@ -118,29 +118,29 @@ export function hsvToRgb(h, s, v) {
     case 5: r = v, g = p, b = q; break
   }
 
-  return [ r, g, b ]
+  return [r, g, b]
 }
 
-export function colorToString(r, g, b, a=1) {
-  r = Math.floor(r*255)
-  g = Math.floor(g*255)
-  b = Math.floor(b*255)
+export function colorToString (r, g, b, a = 1) {
+  r = Math.floor(r * 255)
+  g = Math.floor(g * 255)
+  b = Math.floor(b * 255)
   return `rgba(${r}, ${g}, ${b}, ${a})`
 }
 
-export function stringToColor(hex, mod=[]) {
-  mod[0] = parseInt(hex.slice(1,3), 16)/255
-  mod[1] = parseInt(hex.slice(3,5), 16)/255
-  mod[2] = parseInt(hex.slice(5,7), 16)/255
-  mod[3] = hex.length > 7 ? parseInt(hex.slice(7,9), 16)/255 : 1
+export function stringToColor (hex, mod = []) {
+  mod[0] = parseInt(hex.slice(1, 3), 16) / 255
+  mod[1] = parseInt(hex.slice(3, 5), 16) / 255
+  mod[2] = parseInt(hex.slice(5, 7), 16) / 255
+  mod[3] = hex.length > 7 ? parseInt(hex.slice(7, 9), 16) / 255 : 1
   return mod
 }
 
 // TODO: currently broken!
-let color1 = []
-let color2 = []
-let colorOut = []
-export function interpolateColor(c1, c2, t) {
+const color1 = []
+const color2 = []
+const colorOut = []
+export function interpolateColor (c1, c2, t) {
   stringToColor(c1, color1)
   stringToColor(c2, color2)
   colorOut[0] = lerp(color1[0], color2[0], t)
@@ -150,12 +150,12 @@ export function interpolateColor(c1, c2, t) {
   return colorOut
 }
 
-export function noise(x, y=0, z=0) {
+export function noise (x, y = 0, z = 0) {
   const random = (x, y) => {
-    let angle = Math.sin(x*1074 + y*210)
-              + Math.sin(y * 2321 + z*302)
-              + Math.sin(z * 543 + x*3043)
-              + Math.sin(z * 1003)
+    const angle = Math.sin(x * 1074 + y * 210) +
+              Math.sin(y * 2321 + z * 302) +
+              Math.sin(z * 543 + x * 3043) +
+              Math.sin(z * 1003)
 
     return Math.sin(angle * 512)
   }
@@ -164,58 +164,57 @@ export function noise(x, y=0, z=0) {
   const fy = Math.floor(y)
   const fz = Math.floor(z)
 
-  const v1 = lerp(random(fx, fy, fz), random(fx+1, fy, fz), x%1)
-  const v2 = lerp(random(fx, fy+1, fz), random(fx+1, fy+1, fz), x%1)
-  const v3 = lerp(v1, v2, y%1)
+  const v1 = lerp(random(fx, fy, fz), random(fx + 1, fy, fz), x % 1)
+  const v2 = lerp(random(fx, fy + 1, fz), random(fx + 1, fy + 1, fz), x % 1)
+  const v3 = lerp(v1, v2, y % 1)
 
-  if (z%1 != 0) {
+  if (z % 1 != 0) {
     // interpolate between different z levels, if a z is specified
-    const v4 = lerp(random(fx, fy, fz+1), random(fx+1, fy, fz+1), x%1)
-    const v5 = lerp(random(fx, fy+1, fz+1), random(fx+1, fy+1, fz+1), x%1)
-    const v6 = lerp(v4, v5, y%1)
-    return lerp(v3, v6, z%1)
+    const v4 = lerp(random(fx, fy, fz + 1), random(fx + 1, fy, fz + 1), x % 1)
+    const v5 = lerp(random(fx, fy + 1, fz + 1), random(fx + 1, fy + 1, fz + 1), x % 1)
+    const v6 = lerp(v4, v5, y % 1)
+    return lerp(v3, v6, z % 1)
   }
 
   // otherwise just return 2D noise
   return v3
 }
 
-export function octaveNoise(x, y=0, z=0, octaves=4) {
+export function octaveNoise (x, y = 0, z = 0, octaves = 4) {
   let value = 0
   let total = 0
 
-  for (let o=1; o<=octaves; o+=1) {
+  for (let o = 1; o <= octaves; o += 1) {
     const f = Math.pow(0.5, o)
     value /= 2
     total /= 2
-    value += noise(x*f, y*f, z*f)
+    value += noise(x * f, y * f, z * f)
     total += 1
   }
 
-  return value/total
+  return value / total
 }
 
 // give time in seconds
-export function toTimeString(time, precision=1) {
+export function toTimeString (time, precision = 1) {
   const seconds = time % 60
-  const minutes = time/60|0
-  return minutes + (seconds < 10 ? ":0" : ":") + seconds.toFixed(precision)
+  const minutes = time / 60 | 0
+  return minutes + (seconds < 10 ? ':0' : ':') + seconds.toFixed(precision)
 }
 
-export function shuffle(array, random=random) {
-  let currentIndex = array.length,  randomIndex;
+export function shuffle (array, random = random) {
+  let currentIndex = array.length; let randomIndex
 
   // While there remain elements to shuffle.
   while (currentIndex != 0) {
-
     // Pick a remaining element.
-    randomIndex = Math.floor(random() * currentIndex);
+    randomIndex = Math.floor(random() * currentIndex)
     currentIndex--;
 
     // And swap it with the current element.
     [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
+      array[randomIndex], array[currentIndex]]
   }
 
-  return array;
+  return array
 }
