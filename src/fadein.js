@@ -1,7 +1,4 @@
-import {
-  ctx,
-  getScene
-} from './core/game.js'
+import { ctx } from './core/game.js'
 import { width, height } from './config.js'
 import * as u from './core/utils.js'
 import Thing from './core/thing.js'

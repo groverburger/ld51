@@ -2,8 +2,6 @@ import assets from './assets.js'
 import Thing from './core/thing.js'
 import * as gfx from './core/webgl.js'
 import * as game from './core/game.js'
-import * as u from './core/utils.js'
-import * as vec3 from './core/vector3.js'
 import * as mat from './core/matrices.js'
 import { ItemParticle } from './particle.js'
 
@@ -24,7 +22,7 @@ export default class Pickup extends Thing {
     this.time += 1
     this.position[2] += Math.sin(this.time / 60) / 4
 
-    if (this.time % 16 == 0) {
+    if (this.time % 16 === 0) {
       game.getScene().addThing(new ItemParticle(this.position))
     }
 

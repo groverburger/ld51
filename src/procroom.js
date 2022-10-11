@@ -1,8 +1,5 @@
 import * as proc from './procgeneral.js'
-import * as terr from './procterrain.js'
-import * as basic from './procbasics.js'
 import { add } from './core/vector2.js'
-import { generateCaves } from './proccaves.js'
 
 export function generateRooms (params) {
   const terrain = {}

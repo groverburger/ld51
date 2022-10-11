@@ -1,13 +1,8 @@
-import Thing from './core/thing.js'
 import * as game from './core/game.js'
-import * as gfx from './core/webgl.js'
-import * as mat from './core/matrices.js'
 import * as u from './core/utils.js'
 import assets from './assets.js'
 import * as vec3 from './core/vector3.js'
-import * as vec2 from './core/vector2.js'
 import Enemy from './enemy.js'
-import Player from './player.js'
 import TurretBullet from './turretbullet.js'
 
 export default class EnemyTurret extends Enemy {

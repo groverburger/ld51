@@ -6,13 +6,11 @@ export function insertFeature (terrain, types, pos, params) {
   // Random structure
   if (r < 0.04) {
     selection = Math.floor(params.random() * 100)
-  }
-  // Level Structure
-  else if (r < 0.6) {
+  } else if (r < 0.6) {
+    // Level Structure
     selection = params.levelFeature
-  }
-  // Favorite Structure
-  else {
+  } else {
+    // Favorite Structure
     selection = params.favoriteFeature
   }
 
@@ -20,7 +18,7 @@ export function insertFeature (terrain, types, pos, params) {
   const featureTerrain = {}
   const featureTypes = {}
   selection = selection % 2
-  if (selection == 1) {
+  if (selection === 1) {
     cube(terrain[pos], featureTerrain, featureTypes)
   } else {
     pyramid(terrain[pos], featureTerrain, featureTypes)

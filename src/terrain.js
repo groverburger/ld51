@@ -354,7 +354,6 @@ export default class Terrain extends Thing {
           const normal = [cos(i), sin(i)]
           const coord = [cx + normal[0] * 64, cy + normal[1] * 64]
           const otherHeight = heightAt(...coord)
-          const otherTiletype = this.getTileAtWorld(...coord)
           if (otherHeight >= height) continue
           const turn = [cos(i + pi / 2), sin(i + pi / 2)]
 
@@ -786,8 +785,8 @@ export default class Terrain extends Thing {
   }
 
   populate () {
-    if (getThing('title')) {
-    } else {
+    // add the player to the scene if we're not in the title screen
+    if (!getThing('title')) {
       getScene().addThing(new Player({
         position: [this.startPoint[0] * 64 - 32, this.startPoint[1] * 64 - 32, 10000],
         angle: this.startAngle

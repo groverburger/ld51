@@ -2,7 +2,6 @@ import {
   ctx,
   getFramerate,
   keysPressed,
-  keysDown,
   getScene,
   mouse
 } from './core/game.js'

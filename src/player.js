@@ -17,7 +17,6 @@ import InputHandler from './core/inputs.js'
 import Bullet from './bullet.js'
 import DeathAnim from './deathanim.js'
 import LevelStart from './levelstart.js'
-const { angleToVector } = vec2
 
 export default class Player extends Thing {
   height = 56
@@ -112,9 +111,6 @@ export default class Player extends Thing {
     this.inputs = new InputHandler({
       jump (keys, mouse, gamepad) {
         return keys.Space || gamepad?.buttons[0].pressed
-      },
-      dash (keys, mouse, gamepad) {
-        return keys.ShiftLeft || gamepad?.buttons[2].pressed
       },
       shoot (keys, mouse, gamepad) {
         return (mouse.isLocked() && mouse.button) || gamepad?.buttons[1].pressed
@@ -285,22 +281,6 @@ export default class Player extends Thing {
     this.coyoteFrames = Math.max(this.coyoteFrames - 1, 0)
     this.staircaseOffset = Math.max(this.staircaseOffset - 6, 0)
     this.disableAirControl = Math.max(this.disableAirControl - 1, 0)
-
-    // dashing
-    if (false && this.canDash && this.inputs.pressed('dash') && !this.timer('dashCooldown')) {
-      const sound = assets.sounds.playerDash
-      sound.playbackRate = u.random(1, 1.2)
-      sound.currentTime = 0
-      sound.play()
-      this.canDash = false
-      // this.after(10, null, "dash")
-      const dash = vec3.multiply(vec3.anglesToVector(scene.camera3D.yaw, scene.camera3D.pitch), -18)
-      this.speed[0] = dash[0]
-      this.speed[1] = dash[1]
-      this.speed[2] = dash[2]
-      this.cancelTimer('disableAirControl')
-      this.after(20, null, 'dashCooldown')
-    }
 
     // shooting
     if (this.inputs.get('shoot') && !this.timer('shoot')) {

@@ -1,9 +1,6 @@
 import * as game from './core/game.js'
 import { width, height } from './config.js'
 import * as u from './core/utils.js'
-import * as vec2 from './core/vector2.js'
-import assets from './assets.js'
-import InputHandler from './core/inputs.js'
 import Thing from './core/thing.js'
 
 function * LevelWinAnim () {

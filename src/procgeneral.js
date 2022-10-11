@@ -1,7 +1,6 @@
 import { add, lerp, distance } from './core/vector2.js'
 import * as utils from './core/utils.js'
 import * as cave from './proccaves.js'
-import { generateTerrain } from './procterrain.js'
 import * as room from './procroom.js'
 import * as palace from './procpalace.js'
 import * as parameters from './data/parameters.js'
@@ -444,7 +443,7 @@ function makeDoorway (terrain, types, pos) {
   let count = 0
   for (const delta of deltas) {
     const newPos = add(pos, delta)
-    if (types[newPos] != 2 && !isExtreme(terrain[newPos])) {
+    if (types[newPos] !== 2 && !isExtreme(terrain[newPos])) {
       count += 1
       total += terrain[newPos]
     }

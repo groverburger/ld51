@@ -184,9 +184,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
 
           // End this step
           break
-        }
-        // Jump
-        else {
+        } else { // Jump
           // Backpedal by one space
           curPos = subtract(curPos, direction)
 
@@ -230,7 +228,6 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
 }
 
 function scaleTerrain (terrain, types, params, tileData) {
-  const deltas = [[1, 0], [0, 1], [-1, 0], [0, -1]]
   const floorDeltas = [
     [0, 0], [0, 1], [0, 2],
     [1, 0], [1, 1], [1, 2],

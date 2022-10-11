@@ -102,11 +102,13 @@ export function sat (a, b) {
       bMax = Math.max(dotProduct(point, normal), bMax)
     }
 
+    /*
     if (
       (bMin > aMax && bMax > aMax) ||
       (aMin > bMax && aMax > bMax)
     ) {
     }
+    */
 
     const newOverlap = aMax - bMin
     if (newOverlap <= 0) {

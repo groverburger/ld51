@@ -2,7 +2,6 @@ import * as proc from './procgeneral.js'
 import { add, scale } from './core/vector2.js'
 
 const ROUGHNESS_CONSTANT = 0.5
-const BELL_ITERATIONS = 9
 const SMOOTHING_ITERATIONS = 3
 
 export function generateTerrain (params) {
@@ -105,12 +104,11 @@ function diamondSquareIterate (terrain, size, moveDistance, variance, mode, para
   let deltas = []
   let deltaScale = 0
   // diamond
-  if (mode == 0) {
+  if (mode === 0) {
     deltas = [[0, 1], [1, 0], [0, -1], [-1, 0]]
     deltaScale = moveDistance
-  }
-  // square
-  else {
+  } else {
+    // square
     deltas = [[1, 1], [-1, 1], [1, -1], [-1, -1]]
     deltaScale = Math.floor(moveDistance / 2)
   }
