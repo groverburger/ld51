@@ -1,7 +1,6 @@
 import { add, lerp, distance } from './core/vector2.js'
 import * as utils from './core/utils.js'
 import * as cave from './proccaves.js'
-import { generateTerrain } from './procterrain.js'
 import * as room from './procroom.js'
 import * as palace from './procpalace.js'
 import * as parameters from './data/parameters.js'
@@ -52,11 +51,11 @@ export class GeneratorParams {
     const param = parameters.data[key]
 
     // Set the parameter's base
-    if (param.randomMode == 'bell') {
+    if (param.randomMode === 'bell') {
       this[key + '_BASE'] = this.bellRandom(param.bellCenter, param.bellRadius)
-    } else if (param.randomMode == 'linear') {
+    } else if (param.randomMode === 'linear') {
       this[key + '_BASE'] = (this.random() * (param.linearMax - param.linearMin)) + param.linearMin
-    } else if (param.randomMode == 'constant') {
+    } else if (param.randomMode === 'constant') {
       this[key + '_BASE'] = param.value
     } else {
       console.error('Error initializing param [' + key + ']. Invalid randomMode [' + param.randomMode + ']')
@@ -105,15 +104,15 @@ export class GeneratorParams {
     // Other special logic for the parameters
 
     // Level-based advancements
-    if (level == 5) {
+    if (level === 5) {
       this.caveMode = 13
       this.palaceIndoors = false
       this.palaceLength = 80
-    } else if (level == 10) {
+    } else if (level === 10) {
       this.caveMode = 13
       this.palaceIndoors = true
       this.palaceLength = 65
-    } else if (level == 15) {
+    } else if (level === 15) {
       this.caveMode = 15
       this.palaceIndoors = false
       this.palaceLength = 110
@@ -341,9 +340,9 @@ export function getDistances (terrain, startPoint, invert) {
           if (!isExtreme(terrain[adj])) {
             // Determine the weight based on the height differences between the two spaces
             let weight = 1
-            if (heightDifference == 2) { weight = JUMP_WEIGHT_2 }
-            if (heightDifference == 3) { weight = JUMP_WEIGHT_3 }
-            if (heightDifference == 4) { weight = JUMP_WEIGHT_4 }
+            if (heightDifference === 2) { weight = JUMP_WEIGHT_2 }
+            if (heightDifference === 3) { weight = JUMP_WEIGHT_3 }
+            if (heightDifference === 4) { weight = JUMP_WEIGHT_4 }
             if (heightDifference < -3) {
               weight = Math.floor(Math.abs(heightDifference / 3))
             }
@@ -408,7 +407,7 @@ export function paintPath (types, path, params) {
       if (params.random() < 0.5) {
         const newSpace = add(delta, space)
         // Make sure we don't paint over other painted tiles
-        if (!(newSpace in types) || types[newSpace] == 0) {
+        if (!(newSpace in types) || types[newSpace] === 0) {
           types[newSpace] = 3
         }
       }
@@ -440,7 +439,7 @@ function buildAlongPath (terrain, types, path, params) {
   for (let i = 0; i < path.length; i++) {
     const pos = path[i]
     // If wall...
-    if (types[pos] == 2) {
+    if (types[pos] === 2) {
       // Carve doorway
       makeDoorway(terrain, types, pos)
     }
@@ -468,7 +467,7 @@ function makeDoorway (terrain, types, pos) {
   let count = 0
   for (const delta of deltas) {
     const newPos = add(pos, delta)
-    if (types[newPos] != 2 && !isExtreme(terrain[newPos])) {
+    if (types[newPos] !== 2 && !isExtreme(terrain[newPos])) {
       count += 1
       total += terrain[newPos]
     }
@@ -485,7 +484,7 @@ function makeDoorway (terrain, types, pos) {
 export function validateTerrain (terrain, title) {
   const ret = []
   for (const tile in terrain) {
-    if ((!terrain[tile] && !(terrain[tile] == 0)) || (terrain[tile] != Math.floor(terrain[tile])) || (terrain[tile] < 0)) {
+    if ((!terrain[tile] && !(terrain[tile] === 0)) || (terrain[tile] !== Math.floor(terrain[tile])) || (terrain[tile] < 0)) {
       ret.push({
         p: tile,
         v: terrain[tile]
@@ -550,7 +549,7 @@ export function smoothPath (terrain, path, params) {
 
 export function generateEverything (params) {
   // Bonus levels
-  if (params.caveMode == 13) {
+  if (params.caveMode === 13) {
     // Generate the terrain
     const res = cave.generateCaves(params)
     const res2 = palace.generatePalace(params)
@@ -611,7 +610,7 @@ export function generateEverything (params) {
     cave.carvePoint(gen.terrain, gen.endPoint)
     if (guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)) {
       // If we have to carve the path a third time, this may be uncompletable. Just throw an error so we can restart
-      throw 'Uncompletable terrain'
+      throw new Error('Uncompletable terrain')
     }
   }
 
@@ -627,7 +626,7 @@ export function generateEverything (params) {
   }
 
   // If finale level, put a palace at the end
-  if (params.caveMode == 15) {
+  if (params.caveMode === 15) {
     // Build params
     const pt = gen.endPoint
     const pathData = {
