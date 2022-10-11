@@ -36,7 +36,6 @@ export class GeneratorParams {
   }
 
   resetRandom(offset) {
-    console.log("Resetting random for level " + offset)
     this.random = utils.randomizer(this.seed + offset)
   }
 
@@ -494,6 +493,19 @@ function makeDoorway(terrain, types, pos) {
   }
 }
 
+export function validateTerrain(terrain, title) {
+  let ret = []
+  for (const tile in terrain) {
+    if ((!terrain[tile] && !(terrain[tile] == 0)) || (terrain[tile] != Math.floor(terrain[tile])) || (terrain[tile] < 0)) {
+      ret.push(tile)
+    }
+  }
+  if (ret.length > 0) {
+    console.log("Invalid tiles " + title + ":")
+    console.log(ret)
+  }
+}
+
 export function smoothTile(terrain, pos) {
   let deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
 
@@ -619,7 +631,7 @@ export function generateEverything(params) {
 
   // Smoothing layer over the path
   for (let i = 0; i < params.pathSmoothingIterations; i ++) {
-    smoothPath(gen.terrain, path, params)
+    //smoothPath(gen.terrain, path, params)
   }
 
   // If finale level, put a palace at the end

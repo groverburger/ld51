@@ -79,14 +79,22 @@ export function generateCaves(params) {
       carvePoint(spacesLayer, startPoint)
       carvePoint(spacesLayer, endPoint)
     }
-
+    
     // Merge the cave-gen with the terrain-gen
     let spacing = boundaryLayer ? 0 : (i * params.caveLayerSpacing)
     for (const key in spacesLayer) {
       if (!(key in spacesLayer) || spacesLayer[key] == false) {
-        terrain[key] = Math.floor(terrainLayer[key] + spacing)
+        terrain[key] = Math.floor((terrainLayer[key] || 0) + spacing)
       }
     }
+  }
+
+  // Throw if start or end point ended up at z axis of zero
+  if (isExtreme(terrain[startPoint])) {
+    throw "Extreme start point"
+  }
+  if (isExtreme(terrain[endPoint])) {
+    throw "Extreme end point"
   }
 
   // Return

@@ -801,7 +801,7 @@ export default class Terrain extends Thing {
   generate() {
     // Generate seed
     let seed = Math.floor(Math.random() * 100000)
-    // seed = 50167
+    seed = 39244
 
     // Init the parameterBuilder object
     let parameterBuilder = globals.parameterBuilder
@@ -841,6 +841,7 @@ export default class Terrain extends Thing {
     this.presetClocks = generated.presetClocks
 
     // Write terrain data to map
+    proc.validateTerrain(generated.terrain, "after everything")
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
     proc.mergeTerrain(this.types, generated.types, [-1, -1])
 
