@@ -1,6 +1,7 @@
 import * as proc from './procgeneral.js'
 import * as terr from './procterrain.js'
 import * as basic from './procbasics.js'
+import * as palace from './procpalace.js'
 import { add } from './core/vector2.js'
 import { isExtreme } from './procgeneral.js'
 
@@ -14,9 +15,9 @@ export function generateCaves (params) {
   // Set params from cave mode
   let wallHeight = 0
   let boundaryLayer = false
-  if (params.caveMode === 1) {
+  if (params.caveMode == 1) {
     wallHeight = 40
-  } else if (params.caveMode === 2) {
+  } else if (params.caveMode == 2) {
     boundaryLayer = true
     wallHeight = 40
     layers++
@@ -35,7 +36,7 @@ export function generateCaves (params) {
     // If this is the first layer generated, make it the boundary layer
     let terrainLayer
     let spacesLayer
-    if (i === layers - 1 && boundaryLayer) {
+    if (i == layers - 1 && boundaryLayer) {
       // Terrain
       terrainLayer = basic.generateFlat({
         ...params,
@@ -55,17 +56,17 @@ export function generateCaves (params) {
     }
 
     // If this is layer 0, set the start and end points
-    if (i === 0) {
+    if (i == 0) {
       const sneResult = determineStartAndEndPoint(spacesLayer, params)
       startPoint = sneResult[0]
       endPoint = sneResult[1]
 
-      if (startPoint.toString() === '0,0') {
+      if (startPoint.toString() == '0,0') {
         startPoint = [10, 10]
         terrain[startPoint] = 10
         spacesLayer[startPoint] = false
       }
-      if (endPoint.toString() === '0,0') {
+      if (endPoint.toString() == '0,0') {
         endPoint = [10, 20]
         terrain[endPoint] = 10
         spacesLayer[endPoint] = false
@@ -81,10 +82,18 @@ export function generateCaves (params) {
     // Merge the cave-gen with the terrain-gen
     const spacing = boundaryLayer ? 0 : (i * params.caveLayerSpacing)
     for (const key in spacesLayer) {
-      if (!(key in spacesLayer) || spacesLayer[key] === false) {
-        terrain[key] = Math.floor(terrainLayer[key] + spacing)
+      if (!(key in spacesLayer) || spacesLayer[key] == false) {
+        terrain[key] = Math.floor((terrainLayer[key] || 0) + spacing)
       }
     }
+  }
+
+  // Throw if start or end point ended up at z axis of zero
+  if (isExtreme(terrain[startPoint])) {
+    throw 'Extreme start point'
+  }
+  if (isExtreme(terrain[endPoint])) {
+    throw 'Extreme end point'
   }
 
   // Return
@@ -131,7 +140,7 @@ function caveIterate (spaces) {
     for (const delta of deltas) {
       const samplePos = add(pos, delta)
       if (samplePos in spaces) {
-        if (spaces[samplePos] === true) {
+        if (spaces[samplePos] == true) {
           count += 1
         }
       } else {
@@ -140,7 +149,7 @@ function caveIterate (spaces) {
     }
 
     // Set new space based on count
-    if (spaces[pos] === true) {
+    if (spaces[pos] == true) {
       if (count < DEATH_LIMIT) {
         newSpaces[pos] = false
       } else {
@@ -170,14 +179,14 @@ function determineStartAndEndPoint (spaces, params) {
     candidates = []
     for (const key in spaces) {
       // If this is an open space
-      if (spaces[key] === false) {
+      if (spaces[key] == false) {
         // Look through adjacent spaces
         let count = 0
         const pos = proc.stringToPosition(key)
         for (const delta of deltas) {
           const samplePos = add(pos, delta)
           if (samplePos in spaces) {
-            if (spaces[samplePos] === true) {
+            if (spaces[samplePos] == true) {
               count += 1
             }
           } else {

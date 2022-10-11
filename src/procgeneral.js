@@ -1,6 +1,7 @@
 import { add, lerp, distance } from './core/vector2.js'
 import * as utils from './core/utils.js'
 import * as cave from './proccaves.js'
+import { generateTerrain } from './procterrain.js'
 import * as room from './procroom.js'
 import * as palace from './procpalace.js'
 import * as parameters from './data/parameters.js'
@@ -26,10 +27,16 @@ export class GeneratorParams {
     if (typeof seed !== 'number') {
       seed = Math.floor(Math.random() * 100000)
     }
-    this.random = utils.randomizer(seed)
-    console.log('Level Seed: ' + seed)
+    this.seed = seed
+    this.resetRandom(0)
+
+    console.log('Random Seed: ' + seed)
 
     this.initParameters()
+  }
+
+  resetRandom (offset) {
+    this.random = utils.randomizer(this.seed + offset)
   }
 
   initParameters () {
@@ -45,11 +52,11 @@ export class GeneratorParams {
     const param = parameters.data[key]
 
     // Set the parameter's base
-    if (param.randomMode === 'bell') {
+    if (param.randomMode == 'bell') {
       this[key + '_BASE'] = this.bellRandom(param.bellCenter, param.bellRadius)
-    } else if (param.randomMode === 'linear') {
+    } else if (param.randomMode == 'linear') {
       this[key + '_BASE'] = (this.random() * (param.linearMax - param.linearMin)) + param.linearMin
-    } else if (param.randomMode === 'constant') {
+    } else if (param.randomMode == 'constant') {
       this[key + '_BASE'] = param.value
     } else {
       console.error('Error initializing param [' + key + ']. Invalid randomMode [' + param.randomMode + ']')
@@ -71,10 +78,13 @@ export class GeneratorParams {
     this[key + '_ADVANCED'] = this[key + '_BASE'] + (level * aa)
   }
 
-  setParametersForLevel (level) {
+  setParametersForLevel (level, offset) {
     if (!level) {
       level = 1
     }
+
+    // Reset the random seed
+    this.resetRandom(level + ((offset || 0) * 93))
 
     // Go through params
     for (const key in parameters.data) {
@@ -95,15 +105,15 @@ export class GeneratorParams {
     // Other special logic for the parameters
 
     // Level-based advancements
-    if (level === 5) {
+    if (level == 5) {
       this.caveMode = 13
       this.palaceIndoors = false
       this.palaceLength = 80
-    } else if (level === 10) {
+    } else if (level == 10) {
       this.caveMode = 13
       this.palaceIndoors = true
       this.palaceLength = 65
-    } else if (level === 15) {
+    } else if (level == 15) {
       this.caveMode = 15
       this.palaceIndoors = false
       this.palaceLength = 110
@@ -128,9 +138,9 @@ export class GeneratorParams {
       const param = parameters.data[key]
       let v = this[key + '_ADVANCED']
 
-      // Truncate the value to an integer
-      if (param.truncate) {
-        v = Math.floor(v)
+      // Round the value to an integer
+      if (param.round) {
+        v = Math.round(v)
       }
 
       // Bind it to minimum and maximum
@@ -204,9 +214,8 @@ export function guaranteePath (terrain, startPoint, endPoint, params) {
   const startAccessibleMap = getDistances(terrain, startPoint)
 
   // Exit out if end point is already accessible from end
-  // TODO: double check this
   if (endPoint in startAccessibleMap) {
-    return
+    return false
   }
 
   // Create a list of accessible points from end
@@ -249,6 +258,9 @@ export function guaranteePath (terrain, startPoint, endPoint, params) {
 
   // Carve linear hallway between the two points
   carveHallway(terrain, closestPoint1, closestPoint2)
+
+  // Return true, indicating that we did create a path
+  return true
 }
 
 export function carveHallway (terrain, pos1, pos2) {
@@ -329,9 +341,9 @@ export function getDistances (terrain, startPoint, invert) {
           if (!isExtreme(terrain[adj])) {
             // Determine the weight based on the height differences between the two spaces
             let weight = 1
-            if (heightDifference === 2) { weight = JUMP_WEIGHT_2 }
-            if (heightDifference === 3) { weight = JUMP_WEIGHT_3 }
-            if (heightDifference === 4) { weight = JUMP_WEIGHT_4 }
+            if (heightDifference == 2) { weight = JUMP_WEIGHT_2 }
+            if (heightDifference == 3) { weight = JUMP_WEIGHT_3 }
+            if (heightDifference == 4) { weight = JUMP_WEIGHT_4 }
             if (heightDifference < -3) {
               weight = Math.floor(Math.abs(heightDifference / 3))
             }
@@ -376,6 +388,18 @@ export function findPath (distances, endPoint) {
   return path
 }
 
+export function shortenPath (path, length) {
+  // If the path is too long, shorten it
+  if (path.length > length) {
+    path = path.slice(path.length - length - 1, path.length)
+
+    console.log('Path length: ' + length)
+  } else {
+    console.log('Path length: ' + path.length)
+  }
+  return path
+}
+
 export function paintPath (types, path, params) {
   const deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
 
@@ -384,7 +408,7 @@ export function paintPath (types, path, params) {
       if (params.random() < 0.5) {
         const newSpace = add(delta, space)
         // Make sure we don't paint over other painted tiles
-        if (!(newSpace in types) || types[newSpace] === 0) {
+        if (!(newSpace in types) || types[newSpace] == 0) {
           types[newSpace] = 3
         }
       }
@@ -416,7 +440,7 @@ function buildAlongPath (terrain, types, path, params) {
   for (let i = 0; i < path.length; i++) {
     const pos = path[i]
     // If wall...
-    if (types[pos] === 2) {
+    if (types[pos] == 2) {
       // Carve doorway
       makeDoorway(terrain, types, pos)
     }
@@ -444,7 +468,7 @@ function makeDoorway (terrain, types, pos) {
   let count = 0
   for (const delta of deltas) {
     const newPos = add(pos, delta)
-    if (types[newPos] !== 2 && !isExtreme(terrain[newPos])) {
+    if (types[newPos] != 2 && !isExtreme(terrain[newPos])) {
       count += 1
       total += terrain[newPos]
     }
@@ -458,9 +482,75 @@ function makeDoorway (terrain, types, pos) {
   }
 }
 
+export function validateTerrain (terrain, title) {
+  const ret = []
+  for (const tile in terrain) {
+    if ((!terrain[tile] && !(terrain[tile] == 0)) || (terrain[tile] != Math.floor(terrain[tile])) || (terrain[tile] < 0)) {
+      ret.push({
+        p: tile,
+        v: terrain[tile]
+      })
+    }
+  }
+  if (ret.length > 0) {
+    console.log('Invalid tiles ' + title + ':')
+    console.log(ret)
+  }
+}
+
+export function smoothTile (terrain, pos) {
+  const deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+
+  let total = 0
+  let count = 0
+  for (const delta of deltas) {
+    const newPos = add(pos, delta)
+
+    // Make sure the tile we're checking isn't too much of a height difference
+    if (!isExtreme(terrain[newPos])) {
+      const heightDifference = Math.abs(terrain[newPos] - terrain[pos])
+      if (heightDifference <= 9) {
+        // Count this for the average
+        total += terrain[newPos]
+        count++
+      }
+    }
+  }
+
+  // Average it out
+  if (count > 0) {
+    terrain[pos] = Math.floor(total / count)
+  }
+}
+
+export function smoothArea (terrain, pos) {
+  const deltas = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+
+  // Iterate over the surrounding tiles
+  for (const delta of deltas) {
+    const newPos = add(pos, delta)
+
+    // Smooth it
+    smoothTile(terrain, newPos)
+  }
+}
+
+export function smoothPath (terrain, path, params) {
+  for (let i = 0; i < path.length - 2; i++) {
+    const p0 = stringToPosition(path[i])
+    const p1 = stringToPosition(path[i + 2])
+
+    // See if there is a big height difference in the path
+    const heightDifference = Math.abs(terrain[p0] - terrain[p1])
+    if (heightDifference > params.pathSmoothingLedgeMax) {
+      smoothArea(terrain, p1)
+    }
+  }
+}
+
 export function generateEverything (params) {
   // Bonus levels
-  if (params.caveMode === 13) {
+  if (params.caveMode == 13) {
     // Generate the terrain
     const res = cave.generateCaves(params)
     const res2 = palace.generatePalace(params)
@@ -493,22 +583,13 @@ export function generateEverything (params) {
   guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
 
   // Create the path
-  const distances = getDistances(gen.terrain, gen.startPoint)
+  let distances = getDistances(gen.terrain, gen.startPoint)
   let path = findPath(distances, gen.endPoint)
-
-  // If the path is too long, shorten it
-  if (path.length > params.maxPathLength) {
-    gen.endPoint = path[path.length - params.maxPathLength]
-    cave.carvePoint(gen.terrain, gen.endPoint)
-    path = path.slice(path.length - params.maxPathLength - 1, path.length)
-
-    console.log('Path length: ' + params.maxPathLength)
-  } else {
-    console.log('Path length: ' + path.length)
-  }
+  path = shortenPath(path, params.pathLength)
+  gen.endPoint = path[0]
+  cave.carvePoint(gen.terrain, gen.endPoint)
 
   // Paint the path and put buildings on it
-  paintPath(gen.types, path, params)
   buildAlongPath(gen.terrain, gen.types, path, params)
 
   // Set the player's starting rotation so that they look towards the path
@@ -521,13 +602,32 @@ export function generateEverything (params) {
   }
 
   // Do another guarantee pass
-  guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)
+  if (guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)) {
+    // If we had to carve another path, mark this as the one true path
+    distances = getDistances(gen.terrain, gen.startPoint)
+    path = findPath(distances, gen.endPoint)
+    path = shortenPath(path, params.pathLength)
+    gen.endPoint = path[0]
+    cave.carvePoint(gen.terrain, gen.endPoint)
+    if (guaranteePath(gen.terrain, gen.startPoint, gen.endPoint, params)) {
+      // If we have to carve the path a third time, this may be uncompletable. Just throw an error so we can restart
+      throw 'Uncompletable terrain'
+    }
+  }
+
+  // TODO: Move path painting here
+  paintPath(gen.types, path, params)
 
   // Remove tiny holes from the map (frustrating for the player)
   cave.removeHoles(gen.terrain)
 
+  // Smoothing layer over the path
+  for (let i = 0; i < params.pathSmoothingIterations; i++) {
+    // smoothPath(gen.terrain, path, params)
+  }
+
   // If finale level, put a palace at the end
-  if (params.caveMode === 15) {
+  if (params.caveMode == 15) {
     // Build params
     const pt = gen.endPoint
     const pathData = {
