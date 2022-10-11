@@ -205,7 +205,7 @@ export function guaranteePath (terrain, startPoint, endPoint, params) {
   const startAccessibleMap = getDistances(terrain, startPoint)
 
   // Exit out if end point is already accessible from end
-  if (!endPoint in startAccessibleMap) {
+  if (!(endPoint in startAccessibleMap)) {
     return
   }
 
