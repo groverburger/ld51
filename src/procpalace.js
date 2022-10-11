@@ -93,9 +93,9 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
     }
 
     if (action == "follow") {
-      // Track which of these spaces is the most ledge-like (ledgy?)
+      // Track which of the adjacent spaces is the most ledge-like (ledgy?)
       let bestScore = 0
-      let bestSpace = add(curPos, [0,1])
+      let bestDir = [0,1]
 
       for (const d1 of deltas) {
         let check = add(curPos, d1)
@@ -116,17 +116,16 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
         // Track score
         if (score > bestScore) {
           bestScore = score
-          bestSpace = check
+          bestDir = d1
         }
       }
 
-      // Move to chosen space
-      curPos = bestSpace
+      // Move in chosen direction
+      direction = bestDir
     }
-    else {
-      // Move in this direction
-      curPos = add(curPos, direction)
-    }
+
+    // Move
+    curPos = add(curPos, direction)
 
     // Move upwards
     if (action == "stair") {
@@ -140,12 +139,11 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
       // If this is a ledge, start following 
       if (action == "turn" && terrain[curPos] < curHeight) {
         // Turn and follow the ledge
+        // console.log("Turned after distance " + i)
         action = "follow"
         distance += 3
         curPos = subtract(curPos, direction)
-        direction = [direction[1], direction[0]]
         curTowards = false
-        // console.log("Turned after distance " + distance)
       }
       else if (action == "jump") {
         // Attempt to jump over the ledge
@@ -193,7 +191,6 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
 
           // End action and set distance to the distance we actually traveled
           distance = i
-          data.endPoint = curPos
           break
         }
       }
@@ -209,7 +206,7 @@ function palaceAlgorithm(terrain, height, pos, params, towards, depth, data, til
 
         // End action and set distance to the distance we actually traveled
         distance = i
-        // console.log("End after distance " + distance)
+        // console.log("End after distance " + i)
         break
       }
     } else {
@@ -313,9 +310,9 @@ function canBuild(pos, terrain, pathData) {
       // Get position of the tile relative to the tower
       let newTile = subtract(tile, pathData.offset)
 
-      // Divide tile position by 2 to get position after scaling
-      let nx = Math.floor(newTile[0]/2)
-      let ny = Math.floor(newTile[1]/2)
+      // Divide tile position to get position after scaling
+      let nx = Math.floor(newTile[0]/PALACE_SCALE)
+      let ny = Math.floor(newTile[1]/PALACE_SCALE)
       let divTile = [nx, ny]
 
       // Check if they overlap

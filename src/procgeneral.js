@@ -82,13 +82,13 @@ export class GeneratorParams {
     this[key + "_ADVANCED"] = this[key + "_BASE"] + (level * aa)
   }
 
-  setParametersForLevel(level) {
+  setParametersForLevel(level, offset) {
     if (!level) {
       level = 1
     }
 
     // Reset the random seed
-    this.resetRandom(level)
+    this.resetRandom(level + ((offset || 0) * 93))
 
     // Go through params
     for (const key in parameters.data) {
@@ -497,7 +497,10 @@ export function validateTerrain(terrain, title) {
   let ret = []
   for (const tile in terrain) {
     if ((!terrain[tile] && !(terrain[tile] == 0)) || (terrain[tile] != Math.floor(terrain[tile])) || (terrain[tile] < 0)) {
-      ret.push(tile)
+      ret.push({
+        p: tile,
+        v: terrain[tile],
+      })
     }
   }
   if (ret.length > 0) {
