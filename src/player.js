@@ -169,6 +169,7 @@ export default class Player extends Thing {
     let dx = this.inputs.get('xMove')
     let dy = this.inputs.get('yMove')
 
+    // counter for view bobbing
     if (Math.abs(dx) + Math.abs(dy) > 0) {
       this.walkFrameAccel = 0.08
     } else {
@@ -177,13 +178,17 @@ export default class Player extends Thing {
     this.walkFrames += this.walkFrameAccel
     this.walkFrames = this.walkFrames % (Math.PI * 2)
 
+    // normalize movement so diagonals aren't faster (like in doom)
     if (u.distance2d(0, 0, dx, dy) > 1) {
       [dx, dy] = vec2.normalize([dx, dy])
     }
+
+    // player's max speed should be 11.3583
+
     const yaw = scene.camera3D.yaw - Math.PI / 2
-    const friction = this.slowTime > 0 ? 0.89 : 0.94
-    const groundSpeed = 0.725
-    const airSpeed = 0.5
+    const friction = this.slowTime > 0 ? 0.85 : 0.9
+    const groundSpeed = 1.262
+    const airSpeed = 0.8
     const walkSpeed = this.onGround ? groundSpeed : airSpeed
     const maxSpeed = groundSpeed / (1 - friction)
     const xAccel = (Math.cos(yaw) * dx - Math.sin(yaw) * dy) * walkSpeed
@@ -270,7 +275,7 @@ export default class Player extends Thing {
     }
 
     if (!this.inputs.get('jump') && this.speed[2] >= 0) {
-      this.speed[2] /= 2
+      this.speed[2] /= 1.25
     }
     if (this.position[2] < 0) {
       // assets.sounds.playerSplash.play()

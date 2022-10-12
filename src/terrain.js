@@ -276,17 +276,17 @@ export default class Terrain extends Thing {
       if (getStage() === 1) {
         if (tileType === 1) { return 'path' }
         if (tileType === 2) { return 'roomWall' }
-        if (tileType === 3) { return 'stone' }
+        if (tileType === 3) { return 'path' }
         if (tileType === 4) { return 'goldenWall' }
       } else if (getStage() === 2) {
         if (tileType === 1) { return 'woodtile' }
         if (tileType === 2) { return 'wood' }
-        if (tileType === 3) { return 'stone' }
+        if (tileType === 3) { return 'dirt' }
         if (tileType === 4) { return 'goldenWall' }
       } else if (getStage() === 3) {
         if (tileType === 1) { return 'techstone' }
         if (tileType === 2) { return 'tech1' }
-        if (tileType === 3) { return 'techstone' }
+        if (tileType === 3) { return 'techfloor' }
         if (tileType === 4) { return 'goldenWall' }
         return 'techstone'
       } else if (getStage() === 4) {
