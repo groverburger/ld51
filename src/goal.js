@@ -11,6 +11,7 @@ export default class Goal extends Thing {
   time = 0
   visited = false
   aabb = [-Infinity, -Infinity, Infinity, Infinity]
+  depth = 10000
 
   constructor (data) {
     super(data)
@@ -35,10 +36,11 @@ export default class Goal extends Thing {
 
   draw () {
     const camera = getScene().camera3D
+    const { gl } = gfx
+
     gfx.setShader(assets.shaders.billboard)
     gfx.setTexture(assets.textures.goal)
     camera.setUniforms()
-
     const boing = this.visited ? 64 : u.map(Math.sin(this.time / 30), -1, 1, 64 - 16, 64 + 16)
     gfx.set('modelMatrix', mat.getTransformation({
       translation: [this.position[0], this.position[1], this.position[2] - 64 + boing],
@@ -46,5 +48,10 @@ export default class Goal extends Thing {
     }))
     gfx.set('color', [1, 1, 1, 1])
     gfx.drawBillboard()
+
+    gl.depthFunc(gl.ALWAYS)
+    gfx.set('color', [1, 1, 1, 0.65])
+    gfx.drawBillboard()
+    gl.depthFunc(gl.LEQUAL)
   }
 }
