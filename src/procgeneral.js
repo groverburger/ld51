@@ -110,8 +110,8 @@ export class GeneratorParams {
       this.palaceLength = 80
     } else if (level === 10) {
       this.caveMode = 13
-      this.palaceIndoors = true
-      this.palaceLength = 65
+      this.palaceIndoors = false
+      this.palaceLength = 90
     } else if (level === 15) {
       this.caveMode = 15
       this.palaceIndoors = false
