@@ -804,7 +804,7 @@ export default class Terrain extends Thing {
     const enemyLocations = getLocations('room', 'gold')
     for (let i = 0; i < 5; i++) {
       const coord = enemyLocations.pop()
-      if (coord !== null) {
+      if (coord) {
         getScene().addThing(new Enemy([coord[0] * 64 + 32, coord[1] * 64 + 32, 0]))
       }
     }
