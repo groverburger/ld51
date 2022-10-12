@@ -89,10 +89,12 @@ export function generateCaves (params) {
 
   // Throw if start or end point ended up at z axis of zero
   if (isExtreme(terrain[startPoint])) {
-    throw new Error('Extreme start point')
+    terrain[startPoint] = 20
+    console.warn('Extreme start point')
   }
   if (isExtreme(terrain[endPoint])) {
-    throw new Error('Extreme end point')
+    terrain[endPoint] = 20
+    console.warn('Extreme end point')
   }
 
   // Return
