@@ -95,7 +95,8 @@ const assets = {
     weaponPickup: 'weapon.wav',
     music1: 'music1.mp3',
     music2: 'music2.mp3',
-    music3: 'music3.mp3'
+    music3: 'music3.mp3',
+    music11: 'music11.mp3',
   },
 
   sceneSources: {
