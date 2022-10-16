@@ -71,7 +71,7 @@ const assets = {
     wood: 'woodwall.png',
     cementTile: 'woodwalltop.png',
     dirt: 'dirt.png',
-    finale: 'finale.png',
+    hive: 'hive.png',
     gravel: 'gravel.png',
     crosshair: 'crosshair.png'
   },

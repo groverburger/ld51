@@ -104,43 +104,13 @@ export const data = {
         "noCarve": true,
       },
       "wall": {
-        "wall": "finale",
-        "floor": "finale",
+        "wall": "hive",
+        "floor": "hive",
         "noCarve": true,
       },
       "path": {
-        "wall": "finale",
-        "floor": "finale",
-      },
-      "wall2": {
-        "wall": "goldenWall",
-        "floor": "goldenFloor",
-        "noCarve": true,
-      },
-    },
-  },
-  "snow": {
-    "skybox": "skybox3",
-    "music": "music11",
-    "tiles": {
-      "default": {
-        "wall": "techStone",
-        "floor": "techStone",
-        "ceiling": "techStone",
-      },
-      "floor": {
-        "wall": "techFloor",
-        "floor": "techFloor",
-        "noCarve": true,
-      },
-      "wall": {
-        "wall": "finale",
-        "floor": "finale",
-        "noCarve": true,
-      },
-      "path": {
-        "wall": "finale",
-        "floor": "finale",
+        "wall": "hive",
+        "floor": "hive",
       },
       "wall2": {
         "wall": "goldenWall",
