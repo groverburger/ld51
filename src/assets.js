@@ -66,12 +66,13 @@ const assets = {
     oneUp: 'oneup.png',
     visionPickup: 'eye.png',
     tech1: 'tech1.png',
-    techstone: 'stone3.png',
-    techfloor: 'stone3_tile.png',
+    techStone: 'stone3.png',
+    techFloor: 'stone3_tile.png',
     wood: 'woodwall.png',
-    woodtile: 'woodwalltop.png',
+    cementTile: 'woodwalltop.png',
     dirt: 'dirt.png',
     finale: 'finale.png',
+    gravel: 'gravel.png',
     crosshair: 'crosshair.png'
   },
 
