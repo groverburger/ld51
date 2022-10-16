@@ -256,7 +256,7 @@ function scaleTerrain (terrain, types, params, tileData) {
     for (const delta of floorDeltas) {
       const pf = add(delta, p2)
       terrainRet[pf] = terrain[p]
-      types[pf] = 3
+      types[pf] = "path"
     }
 
     for (const delta of wallDeltas) {
@@ -264,7 +264,7 @@ function scaleTerrain (terrain, types, params, tileData) {
       if (!(pf in terrainRet)) {
         if (params.palaceIndoors) {
           terrainRet[pf] = PALACE_WALL_HEIGHT
-          types[pf] = 3
+          types[pf] = "path"
         } else {
           // Make sure this space wasn't marked as not having a retaining wall
           if (!(tileData[p] && tileData[p].noRetainingWall)) {
@@ -279,7 +279,7 @@ function scaleTerrain (terrain, types, params, tileData) {
             if (xPaths === 1 || yPaths === 1) {
               const isStair = tileData[p] && tileData[p].stair
               terrainRet[pf] = terrain[p] + (isStair ? 3 : 2)
-              types[pf] = 4
+              types[pf] = "wall2"
             }
           }
         }

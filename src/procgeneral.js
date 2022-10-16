@@ -408,7 +408,7 @@ export function paintPath (types, path, params) {
         const newSpace = add(delta, space)
         // Make sure we don't paint over other painted tiles
         if (!(newSpace in types) || types[newSpace] === 0) {
-          types[newSpace] = 3
+          types[newSpace] = "path"
         }
       }
     }
@@ -439,7 +439,7 @@ function buildAlongPath (terrain, types, path, params) {
   for (let i = 0; i < path.length; i++) {
     const pos = path[i]
     // If wall...
-    if (types[pos] === 2) {
+    if (types[pos] === "wall") {
       // Carve doorway
       makeDoorway(terrain, types, pos)
     }
@@ -467,7 +467,7 @@ function makeDoorway (terrain, types, pos) {
   let count = 0
   for (const delta of deltas) {
     const newPos = add(pos, delta)
-    if (types[newPos] !== 2 && !isExtreme(terrain[newPos])) {
+    if (types[newPos] !== "wall" && !isExtreme(terrain[newPos])) {
       count += 1
       total += terrain[newPos]
     }

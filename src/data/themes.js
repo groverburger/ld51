@@ -8,21 +8,21 @@ export const data = {
         "floor": "stone",
         "ceiling": "stone",
       },
-      "1": {
+      "floor": {
         "wall": "path",
         "floor": "path",
         "noCarve": true,
       },
-      "2": {
+      "wall": {
         "wall": "roomWall",
         "floor": "path",
         "noCarve": true,
       },
-      "3": {
+      "path": {
         "wall": "path",
         "floor": "path",
       },
-      "4": {
+      "wall2": {
         "wall": "goldenWall",
         "floor": "goldenFloor",
         "noCarve": true,
@@ -38,21 +38,21 @@ export const data = {
         "floor": "stone",
         "ceiling": "stone",
       },
-      "1": {
+      "floor": {
         "wall": "cementTile",
         "floor": "cementTile",
         "noCarve": true,
       },
-      "2": {
+      "wall": {
         "wall": "wood",
         "floor": "cementTile",
         "noCarve": true,
       },
-      "3": {
+      "path": {
         "wall": "dirt",
         "floor": "dirt",
       },
-      "4": {
+      "wall2": {
         "wall": "goldenWall",
         "floor": "goldenFloor",
         "noCarve": true,
@@ -68,21 +68,21 @@ export const data = {
         "floor": "techStone",
         "ceiling": "techStone",
       },
-      "1": {
+      "floor": {
         "wall": "techFloor",
         "floor": "techFloor",
         "noCarve": true,
       },
-      "2": {
+      "wall": {
         "wall": "tech1",
         "floor": "tech1",
         "noCarve": true,
       },
-      "3": {
+      "path": {
         "wall": "techFloor",
         "floor": "techFloor",
       },
-      "4": {
+      "wall2": {
         "wall": "goldenWall",
         "floor": "goldenFloor",
         "noCarve": true,
@@ -98,21 +98,51 @@ export const data = {
         "floor": "techStone",
         "ceiling": "techStone",
       },
-      "1": {
+      "floor": {
         "wall": "techFloor",
         "floor": "techFloor",
         "noCarve": true,
       },
-      "2": {
+      "wall": {
         "wall": "finale",
         "floor": "finale",
         "noCarve": true,
       },
-      "3": {
+      "path": {
         "wall": "finale",
         "floor": "finale",
       },
-      "4": {
+      "wall2": {
+        "wall": "goldenWall",
+        "floor": "goldenFloor",
+        "noCarve": true,
+      },
+    },
+  },
+  "snow": {
+    "skybox": "skybox3",
+    "music": "music11",
+    "tiles": {
+      "default": {
+        "wall": "techStone",
+        "floor": "techStone",
+        "ceiling": "techStone",
+      },
+      "floor": {
+        "wall": "techFloor",
+        "floor": "techFloor",
+        "noCarve": true,
+      },
+      "wall": {
+        "wall": "finale",
+        "floor": "finale",
+        "noCarve": true,
+      },
+      "path": {
+        "wall": "finale",
+        "floor": "finale",
+      },
+      "wall2": {
         "wall": "goldenWall",
         "floor": "goldenFloor",
         "noCarve": true,

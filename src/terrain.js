@@ -260,6 +260,10 @@ export default class Terrain extends Thing {
       // Texture type
       let texture = typeData[textureType]
       if (!texture) {
+        typeData = themeData["default"]
+        texture = typeData[textureType]
+      }
+      if (!texture) {
         return 'stone'
       }
 
@@ -268,10 +272,30 @@ export default class Terrain extends Thing {
     }
 
     const getShouldRound = (tileType) => {
-      if (tileType === 1 || tileType === 2 || tileType === 4) {
-        return false
+      // Theme data
+      let themeData = themes.data[getTheme()].tiles
+      if (!themeData) {
+        return true
       }
-      return true
+
+      // Tile type
+      let typeData = themeData[tileType]
+      if (!typeData) {
+        typeData = themeData["default"]
+      }
+
+      // Texture type
+      let noCarve = typeData["noCarve"]
+      if (noCarve === null) {
+        typeData = themeData["default"]
+        noCarve = typeData["noCarve"]
+      }
+      if (noCarve === null) {
+        return 'true'
+      }
+
+      // Return
+      return !noCarve
     }
 
     const getShouldSlope = (tileType) => {
@@ -732,18 +756,18 @@ export default class Terrain extends Thing {
       if (this.map[coord] < 30 && this.map[coord] >= 1) {
         const [x, y] = coord.split(',').map(Number)
         if (u.distance2d(x, y, this.startPoint[0], this.startPoint[1]) > 8) {
-          if (this.types[coord] === 1) {
+          if (this.types[coord] === "floor") {
             this.locations.room.push([x, y])
             continue
           }
-          if (this.types[coord] === 2) {
+          if (this.types[coord] === "wall") {
             continue
           }
-          if (this.types[coord] === 3) {
+          if (this.types[coord] === "path") {
             this.locations.path.push([x, y])
             continue
           }
-          if (this.types[coord] === 4) {
+          if (this.types[coord] === "wall2") {
             this.locations.gold.push([x, y])
           }
           this.locations.other.push([x, y])
