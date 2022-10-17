@@ -57,7 +57,7 @@ const assets = {
     skybox2: 'skybox2.png',
     skybox3: 'skybox3.png',
     goal: 'flag.png',
-    path: 'stone.png',
+    lightStone: 'stone.png',
     roomFloor: 'stone1.png',
     roomWall: 'brick1.png',
     timePickup: 'timepickup.png',

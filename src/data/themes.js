@@ -8,19 +8,23 @@ export const data = {
         "floor": "stone",
         "ceiling": "stone",
       },
+      "path": {
+        "wall": "lightStone",
+        "floor": "lightStone",
+      },
       "floor": {
-        "wall": "path",
-        "floor": "path",
+        "wall": "lightStone",
+        "floor": "lightStone",
         "noCarve": true,
       },
       "wall": {
         "wall": "roomWall",
-        "floor": "path",
+        "floor": "lightStone",
         "noCarve": true,
       },
-      "path": {
-        "wall": "path",
-        "floor": "path",
+      "floor2": {
+        "wall": "lightStone",
+        "floor": "lightStone",
       },
       "wall2": {
         "wall": "goldenWall",
@@ -38,6 +42,10 @@ export const data = {
         "floor": "stone",
         "ceiling": "stone",
       },
+      "path": {
+        "wall": "dirt",
+        "floor": "dirt",
+      },
       "floor": {
         "wall": "cementTile",
         "floor": "cementTile",
@@ -48,9 +56,9 @@ export const data = {
         "floor": "cementTile",
         "noCarve": true,
       },
-      "path": {
-        "wall": "dirt",
-        "floor": "dirt",
+      "floor2": {
+        "wall": "lightStone",
+        "floor": "lightStone",
       },
       "wall2": {
         "wall": "goldenWall",
@@ -68,6 +76,10 @@ export const data = {
         "floor": "techStone",
         "ceiling": "techStone",
       },
+      "path": {
+        "wall": "techFloor",
+        "floor": "techFloor",
+      },
       "floor": {
         "wall": "techFloor",
         "floor": "techFloor",
@@ -78,7 +90,7 @@ export const data = {
         "floor": "tech1",
         "noCarve": true,
       },
-      "path": {
+      "floor2": {
         "wall": "techFloor",
         "floor": "techFloor",
       },
@@ -98,6 +110,10 @@ export const data = {
         "floor": "techStone",
         "ceiling": "techStone",
       },
+      "path": {
+        "wall": "hive",
+        "floor": "hive",
+      },
       "floor": {
         "wall": "techFloor",
         "floor": "techFloor",
@@ -108,9 +124,9 @@ export const data = {
         "floor": "hive",
         "noCarve": true,
       },
-      "path": {
-        "wall": "hive",
-        "floor": "hive",
+      "floor2": {
+        "wall": "techFloor",
+        "floor": "techFloor",
       },
       "wall2": {
         "wall": "goldenWall",
