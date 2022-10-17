@@ -108,14 +108,17 @@ export class GeneratorParams {
       this.caveMode = 13
       this.palaceIndoors = false
       this.palaceLength = 80
+      this.palaceMaxJumpDistance = 2
     } else if (level === 10) {
       this.caveMode = 13
       this.palaceIndoors = false
       this.palaceLength = 90
+      this.palaceMaxJumpDistance = 3
     } else if (level === 15) {
       this.caveMode = 15
       this.palaceIndoors = false
       this.palaceLength = 110
+      this.palaceMaxJumpDistance = 3
     } else if (level > 0 && level <= 2) {
       // Type Island
       this.caveMode = 0

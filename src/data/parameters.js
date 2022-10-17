@@ -139,5 +139,10 @@ export const data = {
     randomMode: 'constant',
     value: 20,
     round: true
-  }
+  },
+  palaceMaxJumpDistance: {
+    randomMode: 'constant',
+    value: 3,
+    round: true
+  },
 }

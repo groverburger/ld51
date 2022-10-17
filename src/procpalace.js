@@ -3,7 +3,6 @@ import { GeneratorResult, stringToPosition } from './procgeneral.js'
 
 const TOWARDS_CHANCE = 0.8
 const PALACE_WALL_HEIGHT = 80
-const PALACE_JUMP_LENGTH = 3
 const PALACE_SCALE = 3
 
 export function generatePalace (params, pathData) {
@@ -145,7 +144,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
         // Attempt to jump over the ledge
 
         // Make sure there is a place we can go a certain distance ahead
-        const jumpPos = add(curPos, scale(direction, PALACE_JUMP_LENGTH))
+        const jumpPos = add(curPos, scale(direction, params.palaceMaxJumpDistance))
 
         // console.log("Jump!")
 
@@ -158,7 +157,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
           const prev = subtract(curPos, direction)
           tileData[prev] = { ...tileData[prev], noRetainingWall: true }
 
-          for (let j = 0; j < PALACE_JUMP_LENGTH + 1; j++) {
+          for (let j = 0; j < params.palaceMaxJumpDistance + 1; j++) {
             // Track distance
             distance++
 

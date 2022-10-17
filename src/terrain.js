@@ -767,7 +767,7 @@ export default class Terrain extends Thing {
             this.locations.path.push([x, y])
             continue
           }
-          if (this.types[coord] === "wall2") {
+          if (this.types[coord] === "floor2") {
             this.locations.gold.push([x, y])
           }
           this.locations.other.push([x, y])
