@@ -45,26 +45,14 @@ const assets = {
   },
 
   imageSources: {
-    circle: 'circle.png',
-    square: 'square.png',
-    enemy: 'enemy1.png',
-    squid: 'enemy2.png',
-    turret: 'enemy3.png',
-    turretbullet: 'turretbullet.png',
+    // Map
     stone: 'stone2.png',
-    water: 'water.png',
-    skybox1: 'skybox1.png',
-    skybox2: 'skybox2.png',
-    skybox3: 'skybox3.png',
-    goal: 'flag.png',
     lightStone: 'stone.png',
+    stoneFloor: 'stone_tile.png',
     roomFloor: 'stone1.png',
     roomWall: 'brick1.png',
-    timePickup: 'timepickup.png',
     goldenFloor: 'brick2_f.png',
     goldenWall: 'brick2.png',
-    oneUp: 'oneup.png',
-    visionPickup: 'eye.png',
     tech1: 'tech1.png',
     techStone: 'stone3.png',
     techFloor: 'stone3_tile.png',
@@ -73,6 +61,30 @@ const assets = {
     dirt: 'dirt.png',
     hive: 'hive.png',
     gravel: 'gravel.png',
+    snow: 'snow.png',
+
+    // Skyboxes
+    skybox1: 'skybox1.png',
+    skybox2: 'skybox2.png',
+    skybox3: 'skybox3.png',
+
+    // Enemies
+    enemy: 'enemy1.png',
+    squid: 'enemy2.png',
+    turret: 'enemy3.png',
+
+    // Projectiles
+    turretbullet: 'turretbullet.png',
+
+    // Collectibles
+    goal: 'flag.png',
+    oneUp: 'oneup.png',
+    visionPickup: 'eye.png',
+    timePickup: 'timepickup.png',
+    
+    // Misc
+    circle: 'circle.png',
+    square: 'square.png',
     crosshair: 'crosshair.png'
   },
 

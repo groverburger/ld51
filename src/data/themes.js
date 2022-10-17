@@ -135,4 +135,43 @@ export const data = {
       },
     },
   },
+  "snow": {
+    "skybox": "skybox3",
+    "music": "music11",
+    "tiles": {
+      "default": {
+        "wall": "stone",
+        "floor": "snow",
+        "ceiling": "stone",
+      },
+      "path": {
+        "wall": "stone",
+        "floor": "stone",
+      },
+      "floor": {
+        "wall": "stoneFloor",
+        "floor": "stoneFloor",
+        "noCarve": true,
+      },
+      "wall": {
+        "wall": "stoneFloor",
+        "floor": "stoneFloor",
+        "noCarve": true,
+      },
+      "floor2": {
+        "wall": "stoneFloor",
+        "floor": "stoneFloor",
+        "noCarve": true,
+      },
+      "wall2": {
+        "wall": "stoneFloor",
+        "floor": "stoneFloor",
+        "noCarve": true,
+      },
+      "computer": {
+        "wall": "computer",
+        "floor": "cementTile",
+      }
+    },
+  },
 }
