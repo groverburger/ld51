@@ -209,7 +209,7 @@ export function adjustTerrain (terrain, amt) {
   for (const key in terrain) {
     terrain[key] = terrain[key] + amt
   }
-}
+} 
 
 export function guaranteePath (terrain, startPoint, endPoint, params) {
   // Create the list of accessible points from start
@@ -636,7 +636,7 @@ export function generateEverything (params) {
       path,
       offset: pt
     }
-    const heightDelta = gen.terrain[pt] - params.palaceFloorHeight - 1
+    const heightDelta = Math.max(gen.terrain[pt], 3) - params.palaceFloorHeight - 1
 
     // Generate
     const res = palace.generatePalace(params, pathData)
