@@ -45,6 +45,8 @@ export function generatePalace (params, pathData) {
 }
 
 function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, tileData, pathData) {
+  // console.log("Started iteration at position " + pos)
+
   // Take an action
   const actionNumber = Math.floor(params.random() * 13)
   let action = 'turn' // move forward, turning at a chasm
@@ -157,7 +159,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
           const prev = subtract(curPos, direction)
           tileData[prev] = { ...tileData[prev], noRetainingWall: true }
 
-          for (let j = 0; j < params.palaceMaxJumpDistance + 1; j++) {
+          for (let j = 0; j < params.palaceMaxJumpDistance; j++) {
             // Track distance
             distance++
 

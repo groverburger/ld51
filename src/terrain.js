@@ -704,8 +704,8 @@ export default class Terrain extends Thing {
 
   generate () {
     // Generate seed
-    const seed = Math.floor(Math.random() * 100000)
-    // seed = 19204
+    let seed = Math.floor(Math.random() * 100000)
+    // seed = 81492
 
     // Init the parameterBuilder object
     let parameterBuilder = globals.parameterBuilder
