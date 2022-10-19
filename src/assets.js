@@ -46,21 +46,19 @@ const assets = {
 
   imageSources: {
     // Map
-    stone: 'stone2.png',
-    lightStone: 'stone.png',
-    stoneFloor: 'stone_tile.png',
-    roomFloor: 'stone1.png',
-    roomWall: 'brick1.png',
-    goldenFloor: 'brick2_f.png',
-    goldenWall: 'brick2.png',
-    tech1: 'tech1.png',
-    techStone: 'stone3.png',
-    techFloor: 'stone3_tile.png',
-    wood: 'woodwall.png',
-    cementTile: 'woodwalltop.png',
+    stone: 'stone_grey.png',
+    lightStone: 'stone_lgrey.png',
+    stoneFloor: 'stone_grey_tile.png',
+    roomWall: 'stone_purple_brick.png',
+    goldenFloor: 'stone_gold.png',
+    goldenWall: 'stone_gold_brick.png',
+    tech1: 'tech_lgreen.png',
+    techStone: 'stone_dblue.png',
+    techFloor: 'stone_dblue_tile.png',
+    wood: 'concrete_wall.png',
+    cementTile: 'concrete_tile.png',
     dirt: 'dirt.png',
-    hive: 'hive.png',
-    gravel: 'gravel.png',
+    hive: 'hive_dblue.png',
     snow: 'snow.png',
 
     // Skyboxes
