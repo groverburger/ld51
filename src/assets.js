@@ -75,10 +75,10 @@ const assets = {
     turretbullet: 'turretbullet.png',
 
     // Collectibles
-    goal: 'flag.png',
-    oneUp: 'oneup.png',
-    visionPickup: 'eye.png',
-    timePickup: 'timepickup.png',
+    goal: 'pickup_flag.png',
+    oneUp: 'pickup_oneup.png',
+    visionPickup: 'pickup_eye.png',
+    timePickup: 'pickup_clock.png',
     
     // Misc
     circle: 'circle.png',
