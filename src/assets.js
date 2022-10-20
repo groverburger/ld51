@@ -45,33 +45,44 @@ const assets = {
   },
 
   imageSources: {
-    circle: 'circle.png',
-    square: 'square.png',
-    enemy: 'enemy1.png',
-    squid: 'enemy2.png',
-    turret: 'enemy3.png',
-    turretbullet: 'turretbullet.png',
-    stone: 'stone2.png',
-    water: 'water.png',
+    // Map
+    stone: 'stone_grey.png',
+    lightStone: 'stone_lgrey.png',
+    stoneFloor: 'stone_grey_tile.png',
+    roomWall: 'stone_purple_brick.png',
+    goldenFloor: 'stone_gold.png',
+    goldenWall: 'stone_gold_brick.png',
+    tech1: 'tech_lgreen.png',
+    techStone: 'stone_dblue.png',
+    techFloor: 'stone_dblue_tile.png',
+    wood: 'concrete_wall.png',
+    cementTile: 'concrete_tile.png',
+    dirt: 'dirt.png',
+    hive: 'hive_dblue.png',
+    snow: 'snow.png',
+
+    // Skyboxes
     skybox1: 'skybox1.png',
     skybox2: 'skybox2.png',
     skybox3: 'skybox3.png',
-    goal: 'flag.png',
-    path: 'stone.png',
-    roomFloor: 'stone1.png',
-    roomWall: 'brick1.png',
-    timePickup: 'timepickup.png',
-    goldenFloor: 'brick2_f.png',
-    goldenWall: 'brick2.png',
-    oneUp: 'oneup.png',
-    visionPickup: 'eye.png',
-    tech1: 'tech1.png',
-    techstone: 'stone3.png',
-    techfloor: 'stone3_tile.png',
-    wood: 'woodwall.png',
-    woodtile: 'woodwalltop.png',
-    dirt: 'dirt.png',
-    finale: 'finale.png',
+
+    // Enemies
+    enemy: 'enemy1.png',
+    squid: 'enemy2.png',
+    turret: 'enemy3.png',
+
+    // Projectiles
+    turretbullet: 'turretbullet.png',
+
+    // Collectibles
+    goal: 'pickup_flag.png',
+    oneUp: 'pickup_oneup.png',
+    visionPickup: 'pickup_eye.png',
+    timePickup: 'pickup_clock.png',
+    
+    // Misc
+    circle: 'circle.png',
+    square: 'square.png',
     crosshair: 'crosshair.png'
   },
 
@@ -95,7 +106,8 @@ const assets = {
     weaponPickup: 'weapon.wav',
     music1: 'music1.mp3',
     music2: 'music2.mp3',
-    music3: 'music3.mp3'
+    music3: 'music3.mp3',
+    music11: 'music11.mp3',
   },
 
   sceneSources: {

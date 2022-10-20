@@ -33,7 +33,7 @@ export function insertPlinth (terrain, types, pos, params) {
     for (let j = -3; j <= 3; j++) {
       const newPos = add([i, j], pos)
       terrain[newPos] = params.height
-      types[newPos] = 2
+      types[newPos] = "wall"
     }
   }
 }
@@ -66,7 +66,7 @@ export function generateRoom (params) {
     for (let i = room[0][0]; i <= room[1][0]; i++) {
       for (let j = room[0][1]; j <= room[1][1]; j++) {
         terrain[[i, j]] = params.height
-        types[[i, j]] = 1
+        types[[i, j]] = "floor"
       }
     }
   }
@@ -77,7 +77,7 @@ export function generateRoom (params) {
       const newSpace = add(delta, proc.stringToPosition(space))
       if (!(newSpace in terrain)) {
         terrain[newSpace] = params.height + params.roomWallHeight
-        types[newSpace] = 2
+        types[newSpace] = "wall"
       }
     }
   }

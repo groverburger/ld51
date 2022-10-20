@@ -6,6 +6,7 @@ import * as u from './core/utils.js'
 import * as vec2 from './core/vector2.js'
 import * as vec3 from './core/vector3.js'
 import * as proc from './procgeneral.js'
+import * as themes from './data/themes.js'
 import assets from './assets.js'
 import SpatialHash from './core/spatialhash.js'
 import Player from './player.js'
@@ -230,80 +231,71 @@ export default class Terrain extends Thing {
       return [xMin, yMin, xMax, yMax]
     }
 
-    const getStage = () => {
-      // return 4
+    const getTheme = () => {
       if (globals.level <= 5 || !globals.level) {
-        return 1
+        return "asteroid"
       }
       if (globals.level === 15) {
-        return 4
+        return "hive"
       }
       if (globals.level > 10) {
-        return 3
+        return "cyber"
       }
-      return 2
+      return "yard"
     }
 
-    const getFloorTexture = (tileType) => {
-      if (getStage() === 1) {
-        if (tileType === 1) { return 'path' }
-        if (tileType === 2) { return 'path' }
-        if (tileType === 3) { return 'path' }
-        if (tileType === 4) { return 'goldenFloor' }
-      } else if (getStage() === 2) {
-        if (tileType === 1) { return 'woodtile' }
-        if (tileType === 2) { return 'woodtile' }
-        if (tileType === 3) { return 'dirt' }
-        if (tileType === 4) { return 'goldenFloor' }
-      } else if (getStage() === 3) {
-        if (tileType === 1) { return 'techfloor' }
-        if (tileType === 2) { return 'tech1' }
-        if (tileType === 3) { return 'techfloor' }
-        if (tileType === 4) { return 'goldenFloor' }
-        return 'techstone'
-      } else if (getStage() === 4) {
-        if (tileType === 1) { return 'techfloor' }
-        if (tileType === 2) { return 'finale' }
-        if (tileType === 3) { return 'finale' }
-        if (tileType === 4) { return 'goldenFloor' }
-        return 'techstone'
+    const getTexture = (tileType, textureType) => {
+      // Theme data
+      let themeData = themes.data[getTheme()].tiles
+      if (!themeData) {
+        return 'stone'
       }
 
-      return 'stone'
-    }
-
-    const getWallTexture = (tileType) => {
-      if (getStage() === 1) {
-        if (tileType === 1) { return 'path' }
-        if (tileType === 2) { return 'roomWall' }
-        if (tileType === 3) { return 'path' }
-        if (tileType === 4) { return 'goldenWall' }
-      } else if (getStage() === 2) {
-        if (tileType === 1) { return 'woodtile' }
-        if (tileType === 2) { return 'wood' }
-        if (tileType === 3) { return 'dirt' }
-        if (tileType === 4) { return 'goldenWall' }
-      } else if (getStage() === 3) {
-        if (tileType === 1) { return 'techstone' }
-        if (tileType === 2) { return 'tech1' }
-        if (tileType === 3) { return 'techfloor' }
-        if (tileType === 4) { return 'goldenWall' }
-        return 'techstone'
-      } else if (getStage() === 4) {
-        if (tileType === 1) { return 'techfloor' }
-        if (tileType === 2) { return 'finale' }
-        if (tileType === 3) { return 'finale' }
-        if (tileType === 4) { return 'goldenWall' }
-        return 'techstone'
+      // Tile type
+      let typeData = themeData[tileType]
+      if (!typeData) {
+        typeData = themeData["default"]
       }
-      return 'stone'
+
+      // Texture type
+      let texture = typeData[textureType]
+      if (!texture) {
+        typeData = themeData["default"]
+        texture = typeData[textureType]
+      }
+      if (!texture) {
+        return 'stone'
+      }
+
+      // Return
+      return texture
     }
 
     const getShouldRound = (tileType) => {
-      if (tileType === 1 || tileType === 2 || tileType === 4) {
-        return false
+      // Theme data
+      let themeData = themes.data[getTheme()].tiles
+      if (!themeData) {
+        return true
       }
-      return true
+
+      // Tile type
+      let typeData = themeData[tileType]
+      if (!typeData) {
+        typeData = themeData["default"]
+      }
+
+      // Texture type
+      let noCarve = typeData["noCarve"]
+      if (noCarve === null) {
+        typeData = themeData["default"]
+        noCarve = typeData["noCarve"]
+      }
+      if (noCarve === null) {
+        return 'true'
+      }
+
+      // Return
+      return !noCarve
     }
 
     const getShouldSlope = (tileType) => {
@@ -326,14 +318,14 @@ export default class Terrain extends Thing {
           [greedy[2], greedy[1]],
           [greedy[0], greedy[3]],
           height,
-          getFloorTexture(this.getTileAt(x, y, 'TileType'))
+          getTexture(this.getTileAt(x, y, 'TileType'), "floor")
         )
         addFloorTri(
           [greedy[2], greedy[3]],
           [greedy[2], greedy[1]],
           [greedy[0], greedy[3]],
           height,
-          getFloorTexture(this.getTileAt(x, y, 'TileType'))
+          getTexture(this.getTileAt(x, y, 'TileType'), "floor")
         )
       }
 
@@ -376,7 +368,7 @@ export default class Terrain extends Thing {
               otherHeight
             ],
 
-            getFloorTexture(this.getTileAtWorld(x, y, 'TileType'))
+            getTexture(this.getTileAtWorld(x, y, 'TileType'), "floor")
           )
 
           add3DFloorTri(
@@ -398,7 +390,7 @@ export default class Terrain extends Thing {
               otherHeight
             ],
 
-            getFloorTexture(this.getTileAtWorld(x, y, 'TileType'))
+            getTexture(this.getTileAtWorld(x, y, 'TileType'), "floor")
           )
         }
 
@@ -429,7 +421,7 @@ export default class Terrain extends Thing {
               otherHeight
             ],
 
-            getFloorTexture(this.getTileAtWorld(x, y, 'TileType'))
+            getTexture(this.getTileAtWorld(x, y, 'TileType'), "floor")
           )
         }
 
@@ -470,7 +462,7 @@ export default class Terrain extends Thing {
                 -256,
                 height,
                 {
-                  texture: getWallTexture(this.getTileAtWorld(x, y, 'TileType'))
+                  texture: getTexture(this.getTileAtWorld(x, y, 'TileType'), "wall")
                 }
               )
 
@@ -488,7 +480,7 @@ export default class Terrain extends Thing {
                   center[1] + normal[1] * grid / 2 + turn[1] * grid / -2
                 ],
                 height,
-                getFloorTexture(this.getTileAtWorld(x, y, 'TileType'))
+                getTexture(this.getTileAtWorld(x, y, 'TileType'), "floor")
               )
             }
           }
@@ -513,7 +505,7 @@ export default class Terrain extends Thing {
           -256,
           height,
           {
-            texture: getWallTexture(this.getTileAtWorld(x, y, 'TileType'))
+            texture: getTexture(this.getTileAtWorld(x, y, 'TileType'), "wall")
           }
         )
       }
@@ -712,8 +704,8 @@ export default class Terrain extends Thing {
 
   generate () {
     // Generate seed
-    const seed = Math.floor(Math.random() * 100000)
-    // seed = 19204
+    let seed = Math.floor(Math.random() * 100000)
+    // seed = 81492
 
     // Init the parameterBuilder object
     let parameterBuilder = globals.parameterBuilder
@@ -764,18 +756,18 @@ export default class Terrain extends Thing {
       if (this.map[coord] < 30 && this.map[coord] >= 1) {
         const [x, y] = coord.split(',').map(Number)
         if (u.distance2d(x, y, this.startPoint[0], this.startPoint[1]) > 8) {
-          if (this.types[coord] === 1) {
+          if (this.types[coord] === "floor") {
             this.locations.room.push([x, y])
             continue
           }
-          if (this.types[coord] === 2) {
+          if (this.types[coord] === "wall") {
             continue
           }
-          if (this.types[coord] === 3) {
+          if (this.types[coord] === "path") {
             this.locations.path.push([x, y])
             continue
           }
-          if (this.types[coord] === 4) {
+          if (this.types[coord] === "floor2") {
             this.locations.gold.push([x, y])
           }
           this.locations.other.push([x, y])

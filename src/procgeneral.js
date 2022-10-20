@@ -108,14 +108,17 @@ export class GeneratorParams {
       this.caveMode = 13
       this.palaceIndoors = false
       this.palaceLength = 80
+      this.palaceMaxJumpDistance = 2
     } else if (level === 10) {
       this.caveMode = 13
       this.palaceIndoors = false
       this.palaceLength = 90
+      this.palaceMaxJumpDistance = 3
     } else if (level === 15) {
       this.caveMode = 15
       this.palaceIndoors = false
       this.palaceLength = 110
+      this.palaceMaxJumpDistance = 3
     } else if (level > 0 && level <= 2) {
       // Type Island
       this.caveMode = 0
@@ -206,7 +209,7 @@ export function adjustTerrain (terrain, amt) {
   for (const key in terrain) {
     terrain[key] = terrain[key] + amt
   }
-}
+} 
 
 export function guaranteePath (terrain, startPoint, endPoint, params) {
   // Create the list of accessible points from start
@@ -408,7 +411,7 @@ export function paintPath (types, path, params) {
         const newSpace = add(delta, space)
         // Make sure we don't paint over other painted tiles
         if (!(newSpace in types) || types[newSpace] === 0) {
-          types[newSpace] = 3
+          types[newSpace] = "path"
         }
       }
     }
@@ -439,7 +442,7 @@ function buildAlongPath (terrain, types, path, params) {
   for (let i = 0; i < path.length; i++) {
     const pos = path[i]
     // If wall...
-    if (types[pos] === 2) {
+    if (types[pos] === "wall") {
       // Carve doorway
       makeDoorway(terrain, types, pos)
     }
@@ -467,7 +470,7 @@ function makeDoorway (terrain, types, pos) {
   let count = 0
   for (const delta of deltas) {
     const newPos = add(pos, delta)
-    if (types[newPos] !== 2 && !isExtreme(terrain[newPos])) {
+    if (types[newPos] !== "wall" && !isExtreme(terrain[newPos])) {
       count += 1
       total += terrain[newPos]
     }
@@ -633,7 +636,7 @@ export function generateEverything (params) {
       path,
       offset: pt
     }
-    const heightDelta = gen.terrain[pt] - params.palaceFloorHeight - 1
+    const heightDelta = Math.max(gen.terrain[pt], 3) - params.palaceFloorHeight - 1
 
     // Generate
     const res = palace.generatePalace(params, pathData)

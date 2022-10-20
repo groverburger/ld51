@@ -35,7 +35,7 @@ function pyramid (height, terrain, types) {
     for (let x = -i + 1; x <= i - 1; x++) {
       for (let y = -i + 1; y <= i - 1; y++) {
         terrain[[x, y]] = height + h
-        types[[x, y]] = 4
+        types[[x, y]] = "wall2"
       }
     }
   }
@@ -45,11 +45,11 @@ function cube (height, terrain, types) {
   for (let x = -2; x <= 2; x++) {
     for (let y = -2; y <= 2; y++) {
       terrain[[x, y]] = height + 6
-      types[[x, y]] = 1
+      types[[x, y]] = "floor"
     }
   }
-  types[[2, 2]] = 4
-  types[[-2, 2]] = 4
-  types[[2, -2]] = 4
-  types[[-2, -2]] = 4
+  types[[2, 2]] = "wall2"
+  types[[-2, 2]] = "wall2"
+  types[[2, -2]] = "wall2"
+  types[[-2, -2]] = "wall2"
 }

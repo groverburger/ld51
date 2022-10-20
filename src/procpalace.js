@@ -3,7 +3,6 @@ import { GeneratorResult, stringToPosition } from './procgeneral.js'
 
 const TOWARDS_CHANCE = 0.8
 const PALACE_WALL_HEIGHT = 80
-const PALACE_JUMP_LENGTH = 3
 const PALACE_SCALE = 3
 
 export function generatePalace (params, pathData) {
@@ -46,6 +45,8 @@ export function generatePalace (params, pathData) {
 }
 
 function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, tileData, pathData) {
+  // console.log("Started iteration at position " + pos)
+
   // Take an action
   const actionNumber = Math.floor(params.random() * 13)
   let action = 'turn' // move forward, turning at a chasm
@@ -145,7 +146,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
         // Attempt to jump over the ledge
 
         // Make sure there is a place we can go a certain distance ahead
-        const jumpPos = add(curPos, scale(direction, PALACE_JUMP_LENGTH))
+        const jumpPos = add(curPos, scale(direction, params.palaceMaxJumpDistance))
 
         // console.log("Jump!")
 
@@ -158,7 +159,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
           const prev = subtract(curPos, direction)
           tileData[prev] = { ...tileData[prev], noRetainingWall: true }
 
-          for (let j = 0; j < PALACE_JUMP_LENGTH + 1; j++) {
+          for (let j = 0; j < params.palaceMaxJumpDistance; j++) {
             // Track distance
             distance++
 
@@ -256,7 +257,7 @@ function scaleTerrain (terrain, types, params, tileData) {
     for (const delta of floorDeltas) {
       const pf = add(delta, p2)
       terrainRet[pf] = terrain[p]
-      types[pf] = 3
+      types[pf] = "floor2"
     }
 
     for (const delta of wallDeltas) {
@@ -264,7 +265,7 @@ function scaleTerrain (terrain, types, params, tileData) {
       if (!(pf in terrainRet)) {
         if (params.palaceIndoors) {
           terrainRet[pf] = PALACE_WALL_HEIGHT
-          types[pf] = 3
+          types[pf] = "wall2"
         } else {
           // Make sure this space wasn't marked as not having a retaining wall
           if (!(tileData[p] && tileData[p].noRetainingWall)) {
@@ -279,7 +280,7 @@ function scaleTerrain (terrain, types, params, tileData) {
             if (xPaths === 1 || yPaths === 1) {
               const isStair = tileData[p] && tileData[p].stair
               terrainRet[pf] = terrain[p] + (isStair ? 3 : 2)
-              types[pf] = 4
+              types[pf] = "wall2"
             }
           }
         }
