@@ -6,7 +6,7 @@ import Thing from './core/thing.js'
 function * Animation () {
   const { ctx, globals, mouse } = game
 
-  if (globals.tutorial) {
+  if (false && globals.tutorial) {
     globals.tutorial = false
     game.getThing('player').showGui = false
 

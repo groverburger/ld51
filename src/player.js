@@ -51,8 +51,8 @@ export default class Player extends Thing {
   walkFrameAccel = 0
   slowTime = 0
 
-  constructor (data = {}) {
-    super(data)
+  constructor (position, angle = 0) {
+    super()
 
     const { music1, music2, music3 } = assets.sounds
     for (const music of [music1, music2, music3]) {
@@ -84,23 +84,14 @@ export default class Player extends Thing {
     // getScene().addThing(new DemoHelper())
 
     // this.position[2] = 10000
+    this.position = position
     this.position[2] = getThing('terrain').getGroundHeight(this.position[0], this.position[1]) + this.height
     getScene().camera3D.position = [...this.position]
     getScene().camera3D.pitch = 0.25
-    getScene().camera3D.yaw = data.angle || 0
+    getScene().camera3D.yaw = angle
     getScene().addThing(new LevelStart())
     // getScene().addThing(new DemoHelper())
 
-    if (data.fieldInstances) {
-      for (const { __identifier: id, __value: val } of data.fieldInstances) {
-        if (id === 'direction') {
-          this.direction = 2 * Math.PI * val / 8
-          getScene().camera3D.yaw = Math.PI + this.direction
-        }
-      }
-    }
-
-    this.collisionSettings.tiles = new Set()
     this.spawnPosition = [...this.position]
     this.speed[2] = 0
     // this.direction = 0

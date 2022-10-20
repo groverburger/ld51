@@ -21,12 +21,7 @@ export default class Thing {
   contactDirections = { left: false, right: false, up: false, down: false }
   isCollisionEnabled = true // can other things detect my presence
   isSolid = false // stop movement of other things
-  movementPushback = 0.0001 // after a collision is detected, move back by this much
-  collisionSettings = {
-    solidThings: true,
-    tiles: new Set([1]),
-    levelContained: false
-  }
+  isSolidRespecting = true // is stopped by solid things
 
   // animation
   animations = { idle: { frames: [0], speed: 0 } }
@@ -35,14 +30,6 @@ export default class Thing {
   animationIndex = 0
   animationFrameSize = 64
   timers = []
-
-  constructor (params) {
-    if (!params) return
-    this.position = params.position || this.position
-    for (const value of (params.fieldInstances || [])) {
-      this[value.__identifier] = value.__value
-    }
-  }
 
   // give myself a name so that other things can
   // reference me with getThing()
@@ -160,7 +147,7 @@ export default class Thing {
       const step = sign(dx) * Math.min(Math.abs(dx), stepSize)
       if (this.checkCollision(this.position[0] + step, this.position[1])) {
         this.speed[0] = 0
-        this.position[0] = Math.round(this.position[0]) - sign(dx) * this.movementPushback
+        this.position[0] = Math.round(this.position[0]) - sign(dx) * 0.0001
         if (sign(dx) > 0) this.contactDirections.right = true
         if (sign(dx) < 0) this.contactDirections.left = true
         break
@@ -173,7 +160,7 @@ export default class Thing {
       const step = sign(dy) * Math.min(Math.abs(dy), stepSize)
       if (this.checkCollision(this.position[0], this.position[1] + step)) {
         this.speed[1] = 0
-        this.position[1] = Math.round(this.position[1]) - sign(dy) * this.movementPushback
+        this.position[1] = Math.round(this.position[1]) - sign(dy) * 0.0001
         if (sign(dy) > 0) this.contactDirections.down = true
         if (sign(dy) < 0) this.contactDirections.up = true
         break
@@ -190,36 +177,12 @@ export default class Thing {
     return [a[0] + p[0], a[1] + p[1], a[2] - a[0], a[3] - a[1]]
   }
 
-  isTileSolid (tileID) {
-    return this.collisionSettings.tiles.has(tileID)
-  }
-
-  checkLevelCollision (x = this.position[0], y = this.position[1]) {
-    if (!this.collisionSettings.levelContained) return false
-    const aabb = this.aabb
-
-    if (!getScene().getLevelAt(x + aabb[0], y + aabb[1]) ||
-        !getScene().getLevelAt(x + aabb[2], y + aabb[1]) ||
-        !getScene().getLevelAt(x + aabb[0], y + aabb[3]) ||
-        !getScene().getLevelAt(x + aabb[2], y + aabb[3])) {
-      return true
-    }
-
-    return false
-  }
-
-  checkTileCollision (x = this.position[0], y = this.position[1]) {
-    return this.getAllTileCollisions(x, y).some(tile => this.isTileSolid(tile))
-  }
-
   checkThingCollision (x = this.position[0], y = this.position[1]) {
     return this.getAllThingCollisions(x, y).some(thing => thing.isSolid)
   }
 
   checkCollision (x = this.position[0], y = this.position[1]) {
-    const tileCollision = this.checkTileCollision(x, y)
-    const thingCollision = this.collisionSettings.solidThings && this.checkThingCollision(x, y)
-    return tileCollision || thingCollision || this.checkLevelCollision(x, y)
+    return this.isSolidRespecting && this.checkThingCollision(x, y)
   }
 
   getAllThingCollisions (x = this.position[0], y = this.position[1]) {
@@ -234,21 +197,6 @@ export default class Thing {
         y + a[3] >= thing.aabb[1] + thing.position[1]
       )
     })
-    return hits
-  }
-
-  getAllTileCollisions (x = this.position[0], y = this.position[1]) {
-    const gridSize = getScene().map.gridSize
-    const toGrid = x => Math.floor(x / gridSize)
-    const aabb = this.aabb
-    const hits = []
-
-    for (let hx = toGrid(x + aabb[0]); hx <= toGrid(x + aabb[2]); hx += 1) {
-      for (let hy = toGrid(y + aabb[1]); hy <= toGrid(y + aabb[3]); hy += 1) {
-        hits.push(getScene().getTileAt(hx, hy))
-      }
-    }
-
     return hits
   }
 }

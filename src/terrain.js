@@ -787,10 +787,10 @@ export default class Terrain extends Thing {
   populate () {
     // add the player to the scene if we're not in the title screen
     if (!getThing('title')) {
-      getScene().addThing(new Player({
-        position: [this.startPoint[0] * 64 - 32, this.startPoint[1] * 64 - 32, 10000],
-        angle: this.startAngle
-      }))
+      getScene().addThing(new Player(
+        [this.startPoint[0] * 64 - 32, this.startPoint[1] * 64 - 32, 10000],
+        this.startAngle
+      ))
     }
 
     const getLocations = (...types) => {

@@ -99,9 +99,8 @@ const assets = {
   },
 
   sceneSources: {
-    title: 'title.ldtk',
-    main: '3dtest3.ldtk'
-    // first: "empty.ldtk",
+    title: 'title.json',
+    main: 'main.json'
   },
 
   things: {
