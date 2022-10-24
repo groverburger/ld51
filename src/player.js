@@ -54,25 +54,25 @@ export default class Player extends Thing {
   constructor (position, angle = 0) {
     super()
 
-    const { music1, music2, music3, music11 } = assets.sounds
-    for (const music of [music1, music2, music3, music11]) {
+    const { music1, music2, music3, musicFinal } = assets.sounds
+    for (const music of [music1, music2, music3, musicFinal]) {
       music.pause()
     }
 
-    music1.volume = 0.5
-    music2.volume = 0.4
-    music3.volume = 0.5
-    music11.volume = 0.5
+    music1.volume = 0.15
+    music2.volume = 0.15
+    music3.volume = 0.15
+    musicFinal.volume = 0.15
 
     let music = music1
     if (globals.level > 5) {
       music = music2
     }
     if (globals.level > 10) {
-      music = music11
+      music = musicFinal
     }
     music.loop = true
-    music.volume = 0.5
+    //music.volume = 0.5
     music.play()
 
     if (!globals.level) {
