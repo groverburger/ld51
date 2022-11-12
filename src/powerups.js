@@ -43,6 +43,19 @@ export class MachinegunPickup extends ShotgunPickup {
   }
 }
 
+export class RiflePickup extends ShotgunPickup {
+  model = assets.models.machinegun
+  color = [0.9, 0, 0.8, 1]
+
+  onPickup () {
+    const { globals } = game
+    const sound = assets.sounds.weaponPickup
+    sound.currentTime = 0
+    sound.play()
+    globals.powerup = 'rifle'
+  }
+}
+
 export class VisionPickup extends Pickup {
   onPickup () {
     const { globals } = game
