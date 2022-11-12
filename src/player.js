@@ -59,10 +59,10 @@ export default class Player extends Thing {
       music.pause()
     }
 
-    music1.volume = 0.3
-    music2.volume = 0.3
-    music3.volume = 0.3
-    musicFinal.volume = 0.3
+    music1.volume = 0.8
+    music2.volume = 0.8
+    music3.volume = 0.8
+    musicFinal.volume = 0.8
 
     let music = music1
     if (globals.level > 5) {
