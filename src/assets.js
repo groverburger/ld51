@@ -79,7 +79,7 @@ const assets = {
     oneUp: 'pickup_oneup.png',
     visionPickup: 'pickup_eye.png',
     timePickup: 'pickup_clock.png',
-    
+
     // Misc
     circle: 'circle.png',
     square: 'square.png',
@@ -106,7 +106,7 @@ const assets = {
     weaponPickup: 'weapon.wav',
     music1: 'music/Starshot5.mp3',
     music2: 'music/Starshot4.mp3',
-    music3: 'music/Starshot7.mp3',
+    music3: 'music/Starshot6.mp3',
     musicFinal: 'music/music11.mp3',
   },
 

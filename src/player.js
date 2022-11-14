@@ -69,7 +69,7 @@ export default class Player extends Thing {
       music = music2
     }
     if (globals.level > 10) {
-      music = musicFinal
+      music = music3
     }
     music.loop = true
     //music.volume = 0.5
