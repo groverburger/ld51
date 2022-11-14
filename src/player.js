@@ -59,10 +59,10 @@ export default class Player extends Thing {
       music.pause()
     }
 
-    music1.volume = 0.15
-    music2.volume = 0.15
-    music3.volume = 0.15
-    musicFinal.volume = 0.15
+    music1.volume = 0.8
+    music2.volume = 0.8
+    music3.volume = 0.8
+    musicFinal.volume = 0.8
 
     let music = music1
     if (globals.level > 5) {
@@ -334,6 +334,27 @@ export default class Player extends Thing {
         this.speed[0] -= look[0] * 0.9
         this.speed[1] -= look[1] * 0.9
         this.speed[2] -= look[2] * 0.5
+      } else if (globals.powerup === 'rifle') {
+        // Animation and Timing
+        this.after(24, () => {}, 'shoot')
+        this.after(30, () => {}, 'fire')
+
+        // Create bullet
+        getScene().addThing(new Bullet(pos, look, 90, this))
+        getScene().addThing(new Bullet(vec3.add(pos, vec3.multiply(look, 10)), look, 90, this))
+        getScene().addThing(new Bullet(vec3.add(pos, vec3.multiply(look, 20)), look, 90, this))
+        getScene().addThing(new Bullet(vec3.add(pos, vec3.multiply(look, 30)), look, 90, this))
+        getScene().addThing(new Bullet(vec3.add(pos, vec3.multiply(look, 40)), look, 90, this))
+
+        const sound = assets.sounds.machinegun
+        sound.playbackRate = u.random(1, 1.3)
+        sound.currentTime = 0
+        sound.volume = 0.6
+        sound.play()
+
+        this.speed[0] -= look[0] * 3
+        this.speed[1] -= look[1] * 3
+        this.speed[2] -= look[2] * 1.5
       } else {
         // Animation and Timing
         this.after(16, () => {}, 'shoot')
@@ -575,6 +596,15 @@ export default class Player extends Thing {
         scale: 64
       }))
       gfx.set('color', [0.8, 0.8, 0, 1])
+      gfx.setTexture(assets.textures.square)
+      gfx.drawMesh(assets.models.machinegun)
+    } else if (globals.powerup === 'rifle') {
+      gfx.set('modelMatrix', mat.getTransformation({
+        translation: [bobX - 2, -7 + knockback * 0.2, bobY - 1.8 - (knockback * 0.5)],
+        rotation: [0, -knockback, Math.PI / -2],
+        scale: 64
+      }))
+      gfx.set('color', [0.9, 0, 0.8, 1])
       gfx.setTexture(assets.textures.square)
       gfx.drawMesh(assets.models.machinegun)
     } else {

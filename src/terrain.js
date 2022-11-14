@@ -14,7 +14,7 @@ import Enemy from './enemy.js'
 import Goal from './goal.js'
 import TimePickup from './timepickup.js'
 import OneUp from './oneup.js'
-import { ShotgunPickup, MachinegunPickup } from './powerups.js'
+import { ShotgunPickup, MachinegunPickup, RiflePickup } from './powerups.js'
 
 export default class Terrain extends Thing {
   seaLevel = -256
@@ -835,7 +835,7 @@ export default class Terrain extends Thing {
 
       for (let i = 0; i < gunCount; i++) {
         const coord = gunLocations.pop()
-        const Gun = [ShotgunPickup, MachinegunPickup][globals.level % 2]
+        const Gun = [ShotgunPickup, MachinegunPickup, RiflePickup][globals.level % 3]
         if (coord) {
           getScene().addThing(new Gun([coord[0] * 64 + 32, coord[1] * 64 + 32, 0]))
         }
