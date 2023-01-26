@@ -7,6 +7,7 @@ import Pickup from './pickup.js'
 export class ShotgunPickup extends Pickup {
   model = assets.models.shotgun
   texture = assets.textures.shotgun
+  scale = 1
 
   onPickup () {
     const { globals } = game
@@ -23,7 +24,7 @@ export class ShotgunPickup extends Pickup {
     gfx.set('modelMatrix', mat.getTransformation({
       translation: this.position,
       rotation: [Math.PI*0.5, 0, this.time / 30],
-      scale: 6
+      scale: 6 * this.scale
     }))
     gfx.setTexture(this.texture)
     gfx.drawMesh(this.model)
@@ -53,6 +54,35 @@ export class RiflePickup extends ShotgunPickup {
     sound.currentTime = 0
     sound.play()
     globals.powerup = 'rifle'
+  }
+}
+
+export class TimePickup extends ShotgunPickup {
+  model = assets.models.clock
+  texture = assets.textures.clock
+  scale = 3
+
+  onPickup () {
+    const sound = assets.sounds.timePickup
+    sound.currentTime = 0
+    sound.volume = 0.5
+    sound.play()
+    this.player.time += 5 * 60
+    this.player.after(15, () => {}, 'timeBonus')
+  }
+}
+
+export class OneUp extends ShotgunPickup {
+  model = assets.models.oneup
+  texture = assets.textures.oneup
+  scale = 4
+
+  onPickup () {
+    const { globals } = game
+    const sound = assets.sounds.oneUp
+    sound.currentTime = 0
+    sound.play()
+    globals.lives += 1
   }
 }
 

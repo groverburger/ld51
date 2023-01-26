@@ -12,9 +12,7 @@ import SpatialHash from './core/spatialhash.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
 import Goal from './goal.js'
-import TimePickup from './timepickup.js'
-import OneUp from './oneup.js'
-import { ShotgunPickup, MachinegunPickup, RiflePickup } from './powerups.js'
+import { ShotgunPickup, MachinegunPickup, RiflePickup, TimePickup, OneUp } from './powerups.js'
 
 export default class Terrain extends Thing {
   seaLevel = -256

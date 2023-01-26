@@ -43,6 +43,9 @@ const assets = {
     shotgun: 'shotgun.obj',
     machinegun: 'machinegun.obj',
     rifle: 'rifle.obj',
+    clock: 'clock.obj',
+    boots: 'boots.obj',
+    oneup: 'oneup.obj',
   },
 
   imageSources: {
@@ -88,6 +91,7 @@ const assets = {
     rifle: 'uv_rifle.png',
     clock: 'uv_clock.png',
     boots: 'uv_boots.png',
+    oneup: 'uv_oneup.png',
 
     // Misc
     circle: 'circle.png',
