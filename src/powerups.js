@@ -6,7 +6,7 @@ import Pickup from './pickup.js'
 
 export class ShotgunPickup extends Pickup {
   model = assets.models.shotgun
-  color = [0, 0, 1, 1]
+  texture = assets.textures.shotgun
 
   onPickup () {
     const { globals } = game
@@ -22,17 +22,17 @@ export class ShotgunPickup extends Pickup {
     game.getScene().camera3D.setUniforms()
     gfx.set('modelMatrix', mat.getTransformation({
       translation: this.position,
-      rotation: [0, 0, this.time / 30],
-      scale: 640
+      rotation: [Math.PI*0.5, 0, this.time / 30],
+      scale: 6
     }))
-    gfx.set('color', this.color)
+    gfx.setTexture(this.texture)
     gfx.drawMesh(this.model)
   }
 }
 
 export class MachinegunPickup extends ShotgunPickup {
   model = assets.models.machinegun
-  color = [0.8, 0.8, 0, 1]
+  texture = assets.textures.machinegun
 
   onPickup () {
     const { globals } = game
@@ -44,8 +44,8 @@ export class MachinegunPickup extends ShotgunPickup {
 }
 
 export class RiflePickup extends ShotgunPickup {
-  model = assets.models.machinegun
-  color = [0.9, 0, 0.8, 1]
+  model = assets.models.rifle
+  texture = assets.textures.rifle
 
   onPickup () {
     const { globals } = game

@@ -41,7 +41,8 @@ const assets = {
     sphere: 'sphere.obj',
     pistol: 'pistol.obj',
     shotgun: 'shotgun.obj',
-    machinegun: 'machinegun.obj'
+    machinegun: 'machinegun.obj',
+    rifle: 'rifle.obj',
   },
 
   imageSources: {
@@ -79,6 +80,14 @@ const assets = {
     oneUp: 'pickup_oneup.png',
     visionPickup: 'pickup_eye.png',
     timePickup: 'pickup_clock.png',
+
+    // UV Mapped textures
+    pistol: 'uv_pistol.png',
+    shotgun: 'uv_shotgun.png',
+    machinegun: 'uv_machinegun.png',
+    rifle: 'uv_rifle.png',
+    clock: 'uv_clock.png',
+    boots: 'uv_boots.png',
 
     // Misc
     circle: 'circle.png',

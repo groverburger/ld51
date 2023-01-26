@@ -562,7 +562,7 @@ export default class Player extends Thing {
     gfx.setShader(assets.shaders.defaultShaded)
     gfx.set('viewMatrix', [
       1, 0, 0, 0,
-      0, 0, 1, 0,
+      0, 0, 2, 0,
       0, 1, 0, 0,
       0, 0, 0, 1
     ])
@@ -582,39 +582,39 @@ export default class Player extends Thing {
     // Animation
     if (globals.powerup === 'shotgun') {
       gfx.set('modelMatrix', mat.getTransformation({
-        translation: [bobX - 2, -7 + knockback * 4, bobY - 1.8 - (knockback * 0.5)],
-        rotation: [0, -knockback / 3, Math.PI / -2],
-        scale: 80
+        // translation: [bobX - 2, -7 + knockback * 4, bobY - 1.8 - (knockback * 0.5)],
+        // rotation: [0, -knockback / 3, Math.PI / -2],
+        // scale: 0.4
+
+        translation: [bobX - 2, -3 + knockback * 4, bobY - 2.3 - (knockback * 0.5)],
+        rotation: [Math.PI*1.5 + knockback*0.3, Math.PI, 0],
+        scale: 0.4
       }))
-      gfx.set('color', [0, 0, 1, 1])
-      gfx.setTexture(assets.textures.square)
+      gfx.setTexture(assets.textures.shotgun)
       gfx.drawMesh(assets.models.shotgun)
     } else if (globals.powerup === 'machinegun') {
       gfx.set('modelMatrix', mat.getTransformation({
-        translation: [bobX - 2, -7 + knockback * 0.9, bobY - 1.8],
-        rotation: [0, -knockback * 0.1, Math.PI / -2],
-        scale: 64
+        translation: [bobX - 2, -4.5 + knockback * 0.2, bobY - 2.6],
+        rotation: [Math.PI*1.52 + knockback*0.1, Math.PI, 0.05],
+        scale: 0.5
       }))
-      gfx.set('color', [0.8, 0.8, 0, 1])
-      gfx.setTexture(assets.textures.square)
+      gfx.setTexture(assets.textures.machinegun)
       gfx.drawMesh(assets.models.machinegun)
     } else if (globals.powerup === 'rifle') {
       gfx.set('modelMatrix', mat.getTransformation({
-        translation: [bobX - 2, -7 + knockback * 0.2, bobY - 1.8 - (knockback * 0.5)],
-        rotation: [0, -knockback, Math.PI / -2],
-        scale: 64
+        translation: [bobX - 2, -5 + knockback * 3, bobY - 2.3 - (knockback * 0.5)],
+        rotation: [Math.PI*1.5 + knockback*0.4, Math.PI, 0],
+        scale: 0.4
       }))
-      gfx.set('color', [0.9, 0, 0.8, 1])
-      gfx.setTexture(assets.textures.square)
-      gfx.drawMesh(assets.models.machinegun)
+      gfx.setTexture(assets.textures.rifle)
+      gfx.drawMesh(assets.models.rifle)
     } else {
       gfx.set('modelMatrix', mat.getTransformation({
-        translation: [bobX - 2, -7 + knockback * 0.2, bobY - 1.8 - (knockback * 0.5)],
-        rotation: [0, -knockback, Math.PI / -2],
-        scale: 64
+        translation: [bobX - 2, -4 + knockback * 0.2, bobY - 2.3 - (knockback * 0.5)],
+        rotation: [Math.PI*1.5 + knockback, Math.PI, 0],
+        scale: 0.4
       }))
-      gfx.set('color', [1, 0, 0, 1])
-      gfx.setTexture(assets.textures.square)
+      gfx.setTexture(assets.textures.pistol)
       gfx.drawMesh(assets.models.pistol)
     }
   }
