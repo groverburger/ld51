@@ -111,7 +111,7 @@ export class GeneratorParams {
       this.palaceMaxJumpDistance = 2
     } else if (level === 10) {
       this.caveMode = 13
-      this.palaceIndoors = false
+      this.palaceIndoors = true
       this.palaceLength = 90
       this.palaceMaxJumpDistance = 3
     } else if (level === 15) {
@@ -209,7 +209,7 @@ export function adjustTerrain (terrain, amt) {
   for (const key in terrain) {
     terrain[key] = terrain[key] + amt
   }
-} 
+}
 
 export function guaranteePath (terrain, startPoint, endPoint, params) {
   // Create the list of accessible points from start

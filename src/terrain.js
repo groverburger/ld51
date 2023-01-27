@@ -12,6 +12,7 @@ import SpatialHash from './core/spatialhash.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
 import Goal from './goal.js'
+import { Deco } from './deco.js'
 import { ShotgunPickup, MachinegunPickup, RiflePickup, TimePickup, OneUp } from './powerups.js'
 
 export default class Terrain extends Thing {
@@ -751,7 +752,7 @@ export default class Terrain extends Thing {
       gold: []
     }
     for (const coord in this.map) {
-      if (this.map[coord] < 30 && this.map[coord] >= 1) {
+      if (this.map[coord] < 75 && this.map[coord] >= 1) {
         const [x, y] = coord.split(',').map(Number)
         if (u.distance2d(x, y, this.startPoint[0], this.startPoint[1]) > 8) {
           if (this.types[coord] === "floor") {
@@ -792,7 +793,11 @@ export default class Terrain extends Thing {
     }
 
     const enemyLocations = getLocations('room', 'gold')
-    for (let i = 0; i < 5; i++) {
+    let enemyCount = Math.floor(3 + (globals.level / 2.3))
+    if (globals.level === 15) {
+      enemyCount += 12
+    }
+    for (let i = 0; i < enemyCount; i++) {
       const coord = enemyLocations.pop()
       if (coord) {
         getScene().addThing(new Enemy([coord[0] * 64 + 32, coord[1] * 64 + 32, 0]))
@@ -810,9 +815,23 @@ export default class Terrain extends Thing {
     }
 
     {
-      const coord = itemLocations.pop()
-      if (coord) {
-        getScene().addThing(new OneUp([coord[0] * 64 + 32, coord[1] * 64 + 32, 0]))
+      // No one-ups in tower levels
+      if (globals.level % 5 != 0) {
+        const coord = itemLocations.pop()
+        if (coord) {
+          getScene().addThing(new OneUp([coord[0] * 64 + 32, coord[1] * 64 + 32, 0]))
+        }
+      }
+    }
+
+    {
+      if (globals.level >= 6 && globals.level <= 10) {
+        for (let i = 0; i < 40; i++) {
+          const coord = itemLocations.pop()
+          if (coord) {
+            getScene().addThing(new Deco([coord[0] * 64 + 32, coord[1] * 64 + 32, 0], "crystal"))
+          }
+        }
       }
     }
 
@@ -833,7 +852,11 @@ export default class Terrain extends Thing {
 
       for (let i = 0; i < gunCount; i++) {
         const coord = gunLocations.pop()
-        const Gun = [ShotgunPickup, MachinegunPickup, RiflePickup][globals.level % 3]
+        let whichGun = globals.level % 3
+        if (globals.level === 15) {
+          whichGun = Math.floor(u.random() * 3)
+        }
+        const Gun = [ShotgunPickup, RiflePickup, MachinegunPickup][whichGun]
         if (coord) {
           getScene().addThing(new Gun([coord[0] * 64 + 32, coord[1] * 64 + 32, 0]))
         }

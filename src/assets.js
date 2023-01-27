@@ -46,6 +46,8 @@ const assets = {
     clock: 'clock.obj',
     boots: 'boots.obj',
     oneup: 'oneup.obj',
+
+    crystal: 'deco_crystal.obj',
   },
 
   imageSources: {
@@ -93,6 +95,8 @@ const assets = {
     boots: 'uv_boots.png',
     oneup: 'uv_oneup.png',
 
+    crystal: 'uv_crystal.png',
+
     // Misc
     circle: 'circle.png',
     square: 'square.png',
@@ -119,8 +123,7 @@ const assets = {
     weaponPickup: 'weapon.wav',
     music1: 'music/Starshot5.mp3',
     music2: 'music/Starshot4.mp3',
-    music3: 'music/Starshot6.mp3',
-    musicFinal: 'music/music11.mp3',
+    music3: 'music/Starshot1.mp3',
   },
 
   sceneSources: {

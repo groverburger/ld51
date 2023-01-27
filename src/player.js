@@ -54,15 +54,14 @@ export default class Player extends Thing {
   constructor (position, angle = 0) {
     super()
 
-    const { music1, music2, music3, musicFinal } = assets.sounds
-    for (const music of [music1, music2, music3, musicFinal]) {
+    const { music1, music2, music3 } = assets.sounds
+    for (const music of [music1, music2, music3]) {
       music.pause()
     }
 
     music1.volume = 0.8
     music2.volume = 0.8
     music3.volume = 0.8
-    musicFinal.volume = 0.8
 
     let music = music1
     if (globals.level > 5) {
