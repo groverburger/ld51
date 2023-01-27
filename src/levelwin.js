@@ -122,7 +122,7 @@ function * GameWin () {
     ctx.font = 'italic 32px Times New Roman'
     ctx.fillStyle = u.colorToString(1, 1, 1, u.map(i, 15, 30, 0, 0.75, true))
     ctx.fillText('Thank you for playing!', 0, 0)
-    ctx.fillText('Game created by Groverburger and ZungryWare in 72 hours for Ludum Dare 51', 0, 64)
+    ctx.fillText('Game created by Groverburger and ZungryWare', 0, 64)
     ctx.restore()
 
     i += 1

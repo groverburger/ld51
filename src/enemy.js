@@ -75,9 +75,11 @@ export default class Enemy extends Thing {
     // move towards player
     const player = game.getThing('player')
     if (player && u.distance2d(player.position[0], player.position[1], this.position[0], this.position[1]) < 64 * 16) {
-      const accel = vec2.angleToVector(this.angle, 0.85)
-      this.speed[0] += accel[0]
-      this.speed[1] += accel[1]
+      if (this.position[2] - player.position[2] < 64 * 3) {
+        const accel = vec2.angleToVector(this.angle, 0.85)
+        this.speed[0] += accel[0]
+        this.speed[1] += accel[1]
+      }
     }
 
     this.speed[0] *= this.friction
