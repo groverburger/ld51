@@ -5,6 +5,7 @@ import * as mat from './core/matrices.js'
 import * as u from './core/utils.js'
 import assets from './assets.js'
 import * as vec2 from './core/vector2.js'
+import * as vec3 from './core/vector3.js'
 import Player from './player.js'
 
 export default class Enemy extends Thing {
@@ -23,6 +24,7 @@ export default class Enemy extends Thing {
     this.position[2] = this.groundHeight + this.height
     this.speed[2] = 0
     this.after(60, () => this.angleUpdate())
+    this.seenPlayer = false
   }
 
   update () {
@@ -75,11 +77,19 @@ export default class Enemy extends Thing {
 
     // move towards player
     const player = game.getThing('player')
+    // Horizontal distance check
     if (player && u.distance2d(player.position[0], player.position[1], this.position[0], this.position[1]) < 64 * 16) {
+      // Vertical distance check
       if (this.position[2] - player.position[2] < 64 * 3) {
-        const accel = vec2.angleToVector(this.angle, 0.85)
-        this.speed[0] += accel[0]
-        this.speed[1] += accel[1]
+        // Line of sight check
+        if (!this.seenPlayer && !vec3.rayTrace(this.position, player.position)) {
+          this.seenPlayer = true
+        }
+        if (this.seenPlayer) {
+          const accel = vec2.angleToVector(this.angle, 0.85)
+          this.speed[0] += accel[0]
+          this.speed[1] += accel[1]
+        }
       }
     }
 

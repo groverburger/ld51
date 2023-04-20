@@ -221,11 +221,11 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
     data.firstClock = curPos
     data.firstClockPlaced = true
   }
-  if (depth / params.palaceLength > 0.5 && data.secondClockPlaced === false) {
+  if (depth / params.palaceLength > 0.44 && data.secondClockPlaced === false) {
     data.secondClock = curPos
     data.secondClockPlaced = true
   }
-  if (depth / params.palaceLength > 0.68 && data.thirdClockPlaced === false) {
+  if (depth / params.palaceLength > 0.62 && data.thirdClockPlaced === false) {
     data.thirdClock = curPos
     data.thirdClockPlaced = true
   }
