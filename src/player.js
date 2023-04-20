@@ -15,6 +15,7 @@ import * as vec3 from './core/vector3.js'
 import * as vec2 from './core/vector2.js'
 import InputHandler from './core/inputs.js'
 import Bullet from './bullet.js'
+import MachineGunBullet from './machinegunbullet.js'
 import DeathAnim from './deathanim.js'
 import LevelStart from './levelstart.js'
 
@@ -177,7 +178,7 @@ export default class Player extends Thing {
     // player's max speed should be 11.3583
 
     const yaw = scene.camera3D.yaw - Math.PI / 2
-    const friction = this.slowTime > 0 ? 0.85 : 0.9
+    const friction = this.slowTime > 0 ? 0.8 : 0.9
     const groundSpeed = 1.262
     const airSpeed = 0.8
     const walkSpeed = this.onGround ? groundSpeed : airSpeed
@@ -321,7 +322,7 @@ export default class Player extends Thing {
         const r = 0.1
         let dir = vec3.add(look, [u.random(-r, r), u.random(-r, r), u.random(-r, r)])
         dir = vec3.normalize(dir)
-        getScene().addThing(new Bullet(pos, dir, 28, this))
+        getScene().addThing(new MachineGunBullet(pos, dir, 22, this))
 
         // Sound effect
         const sound = assets.sounds.machinegun

@@ -13,7 +13,7 @@ export default class Enemy extends Thing {
   time = 0
   health = 1
   texture = assets.textures.enemy
-  friction = 0.85
+  friction = 0.87
   attackActive = false
 
   constructor (position) {
@@ -118,7 +118,7 @@ export default class Enemy extends Thing {
   }
 
   angleUpdate () {
-    this.after(60, () => this.angleUpdate())
+    this.after(5, () => this.angleUpdate())
     const player = game.getThing('player')
     if (!player) return
     this.angle = u.angleTowards(this.position[0], this.position[1], player.position[0], player.position[1])

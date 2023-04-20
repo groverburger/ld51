@@ -19,7 +19,7 @@ export const data = {
       },
       "wall": {
         "wall": "roomWall",
-        "floor": "lightStone",
+        "floor": "roomFloor",
         "noCarve": true,
       },
       "floor2": {

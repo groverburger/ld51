@@ -11,6 +11,8 @@ import assets from './assets.js'
 import SpatialHash from './core/spatialhash.js'
 import Player from './player.js'
 import Enemy from './enemy.js'
+import EnemyTurret from './turret.js'
+import EnemySquid from './squid.js'
 import Goal from './goal.js'
 import { Deco } from './deco.js'
 import { ShotgunPickup, MachinegunPickup, RiflePickup, TimePickup, OneUp } from './powerups.js'
@@ -57,6 +59,19 @@ export default class Terrain extends Thing {
     this.generate()
     this.createMesh()
     this.populate()
+  }
+
+  getTheme () {
+    if (globals.level <= 5 || !globals.level) {
+      return "asteroid"
+    }
+    if (globals.level === 15) {
+      return "hive"
+    }
+    if (globals.level > 10) {
+      return "cyber"
+    }
+    return "yard"
   }
 
   createMesh () {
@@ -230,22 +245,9 @@ export default class Terrain extends Thing {
       return [xMin, yMin, xMax, yMax]
     }
 
-    const getTheme = () => {
-      if (globals.level <= 5 || !globals.level) {
-        return "asteroid"
-      }
-      if (globals.level === 15) {
-        return "hive"
-      }
-      if (globals.level > 10) {
-        return "cyber"
-      }
-      return "yard"
-    }
-
     const getTexture = (tileType, textureType) => {
       // Theme data
-      let themeData = themes.data[getTheme()].tiles
+      let themeData = themes.data[this.getTheme()].tiles
       if (!themeData) {
         return 'stone'
       }
@@ -272,7 +274,7 @@ export default class Terrain extends Thing {
 
     const getShouldRound = (tileType) => {
       // Theme data
-      let themeData = themes.data[getTheme()].tiles
+      let themeData = themes.data[this.getTheme()].tiles
       if (!themeData) {
         return true
       }
@@ -550,13 +552,7 @@ export default class Terrain extends Thing {
     gfx.setShader(assets.shaders.default)
     getScene().camera3D.setUniforms()
     gfx.set('color', [1, 1, 1, 1])
-    let skybox = assets.textures.skybox1
-    if (globals.level > 5) {
-      skybox = assets.textures.skybox2
-    }
-    if (globals.level > 10) {
-      skybox = assets.textures.skybox3
-    }
+    let skybox = assets.textures[themes.data[this.getTheme()].skybox]
     gfx.setTexture(skybox)
     gfx.set('modelMatrix', mat.getTransformation({
       translation: [
@@ -797,11 +793,22 @@ export default class Terrain extends Thing {
     if (globals.level === 15) {
       enemyCount += 12
     }
+    let c = 0
     for (let i = 0; i < enemyCount; i++) {
       const coord = enemyLocations.pop()
       if (coord) {
-        getScene().addThing(new Enemy([coord[0] * 64 + 32, coord[1] * 64 + 32, 0]))
+        const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
+        if (c % 4 == 0) {
+          getScene().addThing(new EnemyTurret(pos))
+        }
+        else if (c % 4 == 1) {
+          getScene().addThing(new EnemySquid(pos))
+        }
+        else {
+          getScene().addThing(new Enemy(pos))
+        }
       }
+      c ++
     }
 
     const itemLocations = getLocations('other')
@@ -850,11 +857,11 @@ export default class Terrain extends Thing {
       if (globals.level === 12) { gunCount = 10 }
       if (globals.level === 15) { gunCount = 12 }
 
+      let whichGun = globals.level % 3
       for (let i = 0; i < gunCount; i++) {
         const coord = gunLocations.pop()
-        let whichGun = globals.level % 3
         if (globals.level === 15) {
-          whichGun = Math.floor(u.random() * 3)
+          whichGun = (whichGun + 1) % 3
         }
         const Gun = [ShotgunPickup, RiflePickup, MachinegunPickup][whichGun]
         if (coord) {
