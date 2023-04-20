@@ -792,7 +792,6 @@ export default class Terrain extends Thing {
     const enemyLocations = getLocations('room', 'gold')
     let enemyCounts = enemies.data[globals.level]
     if (!enemyCounts) {
-      console.warn("Missing enemy data!")
       enemyCounts = {}
     }
     // Basic

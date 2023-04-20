@@ -51,6 +51,9 @@ export default class Player extends Thing {
   walkFrames = 0
   walkFrameAccel = 0
   slowTime = 0
+  settingChanged = "DEFAULT"
+  settingTime = 0
+  settingDuration = 200
 
   constructor (position, angle = 0) {
     super()
@@ -108,6 +111,13 @@ export default class Player extends Thing {
         return (mouse.isLocked() && mouse.button) || gamepad?.buttons[1].pressed
       },
 
+      sensDown (keys, mouse, gamepad) {
+        return keys.Minus || keys.NumpadSubtract
+      },
+      sensUp (keys, mouse, gamepad) {
+        return keys.Equal || keys.NumpadAdd
+      },
+
       xMove (keys, mouse, gamepad) {
         const kb = !!keys.KeyD - !!keys.KeyA
         const gp = Math.abs(gamepad?.axes[0]) > 0.1 && gamepad.axes[0]
@@ -156,6 +166,7 @@ export default class Player extends Thing {
     this.inputs.update()
     const scene = getScene()
     this.time -= 1
+    this.settingTime -= 1
 
     // walking and friction
     let dx = this.inputs.get('xMove')
@@ -382,6 +393,21 @@ export default class Player extends Thing {
       }
     }
 
+    // Settings changes
+    if (!globals.mouseSensitivity) {
+      globals.mouseSensitivity = 5
+    }
+    if (this.inputs.pressed('sensDown')) {
+      globals.mouseSensitivity = u.clamp(globals.mouseSensitivity - 1, 1, 10)
+      this.settingChanged = "Sensitivity: " + globals.mouseSensitivity
+      this.settingTime = this.settingDuration
+    }
+    if (this.inputs.pressed('sensUp')) {
+      globals.mouseSensitivity = u.clamp(globals.mouseSensitivity + 1, 1, 10)
+      this.settingChanged = "Sensitivity: " + globals.mouseSensitivity
+      this.settingTime = this.settingDuration
+    }
+
     // step sounds
     if (this.onGround) {
       this.stepCounter += vec2.magnitude(this.speed)
@@ -546,8 +572,10 @@ export default class Player extends Thing {
     // mouse look
     mouse.click && mouse.lock()
     if (mouse.isLocked()) {
-      scene.camera3D.yaw += mouse.delta[0] / 500
-      scene.camera3D.pitch += mouse.delta[1] / 500
+      const sensRange = 1.3
+      const sens = 0.002 * Math.pow(sensRange, (globals.mouseSensitivity||0)-5)
+      scene.camera3D.yaw += mouse.delta[0] * sens
+      scene.camera3D.pitch += mouse.delta[1] * sens
     }
     scene.camera3D.yaw += this.inputs.get('xLook')
     scene.camera3D.pitch += this.inputs.get('yLook')
@@ -676,6 +704,18 @@ export default class Player extends Thing {
       ctx.fillStyle = 'darkBlue'
       ctx.fillText(str, 0, 0)
       ctx.fillStyle = 'white'
+      ctx.fillText(str, 4, -4)
+    }
+    ctx.restore()
+
+    ctx.save()
+    ctx.font = 'italic 32px Times New Roman'
+    ctx.translate(32, 48)
+    {
+      const str = this.settingChanged
+      ctx.fillStyle = u.colorToString(0.2, 0, 0, u.map(this.settingTime, 0, 40, 0, 1, true))
+      ctx.fillText(str, 0, 0)
+      ctx.fillStyle = u.colorToString(1, 1, 1, u.map(this.settingTime, 0, 40, 0, 1, true))
       ctx.fillText(str, 4, -4)
     }
     ctx.restore()
