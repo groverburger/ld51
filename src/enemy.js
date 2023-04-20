@@ -38,6 +38,7 @@ export default class Enemy extends Thing {
         thing.canDamageEnemies &&
         Math.abs(thing.position[2] - this.position[2]) <= this.height / 2 + 32 &&
         !thing.dead &&
+        this.health > 0 &&
         !this.timer('hurt') &&
         thing.owner !== this
       ) {

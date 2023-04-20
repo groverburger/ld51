@@ -6,5 +6,5 @@ import Enemy from './enemy.js'
 
 export default class EnemySquid extends Enemy {
   texture = assets.textures.squid
-  friction = 0.92
+  friction = 0.91
 }

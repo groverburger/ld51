@@ -9,13 +9,19 @@ export default class EnemyTurret extends Enemy {
   texture = assets.textures.turret
   height = 64
   attackPeriod = 20
-  sightTime = 40
+  sightTime = 33
   attackTime = this.sightTime
 
   behavior () {
+    // Dead check
+    if (this.dead) {
+      return
+    }
+
     // Laser attack
     this.friction = 0.60
     const player = game.getThing('player')
+
     // Distance Check
     if (player && u.distance2d(player.position[0], player.position[1], this.position[0], this.position[1]) < 64 * 12) {
       // Line of sight check
