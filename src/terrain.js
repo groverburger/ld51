@@ -7,6 +7,7 @@ import * as vec2 from './core/vector2.js'
 import * as vec3 from './core/vector3.js'
 import * as proc from './procgeneral.js'
 import * as themes from './data/themes.js'
+import * as enemies from './data/enemies.js'
 import assets from './assets.js'
 import SpatialHash from './core/spatialhash.js'
 import Player from './player.js'
@@ -789,26 +790,28 @@ export default class Terrain extends Thing {
     }
 
     const enemyLocations = getLocations('room', 'gold')
-    let enemyCount = Math.floor(3 + (globals.level / 2.3))
-    if (globals.level === 15) {
-      enemyCount += 12
+    let enemyCounts = enemies.data[globals.level]
+    if (!enemyCounts) {
+      console.warn("Missing enemy data!")
+      enemyCounts = {}
     }
-    let c = 0
-    for (let i = 0; i < enemyCount; i++) {
+    // Basic
+    for (let i = 0; i < enemyCounts.basic; i ++) {
       const coord = enemyLocations.pop()
-      if (coord) {
-        const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
-        if (c % 4 == 0) {
-          getScene().addThing(new EnemyTurret(pos))
-        }
-        else if (c % 4 == 1) {
-          getScene().addThing(new EnemySquid(pos))
-        }
-        else {
-          getScene().addThing(new Enemy(pos))
-        }
-      }
-      c ++
+      const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
+      getScene().addThing(new Enemy(pos))
+    }
+    // Turret
+    for (let i = 0; i < enemyCounts.turret; i ++) {
+      const coord = enemyLocations.pop()
+      const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
+      getScene().addThing(new EnemyTurret(pos))
+    }
+    // Squid
+    for (let i = 0; i < enemyCounts.squid; i ++) {
+      const coord = enemyLocations.pop()
+      const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
+      getScene().addThing(new EnemySquid(pos))
     }
 
     const itemLocations = getLocations('other')
