@@ -50,7 +50,7 @@ export default class Player extends Thing {
   lastPosition = [0, 0, 0]
   walkFrames = 0
   walkFrameAccel = 0
-  slowTime = 0
+  slowTime = -1000
   settingChanged = "DEFAULT"
   settingTime = 0
   settingDuration = 200
@@ -672,22 +672,10 @@ export default class Player extends Thing {
     ctx.fillText(time, 0, 0)
     ctx.restore()
 
-    // crosshair
-    /*
-    const size = 10
-    ctx.save()
-    ctx.translate(width/2, height/2)
-    ctx.strokeStyle = "white"
-    ctx.lineWidth = 1
-    ctx.moveTo(-size, 0)
-    ctx.lineTo(size, 0)
-    ctx.moveTo(0, -size + 0.5)
-    ctx.lineTo(0, size + 0.5)
-    ctx.stroke()
-    ctx.restore()
-    */
+    // Crosshair
     ctx.drawImage(assets.images.crosshair, width / 2 - 16, height / 2 - 16)
 
+    // Life and Level display
     ctx.save()
     ctx.translate(32, height - 48)
     ctx.font = 'italic 32px Times New Roman'
@@ -708,6 +696,7 @@ export default class Player extends Thing {
     }
     ctx.restore()
 
+    // Settings changes
     ctx.save()
     ctx.font = 'italic 32px Times New Roman'
     ctx.translate(32, 48)
@@ -717,6 +706,14 @@ export default class Player extends Thing {
       ctx.fillText(str, 0, 0)
       ctx.fillStyle = u.colorToString(1, 1, 1, u.map(this.settingTime, 0, 40, 0, 1, true))
       ctx.fillText(str, 4, -4)
+    }
+    ctx.restore()
+
+    // Slowed Effect overlay
+    ctx.save()
+    {
+      ctx.fillStyle = u.colorToString(0.7, 0.7, 0.9, u.map(this.slowTime, -15, 0, 0, 0.2, true))
+      ctx.fillRect(0, 0, width, height)
     }
     ctx.restore()
   }
