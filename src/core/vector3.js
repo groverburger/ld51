@@ -62,6 +62,41 @@ export function multiply (vector, scalar) {
   ]
 }
 
+export function lerpAngles(v1, v2, t) {
+  // Bind yaw angles to be from 0 to 2*PI
+  let a = v1[0] % (Math.PI*2)
+  let b = v2[0] % (Math.PI*2)
+
+  // Determine which direction to lerp yaw in
+  let minMode = 0
+  let minDist = Math.abs(a - b)
+
+  const d1 = Math.abs((a + (Math.PI*2)) - b)
+  if (d1 < minDist) {
+    minDist = d1
+    minMode = 1
+  }
+
+  const d2 = Math.abs((a - (Math.PI*2)) - b)
+  if (d2 < minDist) {
+    minDist = d2
+    minMode = 2
+  }
+
+  // Apply mode
+  if (minMode === 1) {
+    a += Math.PI*2
+  }
+  else if (minMode === 2) {
+    a -= Math.PI*2
+  }
+
+  return [
+    (1 - t) * a + t * b,
+    (1 - t) * v1[1] + t * v2[1],
+  ]
+}
+
 export function distance (a, b) {
   return Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2)
 }
@@ -115,7 +150,7 @@ export function vectorToAngles (vector) {
 export function rayTrace (start, end) {
   let dist = distance(start, end)
 
-  // Ray-trace 
+  // Ray-trace
   let collision = false
   for (let l = 0; l < 1; l += (1/dist) * 10) {
     let tracePos = lerp(start, end, l)
