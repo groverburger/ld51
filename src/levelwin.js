@@ -126,22 +126,33 @@ function * LevelWinAnim (overlook=false, win=false) {
       ctx.font = '32px Times New Roman'
       ctx.fillText('Press any button to continue', 0, 0)
       ctx.restore()
+    }
 
-      // Exit this screen if the player presses any key
-      if ((Object.keys(game.keysPressed).length || game.mouse.button) && i > 10) {
-        break
-      }
+    // Exit this screen if the player presses any key
+    if ((Object.keys(game.keysPressed).length || game.mouse.button) && i > 10) {
+      break
     }
 
     i += 1
     yield
   }
 
-  // Move to next level
-  globals.level += 1
-  globals.parameterBuilder.setParametersForLevel(globals.level)
-  delete globals.generated
-  game.resetScene()
+  if (win) {
+    delete globals.level
+    delete globals.lives
+    delete globals.parameterBuilder
+    delete globals.generated
+    game.setScene('title')
+  }
+  else {
+    // Move to next level
+    globals.level += 1
+    globals.parameterBuilder.setParametersForLevel(globals.level)
+    delete globals.generated
+    game.resetScene()
+  }
+
+
 
   // Black screen while loading next level
   // Can we just change this to while(true)?

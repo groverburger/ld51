@@ -222,11 +222,20 @@ export function shuffle (array, rand) {
   return array
 }
 
-// Returns the date without time
+// Returns the date in the format used for localStorage entries
 export function getDateKey(date) {
   // If no date was specified, use current system time
   if (!date) {
     date = new Date()
   }
   return `record_y${date.getFullYear()}_m${date.getMonth()}_d${date.getDate()}`
+}
+
+// Returns an integer representing a unique seed for the date
+export function getDateSeed(date) {
+  // If no date was specified, use current system time
+  if (!date) {
+    date = new Date()
+  }
+  return date.getDate() + date.getMonth()*100 + date.getFullYear()*10000
 }

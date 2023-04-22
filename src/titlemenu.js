@@ -14,6 +14,11 @@ export default class TitleMenu extends Thing {
     game.getScene().addThing(new Terrain())
     game.globals.tutorial = true
     this.calendarData = this.buildCalendarData()
+
+    const { music1, music2, music3 } = assets.sounds
+    for (const music of [music1, music2, music3]) {
+      music.pause()
+    }
   }
 
   buildCalendarData () {

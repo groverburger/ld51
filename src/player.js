@@ -80,7 +80,7 @@ export default class Player extends Thing {
 
     if (!globals.level) {
       globals.lives = 3
-      globals.level = 1
+      globals.level = 14
       globals.powerup = 'none'
       music1.currentTime = 0
       music2.currentTime = 0
