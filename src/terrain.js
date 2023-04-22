@@ -731,16 +731,16 @@ export default class Terrain extends Thing {
     proc.mergeTerrain(this.types, generated.types, [-1, -1])
 
     if (globals.level <= 5 || !globals.level) {
-      globals.theme = "asteroid"
+      globals.theme = generated.themes[0]
     }
     else if (globals.level === 15) {
-      globals.theme = "hive"
+      globals.theme = generated.themes[3]
     }
     else if (globals.level > 10) {
-      globals.theme = "cyber"
+      globals.theme = generated.themes[2]
     }
     else {
-      globals.theme = "yard"
+      generated.themes[1]
     }
 
     this.locations = {

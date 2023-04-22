@@ -73,7 +73,15 @@ export function randomizer (startIndex = 0) {
 export const random = randomizer()
 
 export function choose (...things) {
+
   const index = Math.floor(random(0, things.length - 0.001))
+  const result = things[index]
+  return result
+}
+
+export function chooseSeeded (r, ...things) {
+
+  const index = Math.floor(r(0, things.length - 0.001))
   const result = things[index]
   return result
 }
