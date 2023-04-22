@@ -111,6 +111,7 @@ export default class TitleMenu extends Thing {
     ctx.fillText(name, 0, 0)
     ctx.restore()
 
+    // Press Button Prompt
     ctx.save()
     ctx.fillStyle = u.colorToString(1, 1, 1, u.map(this.time, 60, 90, 0, 1, true))
     ctx.font = '32px Times New Roman'
@@ -118,7 +119,7 @@ export default class TitleMenu extends Thing {
     ctx.restore()
 
     // Calendar
-    const buffer = 10
+    const margin = 15
     const w = 21
     const h = 17
     const calendarScale = 2
@@ -131,8 +132,8 @@ export default class TitleMenu extends Thing {
         const xs = i % 7
         const ys = Math.floor(i / 7)
 
-        const x = width - (((w-1) * (7-xs)) * calendarScale) - buffer
-        const y = height - (((h-1) * (6-ys)) * calendarScale) - buffer
+        const x = width - (((w-1) * (7-xs)) * calendarScale) - margin
+        const y = height - (((h-1) * (6-ys)) * calendarScale) - margin
 
         // Border
         ctx.drawImage(assets.images.calBorder, x, y, tileSize, tileSize)
@@ -158,5 +159,12 @@ export default class TitleMenu extends Thing {
         ctx.restore()
       }
     }
+
+    // Calendar Text
+    ctx.save()
+    ctx.font = 'bold 22px Courier New'
+    ctx.fillStyle = u.colorToString(0.6, 0.6, 0.6, 1)
+    ctx.fillText('New Challenge Each Day', width - 300, height - 230)
+    ctx.restore()
   }
 }
