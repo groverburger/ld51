@@ -11,6 +11,7 @@ export default class EnemyTurret extends Enemy {
   attackPeriod = 20
   sightTime = 33
   attackTime = this.sightTime
+  friction = 0
 
   behavior () {
     // Dead check
@@ -19,15 +20,12 @@ export default class EnemyTurret extends Enemy {
     }
 
     // Laser attack
-    this.friction = 0.60
     const player = game.getThing('player')
 
     // Distance Check
     if (player && u.distance2d(player.position[0], player.position[1], this.position[0], this.position[1]) < 64 * 12) {
       // Line of sight check
       if (!vec3.rayTrace(this.position, player.position)) {
-        this.friction = 0
-
         // If it is ready to fire, show itself as attacking
         if (this.attackTime < this.attackPeriod) {
           this.attackActive = true
