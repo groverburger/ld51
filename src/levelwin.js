@@ -37,7 +37,7 @@ function * LevelWinAnim (overlook=false, win=false) {
   }
 
   // Fade to black while spiraling into the sky
-  const fadeDuration = overlook ? 120 : 30
+  const fadeDuration = overlook ? 210 : 30
   const fadeStart = overlook ? fadeDuration - 50 : 0
 
   // Set up camera interpolation
