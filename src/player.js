@@ -82,6 +82,9 @@ export default class Player extends Thing {
       globals.lives = 3
       globals.level = 1
       globals.powerup = 'none'
+      music1.currentTime = 0
+      music2.currentTime = 0
+      music3.currentTime = 0
     }
     // mouse.setStyle("none")
 
