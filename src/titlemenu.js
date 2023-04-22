@@ -89,7 +89,7 @@ export default class TitleMenu extends Thing {
     cam.yaw = -a + Math.PI / 2
     // game.getScene().camera3D.pitch += 0.02
 
-    if (this.time > 30 && (Object.keys(game.keysPressed).length || game.mouse.button)) {
+    if (this.time > 30 && ("Space" in game.keysPressed)) {
       delete game.globals.generated
       game.mouse.lock()
       game.setNextScene()
@@ -115,7 +115,7 @@ export default class TitleMenu extends Thing {
     ctx.save()
     ctx.fillStyle = u.colorToString(1, 1, 1, u.map(this.time, 60, 90, 0, 1, true))
     ctx.font = '32px Times New Roman'
-    ctx.fillText('Press any button to start!', 120, height - 120)
+    ctx.fillText('Press space to start!', 120, height - 120)
     ctx.restore()
 
     // Calendar
