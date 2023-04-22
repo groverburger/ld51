@@ -1,8 +1,9 @@
-import { height } from './config.js'
+import { width, height } from './config.js'
 import Thing from './core/thing.js'
 import * as game from './core/game.js'
 import * as u from './core/utils.js'
 import Terrain from './terrain.js'
+import assets from './assets.js'
 
 export default class TitleMenu extends Thing {
   time = 0
@@ -12,6 +13,70 @@ export default class TitleMenu extends Thing {
     this.setName('title')
     game.getScene().addThing(new Terrain())
     game.globals.tutorial = true
+    this.calendarData = this.buildCalendarData()
+  }
+
+  buildCalendarData () {
+    // Create empty data
+    let ret = []
+    const daysOfTheWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+    for (let i = 0; i < 6; i ++) {
+      for (let j = 0; j < 7; j ++) {
+        ret.push(
+          {
+            day: daysOfTheWeek[j],
+            date: 0,
+            state: 'hidden',
+            level: -1,
+            firstTry: false,
+          }
+        )
+      }
+    }
+
+    // Figure out how many days in the month
+    const date = new Date()
+    const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    const numDays = monthDays[date.getMonth()]
+
+    // Figure out the first day of the week
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay()
+    let dataIndex = firstDay
+
+    // Loop over days in the month
+    for (let i = 0; i < numDays; i ++) {
+      ret[dataIndex].date = i + 1
+      ret[dataIndex].state = 'calendar'
+
+      // Retrieve record data
+      // TODO: Make this actually retrieve record data and not just randomize
+      if (Math.random() < 0.3) {
+        ret[dataIndex].level = Math.floor(Math.random() * 16)
+        if (ret[dataIndex].level === 15 && Math.random() < 0.3) {
+          ret[dataIndex].firstTry = true
+        }
+      }
+
+      // Determine what tier of plaque this achievement merits
+      if (ret[dataIndex].level >= 15) {
+        ret[dataIndex].state = 'gold'
+      }
+      else if (ret[dataIndex].level >= 10) {
+        ret[dataIndex].state = 'silver'
+      }
+      else if (ret[dataIndex].level >= 5) {
+        ret[dataIndex].state = 'bronze'
+      }
+      else if (ret[dataIndex].level >= 0) {
+        ret[dataIndex].state = 'attempted'
+      }
+
+      dataIndex ++
+
+    }
+
+    // Return
+    return ret
   }
 
   update () {
@@ -52,5 +117,47 @@ export default class TitleMenu extends Thing {
     ctx.font = '32px Times New Roman'
     ctx.fillText('Press any button to start!', 120, height - 120)
     ctx.restore()
+
+    // Calendar
+    const buffer = 10
+    const w = 21
+    const h = 17
+    const calendarScale = 2
+    const tileSize = 32 * calendarScale
+    for (const [i, entry] of this.calendarData.entries()) {
+      // Draw tile
+      if (entry.state !== 'hidden') {
+        ctx.save()
+
+        const xs = i % 7
+        const ys = Math.floor(i / 7)
+
+        const x = width - (((w-1) * (7-xs)) * calendarScale) - buffer
+        const y = height - (((h-1) * (6-ys)) * calendarScale) - buffer
+
+        // Border
+        ctx.drawImage(assets.images.calBorder, x, y, tileSize, tileSize)
+
+        // Background tile
+        ctx.drawImage(assets.images["calTile_" + entry.state], x, y, tileSize, tileSize)
+
+        // Date
+        if (entry.state === 'calendar') {
+          ctx.drawImage(assets.images["calDate_" + entry.date], x, y, tileSize, tileSize)
+          ctx.drawImage(assets.images["calWeekday_" + entry.day], x, y, tileSize, tileSize)
+        }
+        // Level
+        else {
+          if (entry.firstTry) {
+            ctx.drawImage(assets.images["calLevel_firstTry"], x, y, tileSize, tileSize)
+          }
+          else {
+            ctx.drawImage(assets.images["calLevel_" + entry.level], x, y, tileSize, tileSize)
+          }
+        }
+
+        ctx.restore()
+      }
+    }
   }
 }
