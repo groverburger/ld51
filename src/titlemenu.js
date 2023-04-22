@@ -36,7 +36,7 @@ export default class TitleMenu extends Thing {
 
     // Figure out how many days in the month
     const date = new Date()
-    const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    const monthDays = [31, (date.getFullYear() % 4 == 0 ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     const numDays = monthDays[date.getMonth()]
 
     // Figure out the first day of the week
