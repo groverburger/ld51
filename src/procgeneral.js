@@ -664,16 +664,6 @@ export function generateEverything (params) {
     throw new Error('Start to close to end')
   }
 
-  // Pick the three themes
-  const theme1 = u.chooseSeeded(params.random, 'asteroid', 'snow')
-  const theme2 = u.chooseSeeded(params.random, 'yard')
-  const theme3 = u.chooseSeeded(params.random, 'cyber', 'metal', 'crystal')
-  let themef = theme3
-  if (themef === 'cyber') {
-    themef = 'hive'
-  }
-  gen.themes = [theme1, theme2, theme3, themef]
-
   // Return
   return gen
 }
