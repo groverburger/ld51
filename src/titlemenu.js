@@ -49,12 +49,11 @@ export default class TitleMenu extends Thing {
       ret[dataIndex].state = 'calendar'
 
       // Retrieve record data
-      // TODO: Make this actually retrieve record data and not just randomize
-      if (Math.random() < 0.3) {
-        ret[dataIndex].level = Math.floor(Math.random() * 16)
-        if (ret[dataIndex].level === 15 && Math.random() < 0.3) {
-          ret[dataIndex].firstTry = true
-        }
+      const thisDay = new Date(date.getFullYear(), date.getMonth(), i + 1)
+      const dateKey = u.getDateKey(thisDay)
+      const record = localStorage.getItem(dateKey)
+      if (record == 0 || record > 0) {
+        ret[dataIndex].level = record
       }
 
       // Determine what tier of plaque this achievement merits
@@ -152,7 +151,7 @@ export default class TitleMenu extends Thing {
             ctx.drawImage(assets.images["calLevel_firstTry"], x, y, tileSize, tileSize)
           }
           else {
-            ctx.drawImage(assets.images["calLevel_" + entry.level], x, y, tileSize, tileSize)
+            ctx.drawImage(assets.images["calLevel_" + (entry.level || 0)], x, y, tileSize, tileSize)
           }
         }
 

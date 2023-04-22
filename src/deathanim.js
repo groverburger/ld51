@@ -131,6 +131,13 @@ export default class DeathAnim extends Thing {
     } else {
       this.anim = GameOver()
     }
+
+    // Save best attempt to records
+    const dateKey = u.getDateKey()
+    const todaysBest = localStorage.getItem(dateKey) || -1
+    if (game.globals.level - 1 > todaysBest) {
+      localStorage.setItem(dateKey, game.globals.level - 1)
+    }
   }
 
   update () {

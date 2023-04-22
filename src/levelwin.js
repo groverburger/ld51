@@ -170,6 +170,13 @@ export default class LevelWin extends Thing {
     else {
       this.anim = LevelWinAnim()
     }
+
+    // Save best attempt to records
+    const dateKey = u.getDateKey()
+    const todaysBest = localStorage.getItem(dateKey) || -1
+    if (game.globals.level > todaysBest) {
+      localStorage.setItem(dateKey, game.globals.level)
+    }
   }
 
   update () {

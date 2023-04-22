@@ -797,20 +797,26 @@ export default class Terrain extends Thing {
     // Basic
     for (let i = 0; i < enemyCounts.basic; i ++) {
       const coord = enemyLocations.pop()
-      const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
-      getScene().addThing(new Enemy(pos))
+      if (coord) {
+        const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
+        getScene().addThing(new Enemy(pos))
+      }
     }
     // Turret
     for (let i = 0; i < enemyCounts.turret; i ++) {
       const coord = enemyLocations.pop()
-      const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
-      getScene().addThing(new EnemyTurret(pos))
+      if (coord) {
+        const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
+        getScene().addThing(new EnemyTurret(pos))
+      }
     }
     // Squid
     for (let i = 0; i < enemyCounts.squid; i ++) {
       const coord = enemyLocations.pop()
-      const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
-      getScene().addThing(new EnemySquid(pos))
+      if (coord) {
+        const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
+        getScene().addThing(new EnemySquid(pos))
+      }
     }
 
     const itemLocations = getLocations('other')
