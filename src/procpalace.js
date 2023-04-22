@@ -1,5 +1,6 @@
 import { add, scale, subtract, equals } from './core/vector2.js'
 import { GeneratorResult, stringToPosition } from './procgeneral.js'
+import * as u from './core/utils.js'
 
 const TOWARDS_CHANCE = 0.8
 const PALACE_WALL_HEIGHT = 80
@@ -44,14 +45,20 @@ export function generatePalace (params, pathData) {
   return ret
 }
 
-function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, tileData, pathData) {
+function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, tileData, pathData, flatDistance=0) {
   // console.log("Started iteration at position " + pos)
 
   // Take an action
   const actionNumber = Math.floor(params.random() * 13)
   let action = 'turn' // move forward, turning at a chasm
-  if (actionNumber >= 4 && actionNumber <= 6) { action = 'jump' } // move forward, jumping over chasm
-  if (actionNumber >= 7 && actionNumber <= 12) { action = 'stair' } // staircase upwards, stopping at chasm
+  if (actionNumber >= 5 && actionNumber <= 11) { action = 'jump' } // move forward, jumping over chasm
+  if (actionNumber >= 10 && actionNumber <= 12) { action = 'stair' } // staircase upwards, stopping at chasm
+
+  // Prioritize stairs if we've gone too long without going up
+  const extraStairChance = u.map(flatDistance, 3, 11, 0, 0.95, true)
+  if (params.random() < extraStairChance) {
+    action = 'stair'
+  }
 
   let distance = Math.floor(params.random() * 4) + 2
 
@@ -135,14 +142,13 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
     // Check if this space was already carved
     if (!canBuild(curPos, terrain, pathData)) {
       // If this is a ledge, start following
-      if (action === 'turn' && terrain[curPos] < curHeight) {
+      if (action === 'turn' && curHeight > terrain[curPos]) {
         // Turn and follow the ledge
-        // console.log("Turned after distance " + i)
         action = 'follow'
         distance += 3
         curPos = subtract(curPos, direction)
         curTowards = false
-      } else if (action === 'jump') {
+      } else if (action === 'jump' && (curHeight - terrain[curPos] >= 4 || params.random() < 0.2)) {
         // Attempt to jump over the ledge
 
         // Make sure there is a place we can go a certain distance ahead
@@ -181,8 +187,6 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
         } else { // Jump
           // Backpedal by one space
           curPos = subtract(curPos, direction)
-
-          // console.log("Failed jump")
 
           // End action and set distance to the distance we actually traveled
           distance = i
@@ -230,9 +234,22 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
     data.thirdClockPlaced = true
   }
 
+  // Track how long it's been since we last went up a significant distance
+  if (curHeight - height > 4) {
+    flatDistance = 0
+  }
+  else {
+    flatDistance = flatDistance + distance
+  }
+
+  // Prevent infinite recursion by having a chance to give one depth for free
+  if (params.random() < 0.003) {
+    distance += 1
+  }
+
   // Recurse
   if (depth + distance < params.palaceLength) {
-    palaceAlgorithm(terrain, curHeight, curPos, params, curTowards, depth + distance, data, tileData, pathData)
+    palaceAlgorithm(terrain, curHeight, curPos, params, curTowards, depth + distance, data, tileData, pathData, flatDistance)
   }
 }
 
