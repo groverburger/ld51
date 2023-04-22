@@ -95,6 +95,9 @@ export default class TitleMenu extends Thing {
     // game.getScene().camera3D.pitch += 0.02
 
     if (this.time > 30 && ("Space" in game.keysPressed)) {
+      delete game.globals.level
+      delete game.globals.lives
+      delete game.globals.parameterBuilder
       delete game.globals.generated
       game.mouse.lock()
       game.setNextScene()
