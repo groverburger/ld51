@@ -15,8 +15,8 @@ export default class TitleMenu extends Thing {
     game.globals.tutorial = true
     this.calendarData = this.buildCalendarData()
 
-    const { music1, music2, music3 } = assets.sounds
-    for (const music of [music1, music2, music3]) {
+    const { music1, music2, music3, music4, music5, music6, music7, music8, music14 } = assets.sounds
+    for (const music of [music1, music2, music3, music4, music5, music6, music7, music8, music14]) {
       music.pause()
     }
   }

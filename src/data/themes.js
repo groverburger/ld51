@@ -1,7 +1,7 @@
 export const data = {
   "asteroid": {
     "skybox": "skybox1",
-    "music": "music1",
+    "music": "music5",
     "tiles": {
       "default": {
         "wall": "stone",
@@ -35,7 +35,7 @@ export const data = {
   },
   "yard": {
     "skybox": "skybox2",
-    "music": "music2",
+    "music": "music4",
     "tiles": {
       "default": {
         "wall": "stone",
@@ -69,7 +69,7 @@ export const data = {
   },
   "cyber": {
     "skybox": "skybox3",
-    "music": "music11",
+    "music": "music1",
     "tiles": {
       "default": {
         "wall": "techStone",
@@ -103,7 +103,7 @@ export const data = {
   },
   "hive": {
     "skybox": "skybox3",
-    "music": "music11",
+    "music": "music1",
     "tiles": {
       "default": {
         "wall": "techStone",
@@ -136,8 +136,8 @@ export const data = {
     },
   },
   "snow": {
-    "skybox": "skybox3",
-    "music": "music11",
+    "skybox": "skybox4",
+    "music": "music3",
     "tiles": {
       "default": {
         "wall": "stone",

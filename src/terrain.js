@@ -62,19 +62,6 @@ export default class Terrain extends Thing {
     this.populate()
   }
 
-  getTheme () {
-    if (globals.level <= 5 || !globals.level) {
-      return "asteroid"
-    }
-    if (globals.level === 15) {
-      return "hive"
-    }
-    if (globals.level > 10) {
-      return "cyber"
-    }
-    return "yard"
-  }
-
   createMesh () {
     /********************************************************************************
        list all the tile positions in the map
@@ -248,7 +235,7 @@ export default class Terrain extends Thing {
 
     const getTexture = (tileType, textureType) => {
       // Theme data
-      let themeData = themes.data[this.getTheme()].tiles
+      let themeData = themes.data[globals.theme].tiles
       if (!themeData) {
         return 'stone'
       }
@@ -275,7 +262,7 @@ export default class Terrain extends Thing {
 
     const getShouldRound = (tileType) => {
       // Theme data
-      let themeData = themes.data[this.getTheme()].tiles
+      let themeData = themes.data[globals.theme].tiles
       if (!themeData) {
         return true
       }
@@ -553,7 +540,7 @@ export default class Terrain extends Thing {
     gfx.setShader(assets.shaders.default)
     getScene().camera3D.setUniforms()
     gfx.set('color', [1, 1, 1, 1])
-    let skybox = assets.textures[themes.data[this.getTheme()].skybox]
+    let skybox = assets.textures[themes.data[globals.theme].skybox]
     gfx.setTexture(skybox)
     gfx.set('modelMatrix', mat.getTransformation({
       translation: [
@@ -742,6 +729,19 @@ export default class Terrain extends Thing {
     // Write terrain data to map
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
     proc.mergeTerrain(this.types, generated.types, [-1, -1])
+
+    if (globals.level <= 5 || !globals.level) {
+      globals.theme = "asteroid"
+    }
+    else if (globals.level === 15) {
+      globals.theme = "hive"
+    }
+    else if (globals.level > 10) {
+      globals.theme = "cyber"
+    }
+    else {
+      globals.theme = "yard"
+    }
 
     this.locations = {
       other: [],

@@ -65,6 +65,7 @@ const assets = {
     wood: 'concrete_wall.png',
     cementTile: 'concrete_tile.png',
     dirt: 'dirt.png',
+    darkDirt: 'dirt_dbrown.png',
     hive: 'hive_dblue.png',
     snow: 'snow.png',
 
@@ -72,6 +73,7 @@ const assets = {
     skybox1: 'skybox1.png',
     skybox2: 'skybox2.png',
     skybox3: 'skybox3.png',
+    skybox4: 'skybox4.png',
 
     // Enemies
     enemy: 'enemy1.png',
@@ -187,6 +189,7 @@ const assets = {
   textureSettings: {},
 
   soundSources: {
+    // Sound effects
     playerJump: 'jump.wav',
     playerLand: 'land.wav',
     tick: 'clocktick.wav',
@@ -204,9 +207,17 @@ const assets = {
     weaponPickup: 'weapon.wav',
     slowRay: 'slowray.wav',
     slowHit: 'slowhit.wav',
-    music1: 'music/Starshot5.mp3',
-    music2: 'music/Starshot4.mp3',
-    music3: 'music/Starshot1.mp3',
+
+    // Music
+    music1: 'music/Starshot1.mp3',
+    music2: 'music/Starshot2.mp3',
+    music3: 'music/Starshot3.mp3',
+    music4: 'music/Starshot4.mp3',
+    music5: 'music/Starshot5.mp3',
+    music6: 'music/Starshot6.mp3',
+    music7: 'music/Starshot7.mp3',
+    music8: 'music/Starshot8.mp3',
+    music14: 'music/Starshot14.mp3',
   },
 
   sceneSources: {

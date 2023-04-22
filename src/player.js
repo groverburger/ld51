@@ -18,6 +18,7 @@ import Bullet from './bullet.js'
 import MachineGunBullet from './machinegunbullet.js'
 import DeathAnim from './deathanim.js'
 import LevelStart from './levelstart.js'
+import * as themes from './data/themes.js'
 
 export default class Player extends Thing {
   height = 56
@@ -58,22 +59,14 @@ export default class Player extends Thing {
   constructor (position, angle = 0) {
     super()
 
-    const { music1, music2, music3 } = assets.sounds
-    for (const music of [music1, music2, music3]) {
+    // Pause all music
+    const { music1, music2, music3, music4, music5, music6, music7, music8, music14 } = assets.sounds
+    for (const music of [music1, music2, music3, music4, music5, music6, music7, music8, music14]) {
       music.pause()
+      music.volume = 0.8
     }
 
-    music1.volume = 0.8
-    music2.volume = 0.8
-    music3.volume = 0.8
-
-    let music = music1
-    if (globals.level > 5) {
-      music = music2
-    }
-    if (globals.level > 10) {
-      music = music3
-    }
+    let music = assets.sounds[themes.data[globals.theme || 'asteroid'].music]
     music.loop = true
     //music.volume = 0.5
     music.play()
@@ -82,9 +75,11 @@ export default class Player extends Thing {
       globals.lives = 3
       globals.level = 1
       globals.powerup = 'none'
-      music1.currentTime = 0
-      music2.currentTime = 0
-      music3.currentTime = 0
+
+      // Reset all music tracks
+      for (const music of [music1, music2, music3, music4, music5, music6, music7, music8, music14]) {
+        music.currentTime = 0
+      }
     }
     // mouse.setStyle("none")
 
