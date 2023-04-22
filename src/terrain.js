@@ -62,19 +62,6 @@ export default class Terrain extends Thing {
     this.populate()
   }
 
-  getTheme () {
-    if (globals.level <= 5 || !globals.level) {
-      return "asteroid"
-    }
-    if (globals.level === 15) {
-      return "hive"
-    }
-    if (globals.level > 10) {
-      return "cyber"
-    }
-    return "yard"
-  }
-
   createMesh () {
     /********************************************************************************
        list all the tile positions in the map
@@ -248,7 +235,7 @@ export default class Terrain extends Thing {
 
     const getTexture = (tileType, textureType) => {
       // Theme data
-      let themeData = themes.data[this.getTheme()].tiles
+      let themeData = themes.data[globals.theme].tiles
       if (!themeData) {
         return 'stone'
       }
@@ -275,7 +262,7 @@ export default class Terrain extends Thing {
 
     const getShouldRound = (tileType) => {
       // Theme data
-      let themeData = themes.data[this.getTheme()].tiles
+      let themeData = themes.data[globals.theme].tiles
       if (!themeData) {
         return true
       }
@@ -553,7 +540,7 @@ export default class Terrain extends Thing {
     gfx.setShader(assets.shaders.default)
     getScene().camera3D.setUniforms()
     gfx.set('color', [1, 1, 1, 1])
-    let skybox = assets.textures[themes.data[this.getTheme()].skybox]
+    let skybox = assets.textures[themes.data[globals.theme].skybox]
     gfx.setTexture(skybox)
     gfx.set('modelMatrix', mat.getTransformation({
       translation: [
@@ -700,7 +687,8 @@ export default class Terrain extends Thing {
 
   generate () {
     // Generate seed
-    let seed = Math.floor(Math.random() * 100000)
+    let seed = u.getDateSeed()
+    seed = Math.floor(Math.random() * 100000)
     // seed = 81492
 
     // Init the parameterBuilder object
@@ -741,6 +729,21 @@ export default class Terrain extends Thing {
     // Write terrain data to map
     proc.mergeTerrain(this.map, generated.terrain, [-1, -1])
     proc.mergeTerrain(this.types, generated.types, [-1, -1])
+
+    // Pick the three themes
+    let themeRandom = u.randomizer(seed)
+    if (globals.level == 1 || !globals.level) {
+      globals.theme = u.chooseSeeded(themeRandom, 'asteroid', 'snow')
+    }
+    else if (globals.level == 6) {
+      globals.theme = u.chooseSeeded(themeRandom, 'yard')
+    }
+    else if (globals.level == 11) {
+      globals.theme = u.chooseSeeded(themeRandom, 'cyber', 'metal', 'crystal')
+    }
+    else if (globals.level === 15 && globals.theme === 'cyber') {
+      globals.theme = 'hive'
+    }
 
     this.locations = {
       other: [],
@@ -797,20 +800,26 @@ export default class Terrain extends Thing {
     // Basic
     for (let i = 0; i < enemyCounts.basic; i ++) {
       const coord = enemyLocations.pop()
-      const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
-      getScene().addThing(new Enemy(pos))
+      if (coord) {
+        const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
+        getScene().addThing(new Enemy(pos))
+      }
     }
     // Turret
     for (let i = 0; i < enemyCounts.turret; i ++) {
       const coord = enemyLocations.pop()
-      const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
-      getScene().addThing(new EnemyTurret(pos))
+      if (coord) {
+        const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
+        getScene().addThing(new EnemyTurret(pos))
+      }
     }
     // Squid
     for (let i = 0; i < enemyCounts.squid; i ++) {
       const coord = enemyLocations.pop()
-      const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
-      getScene().addThing(new EnemySquid(pos))
+      if (coord) {
+        const pos = [coord[0] * 64 + 32, coord[1] * 64 + 32, 0]
+        getScene().addThing(new EnemySquid(pos))
+      }
     }
 
     const itemLocations = getLocations('other')
@@ -834,7 +843,7 @@ export default class Terrain extends Thing {
     }
 
     {
-      if (globals.level >= 6 && globals.level <= 10) {
+      if (themes.data[globals.theme || 'asteroid'].deco === 'crystals') {
         for (let i = 0; i < 40; i++) {
           const coord = itemLocations.pop()
           if (coord) {

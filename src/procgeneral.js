@@ -1,9 +1,10 @@
 import { add, lerp, distance } from './core/vector2.js'
-import * as utils from './core/utils.js'
+import * as u from './core/utils.js'
 import * as cave from './proccaves.js'
 import * as room from './procroom.js'
 import * as palace from './procpalace.js'
 import * as parameters from './data/parameters.js'
+import * as vec2 from './core/vector2.js'
 import { PriorityQueue } from './core/pqueue.js'
 
 const PLAYER_JUMP_HEIGHT = 4
@@ -35,7 +36,7 @@ export class GeneratorParams {
   }
 
   resetRandom (offset) {
-    this.random = utils.randomizer(this.seed + offset)
+    this.random = u.randomizer(this.seed + offset)
   }
 
   initParameters () {
@@ -599,7 +600,7 @@ export function generateEverything (params) {
     const point1 = path[path.length - 1]
     const point2 = path[path.length - PATH_LOOK]
 
-    const angle = utils.angleTowards(point2[0], point2[1], point1[0], point1[1])
+    const angle = u.angleTowards(point2[0], point2[1], point1[0], point1[1])
     gen.startAngle = angle
   }
 
@@ -656,6 +657,11 @@ export function generateEverything (params) {
     gen.presetClocks.push(path[Math.floor(path.length * 0.75)])
     gen.presetClocks.push(path[Math.floor(path.length * 0.5)])
     gen.presetClocks.push(add(res.startPoint, pt))
+  }
+
+  // Throw error and restart if the start is right next to the flag
+  if (vec2.distance(gen.startPoint, gen.endPoint) < 5) {
+    throw new Error('Start to close to end')
   }
 
   // Return
