@@ -841,7 +841,7 @@ export default class Terrain extends Thing {
     }
 
     {
-      if (globals.level >= 6 && globals.level <= 10) {
+      if (themes.data[globals.theme || 'asteroid'].deco === 'crystals') {
         for (let i = 0; i < 40; i++) {
           const coord = itemLocations.pop()
           if (coord) {

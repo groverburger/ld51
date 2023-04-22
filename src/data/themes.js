@@ -6,7 +6,6 @@ export const data = {
       "default": {
         "wall": "stone",
         "floor": "stone",
-        "ceiling": "stone",
       },
       "path": {
         "wall": "lightStone",
@@ -36,24 +35,24 @@ export const data = {
   "yard": {
     "skybox": "skybox2",
     "music": "music4",
+    "deco": "crystals",
     "tiles": {
       "default": {
         "wall": "stone",
         "floor": "stone",
-        "ceiling": "stone",
       },
       "path": {
         "wall": "dirt",
         "floor": "dirt",
       },
       "floor": {
-        "wall": "cementTile",
-        "floor": "cementTile",
+        "wall": "concreteTile",
+        "floor": "concreteTile",
         "noCarve": true,
       },
       "wall": {
         "wall": "wood",
-        "floor": "cementTile",
+        "floor": "concreteTile",
         "noCarve": true,
       },
       "floor2": {
@@ -74,7 +73,6 @@ export const data = {
       "default": {
         "wall": "techStone",
         "floor": "techStone",
-        "ceiling": "techStone",
       },
       "path": {
         "wall": "techFloor",
@@ -108,7 +106,6 @@ export const data = {
       "default": {
         "wall": "techStone",
         "floor": "techStone",
-        "ceiling": "techStone",
       },
       "path": {
         "wall": "hive",
@@ -142,7 +139,6 @@ export const data = {
       "default": {
         "wall": "stone",
         "floor": "snow",
-        "ceiling": "stone",
       },
       "path": {
         "wall": "stone",
@@ -164,13 +160,78 @@ export const data = {
         "noCarve": true,
       },
       "wall2": {
+        "wall": "stoneFloor2",
+        "floor": "stoneFloor2",
+        "noCarve": true,
+      }
+    },
+  },
+  "metal": {
+    "skybox": "skybox5",
+    "music": "music7",
+    "tiles": {
+      "default": {
+        "wall": "rustBrownStrips",
+        "floor": "rustBrownTile",
+      },
+      "path": {
+        "wall": "darkDirt",
+        "floor": "darkDirt",
+      },
+      "floor": {
+        "wall": "stoneFloor",
+        "floor": "stone",
+        "noCarve": true,
+      },
+      "wall": {
+        "wall": "computer",
+        "floor": "stoneFloor",
+        "noCarve": true,
+      },
+      "floor2": {
         "wall": "stoneFloor",
         "floor": "stoneFloor",
         "noCarve": true,
       },
-      "computer": {
-        "wall": "computer",
-        "floor": "cementTile",
+      "wall2": {
+        "wall": "rustBrown",
+        "floor": "rustBrown",
+        "noCarve": true,
+      }
+    },
+  },
+  "crystal": {
+    "skybox": "skybox1",
+    "music": "music6",
+    "deco": "crystals",
+    "tiles": {
+      "default": {
+        "wall": "stoneBlackStrips",
+        "floor": "stoneBlack",
+      },
+      "path": {
+        "wall": "crystalCyan",
+        "floor": "crystalCyan",
+      },
+      "floor": {
+        "wall": "stoneFloor",
+        "floor": "stone",
+        "noCarve": true,
+      },
+      "wall": {
+        "wall": "stoneFloor2",
+        "floor": "stoneFloor2",
+        "noCarve": true,
+      },
+      "floor2": {
+        "wall": "stoneFloor",
+        "floor": "stoneFloor",
+        "noCarve": true,
+      },
+      "wall2": {
+        "wall": "stoneBlackStrips",
+        "floor": "stoneBlackTile",
+        "noCarve": true,
       }
     },
   },
