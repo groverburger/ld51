@@ -38,6 +38,7 @@ function * LevelWinAnim (overlook=false, win=false) {
 
   // Fade to black while spiraling into the sky
   const fadeDuration = overlook ? 120 : 30
+  const fadeStart = overlook ? fadeDuration - 50 : 0
 
   // Set up camera interpolation
   const cam = game.getScene().camera3D
@@ -45,7 +46,7 @@ function * LevelWinAnim (overlook=false, win=false) {
   let startLook = [cam.yaw, cam.pitch]
 
   for (let i = 0; i < fadeDuration; i++) {
-    ctx.fillStyle = `rgba(0, 0, 0, ${u.map(i, 0, fadeDuration, 0, 1, true)})`
+    ctx.fillStyle = `rgba(0, 0, 0, ${u.map(i, fadeStart, fadeDuration, 0, 1, true)})`
     ctx.fillRect(0, 0, width, height)
 
     if (overlook) {
