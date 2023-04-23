@@ -618,7 +618,12 @@ export function generateEverything (params) {
     }
   }
 
-  // TODO: Move path painting here
+  // For the finale, it's disappointing if it's too easy. So make sure the path is no shorter than it's supposed to be
+  if (params.caveMode === 15 && params.pathLength - path.length > 5) {
+    throw new Error('Path too short')
+  }
+
+  // Paint the path with a unique tile type
   paintPath(gen.types, path, params)
 
   // Remove tiny holes from the map (frustrating for the player)
@@ -661,7 +666,7 @@ export function generateEverything (params) {
 
   // Throw error and restart if the start is right next to the flag
   if (vec2.distance(gen.startPoint, gen.endPoint) < 5) {
-    throw new Error('Start to close to end')
+    throw new Error('Start too close to end')
   }
 
   // Return
