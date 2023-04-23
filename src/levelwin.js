@@ -125,12 +125,12 @@ function * LevelWinAnim (overlook=false, win=false) {
       ctx.textAlign = 'right'
       ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, 10, 30, 0, 0.5, true)})`
       ctx.font = '32px Times New Roman'
-      ctx.fillText('Press any button to continue', 0, 0)
+      ctx.fillText('Press space to continue', 0, 0)
       ctx.restore()
     }
 
-    // Exit this screen if the player presses any key
-    if ((Object.keys(game.keysPressed).length || game.mouse.button) && i > 10) {
+    // Exit this screen if the player presses space
+    if (("Space" in game.keysPressed) && i > 10) {
       break
     }
 

@@ -32,7 +32,7 @@ function * DeathAnimation () {
     ctx.textAlign = 'right'
     ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, subTime + 10, subTime + 30, 0, 0.5, true)})`
     ctx.font = '32px Times New Roman'
-    ctx.fillText('Press any button to try again...', 0, 0)
+    ctx.fillText('Press space to try again...', 0, 0)
     ctx.restore()
 
     ctx.save()
@@ -47,7 +47,7 @@ function * DeathAnimation () {
     ctx.fillText(str, 4, -4)
     ctx.restore()
 
-    if ((Object.keys(game.keysPressed).length || game.mouse.button) && i > subTime + 10) {
+    if (("Space" in game.keysPressed) && i > subTime + 10) {
       break
     }
 
@@ -102,10 +102,10 @@ function * GameOver () {
     ctx.textAlign = 'right'
     ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, subTime + 10, subTime + 30, 0, 0.5, true)})`
     ctx.font = '32px Times New Roman'
-    ctx.fillText('Press any button to try again...', 0, 0)
+    ctx.fillText('Press space to try again...', 0, 0)
     ctx.restore()
 
-    if ((Object.keys(game.keysPressed).length || game.mouse.button) && i > subTime + 10) {
+    if (("Space" in game.keysPressed) && i > subTime + 10) {
       break
     }
 

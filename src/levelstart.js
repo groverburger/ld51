@@ -33,10 +33,10 @@ function * Animation () {
       ctx.textAlign = 'right'
       ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, startTime + 10, startTime + 30, 0, 0.5, true)})`
       ctx.font = '32px Times New Roman'
-      ctx.fillText('Press any button to start', 0, 0)
+      ctx.fillText('Press space to start', 0, 0)
       ctx.restore()
 
-      if ((Object.keys(game.keysPressed).length || game.mouse.button) && i > startTime) {
+      if (("Space" in game.keysPressed) && i > startTime) {
         break
       }
 
