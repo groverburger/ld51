@@ -193,7 +193,8 @@ const assets = {
     calLevel_13: 'calendar/l13.png',
     calLevel_14: 'calendar/l14.png',
     calLevel_15: 'calendar/l15.png',
-    calLevel_firstTry: 'calendar/l_first_try.png',
+    calLevel_firstTry: 'calendar/lc01.png',
+    calLevel_firstTryDeathless: 'calendar/lc02.png',
   },
 
   textureSettings: {},

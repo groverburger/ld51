@@ -135,6 +135,11 @@ export default class DeathAnim extends Thing {
 
     // Save best attempt to records
     records.beatLevel(game.globals.level - 1)
+
+    // Count this as a death if we're past level 1
+    if (game.globals.level > 1) {
+      records.countDeath()
+    }
   }
 
   update () {

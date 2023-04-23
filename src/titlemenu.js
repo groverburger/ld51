@@ -35,6 +35,7 @@ export default class TitleMenu extends Thing {
             state: 'hidden',
             level: -1,
             firstTry: false,
+            firstTryDeathless: false,
           }
         )
       }
@@ -60,6 +61,10 @@ export default class TitleMenu extends Thing {
       if (best == 0 || best > 0) {
         ret[dataIndex].level = best
       }
+
+      // Determine additional awards
+      ret[dataIndex].firstTry = records.getFirstTry(thisDay)
+      ret[dataIndex].firstTryDeathless = records.getFirstTryDeathless(thisDay)
 
       // Determine what tier of plaque this achievement merits
       if (ret[dataIndex].level >= 15) {
@@ -156,7 +161,10 @@ export default class TitleMenu extends Thing {
         }
         // Level
         else {
-          if (entry.firstTry) {
+          if (entry.firstTryDeathless) {
+            ctx.drawImage(assets.images["calLevel_firstTryDeathless"], x, y, tileSize, tileSize)
+          }
+          else if (entry.firstTry) {
             ctx.drawImage(assets.images["calLevel_firstTry"], x, y, tileSize, tileSize)
           }
           else {
