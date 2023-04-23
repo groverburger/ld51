@@ -733,15 +733,30 @@ export default class Terrain extends Thing {
     // Pick the three themes
     if (globals.level <= 5 || !globals.level) {
       let themeRandom = u.randomizer(parameterBuilder.seed)
-      globals.theme = u.chooseSeeded(themeRandom, 'asteroid', 'snow')
+      globals.theme = u.weightedChoose(themeRandom,
+        [
+          {value:'asteroid', weight:100},
+          {value:'snow', weight:70},
+        ]
+      )
     }
     else if (globals.level <= 10) {
       let themeRandom = u.randomizer(parameterBuilder.seed + 1)
-      globals.theme = u.chooseSeeded(themeRandom, 'yard')
+      globals.theme = u.weightedChoose(themeRandom,
+        [
+          {value:'yard', weight:100},
+        ]
+      )
     }
     else if (globals.level <= 14) {
       let themeRandom = u.randomizer(parameterBuilder.seed + 2)
-      globals.theme = u.chooseSeeded(themeRandom, 'cyber', 'metal', 'crystal')
+      globals.theme = u.weightedChoose(themeRandom,
+        [
+          {value:'cyber', weight:100},
+          {value:'metal', weight:60},
+          {value:'crystal', weight:30},
+        ]
+      )
     }
     else if (globals.level === 15 && globals.theme === 'cyber') {
       globals.theme = 'hive'

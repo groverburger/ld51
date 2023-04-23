@@ -79,11 +79,31 @@ export function choose (...things) {
   return result
 }
 
-export function chooseSeeded (r, ...things) {
+export function chooseSeeded (rand, ...things) {
 
-  const index = Math.floor(r(0, things.length - 0.001))
+  const index = Math.floor(rand(0, things.length - 0.001))
   const result = things[index]
   return result
+}
+
+export function weightedChoose(rand, list) {
+  // Figure out what the total weight of all items is
+  let totalWeight = 0;
+  list.forEach((item) => {
+    totalWeight += item.weight;
+  })
+
+  // Pick a number within that range
+  let randomVal = Math.trunc(rand() * totalWeight);
+
+  // Select item based on that
+  for (let i = 0; i < list.length; i ++) {
+    randomVal -= list[i].weight;
+    if (randomVal < 0) {
+      return list[i].value;
+    }
+  }
+  return list[0].value;
 }
 
 export function rgbToHsv (r, g, b) {
