@@ -4,6 +4,7 @@ import * as game from './core/game.js'
 import * as u from './core/utils.js'
 import * as records from './records.js'
 import Terrain from './terrain.js'
+import Settings from './settings.js'
 import assets from './assets.js'
 import * as music from './music.js'
 
@@ -14,6 +15,7 @@ export default class TitleMenu extends Thing {
     super(data)
     this.setName('title')
     game.getScene().addThing(new Terrain())
+    game.getScene().addThing(new Settings())
     game.globals.tutorial = true
     this.calendarData = this.buildCalendarData()
 
