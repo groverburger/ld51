@@ -2,6 +2,7 @@ import { width, height } from './config.js'
 import Thing from './core/thing.js'
 import * as game from './core/game.js'
 import * as u from './core/utils.js'
+import * as records from './records.js'
 import Terrain from './terrain.js'
 import assets from './assets.js'
 
@@ -55,10 +56,9 @@ export default class TitleMenu extends Thing {
 
       // Retrieve record data
       const thisDay = new Date(date.getFullYear(), date.getMonth(), i + 1)
-      const dateKey = u.getDateKey(thisDay)
-      const record = localStorage.getItem(dateKey)
-      if (record == 0 || record > 0) {
-        ret[dataIndex].level = record
+      const best = records.getHighestLevel(thisDay)
+      if (best == 0 || best > 0) {
+        ret[dataIndex].level = best
       }
 
       // Determine what tier of plaque this achievement merits

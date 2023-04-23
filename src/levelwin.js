@@ -4,6 +4,7 @@ import * as u from './core/utils.js'
 import * as vec3 from './core/vector3.js'
 import * as vec2 from './core/vector2.js'
 import Thing from './core/thing.js'
+import * as records from './records.js'
 
 function getTerrainCenterOfMass() {
   const t = game.getThing('terrain').map
@@ -183,11 +184,7 @@ export default class LevelWin extends Thing {
     }
 
     // Save best attempt to records
-    const dateKey = u.getDateKey()
-    const todaysBest = localStorage.getItem(dateKey) || -1
-    if (game.globals.level > todaysBest) {
-      localStorage.setItem(dateKey, game.globals.level)
-    }
+    records.beatLevel(game.globals.level)
   }
 
   update () {

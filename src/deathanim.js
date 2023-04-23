@@ -2,6 +2,7 @@ import { width, height } from './config.js'
 import * as u from './core/utils.js'
 import * as game from './core/game.js'
 import Thing from './core/thing.js'
+import * as records from './records.js'
 
 function * DeathAnimation () {
   const { ctx, globals } = game
@@ -133,11 +134,7 @@ export default class DeathAnim extends Thing {
     }
 
     // Save best attempt to records
-    const dateKey = u.getDateKey()
-    const todaysBest = localStorage.getItem(dateKey) || -1
-    if (game.globals.level - 1 > todaysBest) {
-      localStorage.setItem(dateKey, game.globals.level - 1)
-    }
+    records.beatLevel(game.globals.level - 1)
   }
 
   update () {

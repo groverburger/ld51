@@ -1,5 +1,3 @@
-/* global requestAnimationFrame, localStorage */
-
 import * as config from '../config.js'
 import assets from '../assets.js'
 import { map } from './utils.js'
