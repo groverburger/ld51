@@ -5,6 +5,7 @@ import * as u from './core/utils.js'
 import * as records from './records.js'
 import Terrain from './terrain.js'
 import assets from './assets.js'
+import * as music from './music.js'
 
 export default class TitleMenu extends Thing {
   time = 0
@@ -16,10 +17,7 @@ export default class TitleMenu extends Thing {
     game.globals.tutorial = true
     this.calendarData = this.buildCalendarData()
 
-    const { music1, music2, music3, music4, music5, music6, music7, music8, music14 } = assets.sounds
-    for (const music of [music1, music2, music3, music4, music5, music6, music7, music8, music14]) {
-      music.pause()
-    }
+    music.pauseAllTracks()
   }
 
   buildCalendarData () {

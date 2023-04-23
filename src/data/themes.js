@@ -142,7 +142,7 @@ export const data = {
       },
       "path": {
         "wall": "stone",
-        "floor": "stone",
+        "floor": "lightStone",
       },
       "floor": {
         "wall": "stoneFloor",
