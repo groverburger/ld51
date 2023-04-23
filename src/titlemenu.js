@@ -132,7 +132,7 @@ export default class TitleMenu extends Thing {
     ctx.restore()
 
     // Calendar
-    const margin = 15
+    const margin = 20
     const w = 21
     const h = 17
     const calendarScale = 2
@@ -180,7 +180,7 @@ export default class TitleMenu extends Thing {
     ctx.save()
     ctx.font = 'bold 22px Courier New'
     ctx.fillStyle = u.colorToString(0.6, 0.6, 0.6, 1)
-    ctx.fillText('New Challenge Each Day', width - 300, height - 230)
+    ctx.fillText('New Challenge Every Day', width - 320, height - 230)
     ctx.restore()
   }
 }
