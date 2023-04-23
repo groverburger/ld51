@@ -731,14 +731,16 @@ export default class Terrain extends Thing {
     proc.mergeTerrain(this.types, generated.types, [-1, -1])
 
     // Pick the three themes
-    let themeRandom = u.randomizer(seed)
-    if (globals.level == 1 || !globals.level) {
+    if (globals.level <= 5 || !globals.level) {
+      let themeRandom = u.randomizer(parameterBuilder.seed)
       globals.theme = u.chooseSeeded(themeRandom, 'asteroid', 'snow')
     }
-    else if (globals.level == 6) {
+    else if (globals.level <= 10) {
+      let themeRandom = u.randomizer(parameterBuilder.seed + 1)
       globals.theme = u.chooseSeeded(themeRandom, 'yard')
     }
-    else if (globals.level == 11) {
+    else if (globals.level <= 14) {
+      let themeRandom = u.randomizer(parameterBuilder.seed + 2)
       globals.theme = u.chooseSeeded(themeRandom, 'cyber', 'metal', 'crystal')
     }
     else if (globals.level === 15 && globals.theme === 'cyber') {
