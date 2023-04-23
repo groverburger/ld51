@@ -110,6 +110,19 @@ export default class Scene {
     ctx.rotate(camera.rotation)
     ctx.translate(-camera.position[0], -camera.position[1])
 
+    // update 3D camera matrix and look vector
+    this.camera3D.viewMatrix = mat.getView({
+      position: this.camera3D.position,
+      target: vec3.add(this.camera3D.position, this.camera3D.lookVector)
+    })
+    this.camera3D.projectionMatrix = mat.getPerspective({
+      aspect: width / height
+    })
+    this.camera3D.lookVector = vec3.anglesToVector(
+      this.camera3D.yaw,
+      this.camera3D.pitch
+    )
+
     const layerOrder = Object.keys(this.layers).map(Number).sort((a, b) => a - b)
     for (const layer of layerOrder) {
       for (const thing of this.layers[layer]) {
@@ -144,19 +157,6 @@ export default class Scene {
       gl.enable(gl.BLEND)
       gl.blendEquation(gl.FUNC_ADD)
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
-      // update 3D camera matrix and look vector
-      this.camera3D.viewMatrix = mat.getView({
-        position: this.camera3D.position,
-        target: vec3.add(this.camera3D.position, this.camera3D.lookVector)
-      })
-      this.camera3D.projectionMatrix = mat.getPerspective({
-        aspect: width / height
-      })
-      this.camera3D.lookVector = vec3.anglesToVector(
-        this.camera3D.yaw,
-        this.camera3D.pitch
-      )
 
       // clear the 2d canvas
       ctx.clearRect(0, 0, width, height)
