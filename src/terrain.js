@@ -688,7 +688,7 @@ export default class Terrain extends Thing {
   generate () {
     // Generate seed
     let seed = u.getDateSeed()
-    seed = Math.floor(Math.random() * 100000)
+    // seed = Math.floor(Math.random() * 100000)
     // seed = 81492
 
     // Init the parameterBuilder object
@@ -713,6 +713,7 @@ export default class Terrain extends Thing {
           console.log(e)
           console.log(parameterBuilder)
           delete globals.generated
+          parameterBuilder.seed += 1
           parameterBuilder.setParametersForLevel(globals.level)
         }
       }

@@ -256,5 +256,5 @@ export function getDateSeed(date) {
   if (!date) {
     date = new Date()
   }
-  return date.getDate() + date.getMonth()*100 + date.getFullYear()*10000
+  return date.getDate()*100 + date.getMonth()*10000 + date.getFullYear()*1000000
 }
