@@ -769,7 +769,6 @@ export default class Terrain extends Thing {
     else if (globals.level === 15 && globals.theme === 'cyber') {
       globals.theme = 'hive'
     }
-    globals.theme = 'cyber'
 
     this.locations = {
       other: [],
