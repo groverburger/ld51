@@ -30,6 +30,7 @@ export class Deco extends Thing {
       rotation: [Math.PI/2, 0, this.angle],
       scale: 6 * this.scale
     }))
+    gfx.set('useAlphaAsEmission', 0, 'int')
     gfx.setTexture(this.texture)
     gfx.drawMesh(this.model)
   }

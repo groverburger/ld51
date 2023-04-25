@@ -182,7 +182,7 @@ export const data = {
     "skybox": "skybox5",
     "music": "music7",
     "fogColor": [0.01, 0.0, 0.0],
-    "fogDensity": 0.23,
+    "fogDensity": 0.20,
     "fogMode": 0,
     "tiles": {
       "default": {
