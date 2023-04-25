@@ -549,7 +549,7 @@ export default class Player extends Thing {
   }
 
   draw () {
-    gfx.setShader(assets.shaders.defaultShaded)
+    gfx.setShader(assets.shaders.defaultFog)
     gfx.set('viewMatrix', [
       1, 0, 0, 0,
       0, 0, 2, 0,

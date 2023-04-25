@@ -8,6 +8,7 @@ const assets = {
   shaderFileSources: {
     defaultFrag: 'default.frag',
     defaultShadedFrag: 'defaultshaded.frag',
+    defaultFogFrag: 'defaultfog.frag',
     mapFrag: 'map.frag',
     scrollingFrag: 'scrolling.frag',
     cloudsFrag: 'clouds.frag',
@@ -24,6 +25,7 @@ const assets = {
   shaderSources: {
     default: ['defaultVert', 'defaultFrag'],
     defaultShaded: ['defaultVert', 'defaultShadedFrag'],
+    defaultFog: ['defaultVert', 'defaultFogFrag'],
     map: ['defaultVert', 'triplanarFrag'],
     scrolling: ['defaultVert', 'scrollingFrag'],
     clouds: ['defaultVert', 'cloudsFrag'],

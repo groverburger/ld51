@@ -23,7 +23,7 @@ export class Deco extends Thing {
   }
 
   draw () {
-    gfx.setShader(assets.shaders.defaultShaded)
+    gfx.setShader(assets.shaders.defaultFog)
     game.getScene().camera3D.setUniforms()
     gfx.set('modelMatrix', mat.getTransformation({
       translation: this.position,

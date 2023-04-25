@@ -510,10 +510,12 @@ export default class Terrain extends Thing {
   }
 
   draw (_ctx) {
-    gfx.setShader(assets.shaders.defaultShaded)
+    gfx.setShader(assets.shaders.defaultFog)
     gfx.set('modelMatrix', mat.getIdentity())
     getScene().camera3D.setUniforms()
     gfx.set('color', [1, 1, 1, 1])
+    gfx.set('fogColor', themes.data[globals.theme || 'asteroid'].fogColor)
+    gfx.set('fogDensity', themes.data[globals.theme || 'asteroid'].fogDensity)
     // const {gl} = gfx
     // gl.enable(gl.CULL_FACE)
     // gl.cullFace(gl.FRONT)
@@ -767,6 +769,7 @@ export default class Terrain extends Thing {
     else if (globals.level === 15 && globals.theme === 'cyber') {
       globals.theme = 'hive'
     }
+    globals.theme = 'cyber'
 
     this.locations = {
       other: [],

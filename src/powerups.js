@@ -18,7 +18,7 @@ export class ShotgunPickup extends Pickup {
   }
 
   draw () {
-    gfx.setShader(assets.shaders.defaultShaded)
+    gfx.setShader(assets.shaders.defaultFog)
     gfx.setTexture(assets.textures.square)
     game.getScene().camera3D.setUniforms()
     gfx.set('modelMatrix', mat.getTransformation({

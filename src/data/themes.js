@@ -2,6 +2,8 @@ export const data = {
   "asteroid": {
     "skybox": "skybox1",
     "music": "music5",
+    "fogColor": [0.8, 0.8, 0.9],
+    "fogDensity": 0.0,
     "tiles": {
       "default": {
         "wall": "stone",
@@ -35,6 +37,8 @@ export const data = {
   "yard": {
     "skybox": "skybox2",
     "music": "music4",
+    "fogColor": [0.9, 0.7, 0.6],
+    "fogDensity": 0.0,
     "deco": "crystals",
     "tiles": {
       "default": {
@@ -69,6 +73,9 @@ export const data = {
   "cyber": {
     "skybox": "skybox3",
     "music": "music1",
+    "fogColor": [0.0, 0.0, 0.01],
+    "fogDensity": 0.19,
+    "fogMode": 1,
     "tiles": {
       "default": {
         "wall": "techStone",
@@ -102,6 +109,9 @@ export const data = {
   "hive": {
     "skybox": "skybox3",
     "music": "music1",
+    "fogColor": [0.0, 0.0, 0.01],
+    "fogDensity": 0.19,
+    "fogMode": 1,
     "tiles": {
       "default": {
         "wall": "techStone",
@@ -135,6 +145,8 @@ export const data = {
   "snow": {
     "skybox": "skybox4",
     "music": "music3",
+    "fogColor": [0.96, 0.91, 1.0],
+    "fogDensity": 0.0,
     "tiles": {
       "default": {
         "wall": "stone",
@@ -169,6 +181,9 @@ export const data = {
   "metal": {
     "skybox": "skybox5",
     "music": "music7",
+    "fogColor": [0.01, 0.0, 0.0],
+    "fogDensity": 0.23,
+    "fogMode": 0,
     "tiles": {
       "default": {
         "wall": "rustBrownStrips",
@@ -204,6 +219,8 @@ export const data = {
     "skybox": "skybox1",
     "music": "music6",
     "deco": "crystals",
+    "fogColor": [0.4, 0.8, 1.0],
+    "fogDensity": 0.12,
     "tiles": {
       "default": {
         "wall": "stoneBlackStrips",
