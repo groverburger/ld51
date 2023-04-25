@@ -86,6 +86,12 @@ export function setTexture (texture, index = 0) {
   gl.activeTexture(gl.TEXTURE0)
 }
 
+export function setEmissionMap (texture, index = 0) {
+  gl.activeTexture(gl['TEXTURE' + index])
+  gl.bindTexture(gl.EMISSIONMAP_2D, texture)
+  gl.activeTexture(gl.TEXTURE0)
+}
+
 export function setFramebuffer (fb = null) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, fb?.framebuffer ? fb.framebuffer : fb)
 }

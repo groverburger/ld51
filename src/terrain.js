@@ -516,6 +516,7 @@ export default class Terrain extends Thing {
     gfx.set('color', [1, 1, 1, 1])
     gfx.set('fogColor', themes.data[globals.theme || 'asteroid'].fogColor)
     gfx.set('fogDensity', themes.data[globals.theme || 'asteroid'].fogDensity)
+    gfx.set('useAlphaAsEmission', 1, 'int')
     // const {gl} = gfx
     // gl.enable(gl.CULL_FACE)
     // gl.cullFace(gl.FRONT)
