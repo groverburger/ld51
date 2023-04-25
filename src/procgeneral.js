@@ -28,6 +28,7 @@ export class GeneratorParams {
       seed = Math.floor(Math.random() * 100000)
     }
     this.seed = seed
+    this.initialSeed = seed
     this.resetRandom(0)
 
     console.log('Random Seed: ' + seed)
