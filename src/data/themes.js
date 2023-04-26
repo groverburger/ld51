@@ -100,8 +100,8 @@ export const data = {
         "floor": "techFloor",
       },
       "wall2": {
-        "wall": "goldenWall",
-        "floor": "goldenFloor",
+        "wall": "tech1",
+        "floor": "tech1",
         "noCarve": true,
       },
     },
@@ -136,8 +136,8 @@ export const data = {
         "floor": "techFloor",
       },
       "wall2": {
-        "wall": "goldenWall",
-        "floor": "goldenFloor",
+        "wall": "tech1",
+        "floor": "tech1",
         "noCarve": true,
       },
     },
