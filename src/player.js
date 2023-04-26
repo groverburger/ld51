@@ -438,7 +438,7 @@ export default class Player extends Thing {
       this.after(10, () => {}, 'timeWarning')
     }
 
-    this.dead = this.dead || this.time < -10
+    this.dead = this.dead || this.time < 0
   }
 
   moveAndCollide () {
@@ -632,8 +632,6 @@ export default class Player extends Thing {
   }
 
   guiDraw () {
-    if (!this.showGui) return
-
     // time
     ctx.save()
     ctx.font = 'italic bold 64px Times New Roman'
@@ -655,6 +653,8 @@ export default class Player extends Thing {
     }
     ctx.fillText(time, 0, 0)
     ctx.restore()
+
+    if (!this.showGui) return
 
     // Crosshair
     ctx.drawImage(assets.images.crosshair, width / 2 - 16, height / 2 - 16)

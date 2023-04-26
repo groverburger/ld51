@@ -194,6 +194,10 @@ export default class LevelWin extends Thing {
 
   update () {
     game.getScene().paused = true
+
+  }
+
+  guiDraw() {
     this.anim.next()
   }
 }

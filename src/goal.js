@@ -22,7 +22,7 @@ export default class Goal extends Thing {
   update () {
     this.time += 1
     const player = getThing('player')
-    if (!player) return
+    if (!player || player.dead) return
 
     if (!this.visited && u.distance3d(...this.position, ...player.position) < 80) {
       this.visited = true
