@@ -522,7 +522,7 @@ export default class Player extends Thing {
   getClosestWall () {
     let closest = null
     let closestDistance = 0
-    const position = [...this.position]
+    const position = vec3.add([...this.position], [0, 0, 48])
     position[2] -= this.height / 2
 
     for (const collider of getThing('terrain').query(this.position[0] - 64, this.position[1] - 64, 128, 128)) {
