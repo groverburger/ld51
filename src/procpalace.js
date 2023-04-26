@@ -115,7 +115,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
         for (const d2 of deltas) {
           const next = add(check, d2)
 
-          if (terrain[next] < curHeight) { score += 1 }
+          score += Math.min(0, curHeight - terrain[next])
         }
 
         // Track score
@@ -148,7 +148,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
         distance += 3
         curPos = subtract(curPos, direction)
         curTowards = false
-      } else if (action === 'jump' && (curHeight - terrain[curPos] >= 4 || params.random() < 0.3)) {
+      } else if (action === 'jump' && curHeight > terrain[curPos]) {
         // Attempt to jump over the ledge
 
         // Make sure there is a place we can go a certain distance ahead
