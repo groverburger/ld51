@@ -19,6 +19,9 @@ export default class Settings extends Thing {
     if (!globals.mouseSensitivity) {
       globals.mouseSensitivity = 5
     }
+    if (!globals.showSpeed) {
+      globals.showSpeed = false
+    }
 
     this.inputs = new InputHandler({
       sensDown (keys, mouse, gamepad) {
@@ -26,6 +29,9 @@ export default class Settings extends Thing {
       },
       sensUp (keys, mouse, gamepad) {
         return keys.Equal || keys.NumpadAdd
+      },
+      toggleSpeed (keys, mouse, gamepad) {
+        return keys.BracketRight
       },
     })
   }
@@ -45,6 +51,11 @@ export default class Settings extends Thing {
     if (this.inputs.pressed('sensUp')) {
       globals.mouseSensitivity = u.clamp(globals.mouseSensitivity + 1, 1, 10)
       this.settingChanged = "Sensitivity: " + globals.mouseSensitivity
+      this.displayTime = this.displayDuration
+    }
+    if (this.inputs.pressed('toggleSpeed')) {
+      globals.showSpeed = !globals.showSpeed
+      this.settingChanged = "Show Speed: " + (globals.showSpeed ? "On" : "Off")
       this.displayTime = this.displayDuration
     }
 

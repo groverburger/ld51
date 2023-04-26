@@ -3,6 +3,7 @@ import * as u from './core/utils.js'
 import * as cave from './proccaves.js'
 import * as room from './procroom.js'
 import * as palace from './procpalace.js'
+import * as basics from './procbasics.js'
 import * as parameters from './data/parameters.js'
 import * as vec2 from './core/vector2.js'
 import { PriorityQueue } from './core/pqueue.js'
@@ -664,6 +665,8 @@ export function generateEverything (params) {
     gen.presetClocks.push(path[Math.floor(path.length * 0.5)])
     gen.presetClocks.push(add(res.startPoint, pt))
   }
+
+  // mergeTerrain(gen.terrain, basics.generateFlat({width:300,length:300,height:10}), [0, 0])
 
   // Throw error and restart if the start is right next to the flag
   if (vec2.distance(gen.startPoint, gen.endPoint) < 5) {

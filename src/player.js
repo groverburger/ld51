@@ -143,9 +143,10 @@ export default class Player extends Thing {
   update () {
     this.inputs.update()
     const scene = getScene()
-    this.time -= 1
+    this.time --
+    this.slowTime--
 
-    // walking and friction
+    // walking
     let dx = this.inputs.get('xMove')
     let dy = this.inputs.get('yMove')
 
@@ -163,37 +164,61 @@ export default class Player extends Thing {
       [dx, dy] = vec2.normalize([dx, dy])
     }
 
-    // player's max speed should be 11.3583
-
+    // Calculate acceleration on each axis
     const yaw = scene.camera3D.yaw - Math.PI / 2
-    const friction = this.slowTime > 0 ? 0.8 : 0.9
-    const groundSpeed = 1.262
-    const airSpeed = 0.8
-    const walkSpeed = this.onGround ? groundSpeed : airSpeed
-    const maxSpeed = groundSpeed / (1 - friction)
-    const xAccel = (Math.cos(yaw) * dx - Math.sin(yaw) * dy) * walkSpeed
-    const yAccel = (Math.sin(yaw) * dx + Math.cos(yaw) * dy) * walkSpeed
+    const xAccelNorm = Math.cos(yaw) * dx - Math.sin(yaw) * dy
+    const yAccelNorm = Math.sin(yaw) * dx + Math.cos(yaw) * dy
 
-    this.slowTime--
+    // Friction should be lower when accelerating than when decelerating
+    const dp = vec2.dotProduct(vec2.normalize(this.speed), [xAccelNorm, yAccelNorm])
+    const slip = u.map(dp, -1, 1, 0.9, 0.6)
+
+    let friction = 0.9
+    let groundAccel = 1.262
+    let airAccel = 0.8
+
+    // Check for slowness
+    if (this.slowTime > 0) {
+      friction *= 0.888
+    }
+    // Apply slip
+    groundAccel *= slip
+    airAccel *= slip
+    friction = 1 - ((1-friction)*slip)
+
+    const moveAccel = this.onGround ? groundAccel : airAccel
+    const maxSpeed = groundAccel / (1 - friction)
+
+    // Apply friction
+    if (this.onGround) {
+      this.speed[0] *= friction
+      this.speed[1] *= friction
+    }
+
+    // Scale accel
+    const xAccel = xAccelNorm * moveAccel
+    const yAccel = yAccelNorm * moveAccel
 
     this.moveDirection = vec3.normalize([xAccel, yAccel, 0])
     this.forward = vec3.normalize([Math.sin(yaw), Math.cos(yaw), 0])
 
-    // can't move if diving
+    // Don't move if in air and air control is disabled
     if (this.onGround || !this.timer('disableAirControl')) {
+      // Apply movement acceleration
       const lastMagnitude = vec2.magnitude(this.speed)
       this.speed[0] += xAccel
       this.speed[1] += yAccel
       const newMagnitude = vec2.magnitude(this.speed)
 
+      // If player is at or above max speed, don't let them increase their speed.
+      // They can change the direction of their velocity, but not increase the magnitude.
       if (u.distance2d(0, 0, this.speed[0] + xAccel, this.speed[1] + yAccel) >= maxSpeed) {
         this.speed[0] *= lastMagnitude / newMagnitude
         this.speed[1] *= lastMagnitude / newMagnitude
       }
-
-      // scene.camera3D.yaw += dx*0.025
     }
 
+    // Falling due to gravity
     let grav = this.speed[2] < 0 ? 0.6 : 0.35
     if (this.slowTime > 0) {
       grav *= 1.7
@@ -201,9 +226,6 @@ export default class Player extends Thing {
     this.speed[2] -= grav
 
     if (this.onGround) {
-      this.speed[0] *= friction
-      this.speed[1] *= friction
-      this.canDash = true
       this.cancelTimer('disableAirControl')
 
       // land
@@ -651,6 +673,15 @@ export default class Player extends Thing {
     ctx.translate(0, -48)
     {
       const str = 'Level: ' + globals.level
+      ctx.fillStyle = 'darkBlue'
+      ctx.fillText(str, 0, 0)
+      ctx.fillStyle = 'white'
+      ctx.fillText(str, 4, -4)
+    }
+    if (globals.showSpeed) {
+      ctx.translate(0, -48)
+      const s2 = [this.speed[0], this.speed[1], 0]
+      const str = 'Speed: ' + Math.round(vec3.magnitude(s2)*100)/100
       ctx.fillStyle = 'darkBlue'
       ctx.fillText(str, 0, 0)
       ctx.fillStyle = 'white'
