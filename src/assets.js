@@ -79,6 +79,9 @@ const assets = {
     stoneBlackTile: 'stone_black_smalltile.png',
     stoneBlackStrips: 'stone_black_strips.png',
     crystalCyan: 'crystal_cyan.png',
+    stoneRed: 'stone_dred.png',
+    redBricks: 'stone_dred_tile.png',
+    lava: 'tech_orange.png',
 
     // Skyboxes
     skybox1: 'skybox1.png',

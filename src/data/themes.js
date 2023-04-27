@@ -70,6 +70,42 @@ export const data = {
       },
     },
   },
+  "volcano": {
+    "skybox": "skybox5",
+    "music": "music16",
+    "fogColor": [1.0, 0.4, 0.0],
+    "fogDensity": 0.09,
+    "deco": "rocks",
+    "tiles": {
+      "default": {
+        "wall": "stoneRed",
+        "floor": "stoneRed",
+      },
+      "path": {
+        "wall": "stoneRed",
+        "floor": "lightStone",
+      },
+      "floor": {
+        "wall": "stoneFloor",
+        "floor": "stoneFloor",
+        "noCarve": true,
+      },
+      "wall": {
+        "wall": "redBricks",
+        "floor": "stoneRed",
+        "noCarve": true,
+      },
+      "floor2": {
+        "wall": "stoneFloor",
+        "floor": "stoneFloor",
+      },
+      "wall2": {
+        "wall": "redBricks",
+        "floor": "stoneRed",
+        "noCarve": true,
+      },
+    },
+  },
   "cyber": {
     "skybox": "skybox3",
     "music": "music1",

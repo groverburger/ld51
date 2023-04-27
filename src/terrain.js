@@ -746,6 +746,8 @@ export default class Terrain extends Thing {
         [
           {value:'asteroid', weight:100},
           {value:'snow', weight:70},
+          {value:'yard', weight:4},
+          {value:'crystal', weight:1},
         ]
       )
     }
@@ -754,6 +756,8 @@ export default class Terrain extends Thing {
       globals.theme = u.weightedChoose(themeRandom,
         [
           {value:'yard', weight:100},
+          {value:'volcano', weight:70},
+          {value:'snow', weight:9},
         ]
       )
     }
@@ -764,6 +768,7 @@ export default class Terrain extends Thing {
           {value:'cyber', weight:100},
           {value:'metal', weight:60},
           {value:'crystal', weight:30},
+          {value:'volcano', weight:5},
         ]
       )
     }
