@@ -63,6 +63,7 @@ const assets = {
     goldenFloor: 'stone_gold.png',
     goldenWall: 'stone_gold_brick.png',
     tech1: 'tech_lgreen.png',
+    tech2: 'tech_orange.png',
     techStone: 'stone_dblue.png',
     techFloor: 'stone_dblue_tile.png',
     wood: 'concrete_wall.png',
@@ -82,6 +83,10 @@ const assets = {
     stoneRed: 'stone_dred.png',
     redBricks: 'stone_dred_tile.png',
     lava: 'tech_orange.png',
+    ruinBricks: 'stone_dbrown_brick.png',
+    ruinFloor: 'stone_dbrown.png',
+    creamStone: 'stone_cream.png',
+    creamTile: 'stone_cream_tile.png',
 
     // Skyboxes
     skybox1: 'skybox1.png',
@@ -89,6 +94,9 @@ const assets = {
     skybox3: 'skybox3.png',
     skybox4: 'skybox4.png',
     skybox5: 'skybox5.png',
+    skybox6: 'skybox6.png',
+    skybox7: 'skybox7.png',
+    skybox8: 'skybox8.png',
 
     // Enemies
     enemy: 'enemy1.png',
@@ -100,9 +108,6 @@ const assets = {
 
     // Collectibles
     goal: 'pickup_flag.png',
-    oneUp: 'pickup_oneup.png',
-    visionPickup: 'pickup_eye.png',
-    timePickup: 'pickup_clock.png',
 
     // UV Mapped textures
     pistol: 'uv_pistol.png',

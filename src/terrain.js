@@ -750,8 +750,10 @@ export default class Terrain extends Thing {
         [
           {value:'asteroid', weight:100},
           {value:'snow', weight:70},
-          {value:'yard', weight:4},
-          {value:'crystal', weight:1},
+          {value:'yard', weight:6},
+          {value:'white', weight:6},
+          {value:'crystal', weight:2},
+          {value:'backwards', weight:1},
         ]
       )
     }
@@ -762,10 +764,11 @@ export default class Terrain extends Thing {
           {value:'yard', weight:100},
           {value:'volcano', weight:70},
           {value:'snow', weight:9},
+          {value:'ruins', weight:30},
         ]
       )
     }
-    else if (globals.level <= 14) {
+    else if (globals.level <= 15) {
       let themeRandom = u.randomizer(parameterBuilder.initialSeed + 2)
       globals.theme = u.weightedChoose(themeRandom,
         [
@@ -776,7 +779,10 @@ export default class Terrain extends Thing {
         ]
       )
     }
-    else if (globals.level === 15 && globals.theme === 'cyber') {
+    if (globals.level === 5 && globals.theme === 'backwards') {
+      globals.theme = 'backwardsgold'
+    }
+    if (globals.level === 15 && globals.theme === 'cyber') {
       globals.theme = 'hive'
     }
 

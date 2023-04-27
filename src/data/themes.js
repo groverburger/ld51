@@ -288,4 +288,140 @@ export const data = {
       }
     },
   },
+  "ruins": {
+    "skybox": "skybox6",
+    "music": "music14",
+    "fogColor": [0.9, 0.7, 0.6],
+    "fogDensity": 0.0,
+    "tiles": {
+      "default": {
+        "wall": "darkDirt",
+        "floor": "darkDirt",
+      },
+      "path": {
+        "wall": "darkDirt",
+        "floor": "dirt",
+      },
+      "floor": {
+        "wall": "darkDirt",
+        "floor": "dirt",
+        "noCarve": true,
+      },
+      "wall": {
+        "wall": "ruinBricks",
+        "floor": "ruinFloor",
+        "noCarve": true,
+      },
+      "floor2": {
+        "wall": "dirt",
+        "floor": "dirt",
+      },
+      "wall2": {
+        "wall": "ruinBricks",
+        "floor": "ruinFloor",
+        "noCarve": true,
+      },
+    },
+  },
+  "white": {
+    "skybox": "skybox7",
+    "music": "music8",
+    "fogColor": [0.95, 0.95, 0.95],
+    "fogDensity": 0.11,
+    "tiles": {
+      "default": {
+        "wall": "lightStone",
+        "floor": "lightStone",
+      },
+      "path": {
+        "wall": "lightStone",
+        "floor": "snow",
+      },
+      "floor": {
+        "wall": "creamTile",
+        "floor": "creamStone",
+        "noCarve": true,
+      },
+      "wall": {
+        "wall": "creamTile",
+        "floor": "creamTile",
+        "noCarve": true,
+      },
+      "floor2": {
+        "wall": "creamTile",
+        "floor": "creamStone",
+      },
+      "wall2": {
+        "wall": "creamTile",
+        "floor": "creamTile",
+        "noCarve": true,
+      },
+    },
+  },
+  "backwards": {
+    "skybox": "skybox8",
+    "music": "music2",
+    "fogColor": [0.95, 0.95, 0.95],
+    "fogDensity": 0.0,
+    "tiles": {
+      "default": {
+        "wall": "roomWall",
+        "floor": "roomFloor",
+        "noCarve": true,
+      },
+      "path": {
+        "wall": "lightStone",
+        "floor": "lightStone",
+      },
+      "floor": {
+        "wall": "stone",
+        "floor": "stone",
+      },
+      "wall": {
+        "wall": "lightStone",
+        "floor": "lightStone",
+      },
+      "floor2": {
+        "wall": "stone",
+        "floor": "stone",
+      },
+      "wall2": {
+        "wall": "lightStone",
+        "floor": "lightStone",
+      },
+    },
+  },
+  "backwardsgold": {
+    "skybox": "skybox8",
+    "music": "music2",
+    "fogColor": [0.95, 0.95, 0.95],
+    "fogDensity": 0.0,
+    "tiles": {
+      "default": {
+        "wall": "goldenWall",
+        "floor": "goldenFloor",
+        "noCarve": true,
+      },
+      "path": {
+        "wall": "lightStone",
+        "floor": "lightStone",
+      },
+      "floor": {
+        "wall": "stone",
+        "floor": "stone",
+      },
+      "wall": {
+        "wall": "lightStone",
+        "floor": "lightStone",
+      },
+      "floor2": {
+        "wall": "stone",
+        "floor": "stone",
+      },
+      "wall2": {
+        "wall": "lightStone",
+        "floor": "lightStone",
+      },
+    },
+  },
 }
