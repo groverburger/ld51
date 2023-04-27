@@ -46,7 +46,7 @@ export function generatePalace (params, pathData) {
 }
 
 function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, tileData, pathData, flatDistance=0) {
-  console.log("Started iteration at position " + pos)
+  // console.log("Started iteration at position " + pos)
 
   // Take an action
   const actionNumber = Math.floor(params.random() * 13)
@@ -86,7 +86,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
     direction = [1, 0]
   }
 
-  console.log("Iteration: " + action + " for " + distance + " spaces in direction " + direction)
+  // console.log("Iteration: " + action + " for " + distance + " spaces in direction " + direction)
 
   let curTowards = towards
   let curPos = pos
@@ -154,7 +154,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
         // Make sure there is a place we can go a certain distance ahead
         const jumpPos = add(curPos, scale(direction, params.palaceMaxJumpDistance))
 
-        console.log("Jump!")
+        // console.log("Jump!")
 
         // No space to jump
         if (canBuild(jumpPos, terrain, pathData)) {
@@ -204,7 +204,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
 
         // End action and set distance to the distance we actually traveled
         distance = i
-        console.log("End after distance " + i)
+        // console.log("End after distance " + i)
         break
       }
     } else {
