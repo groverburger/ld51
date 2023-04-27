@@ -77,7 +77,7 @@ function * LevelWinAnim (overlook=false, win=false) {
       ctx.fillStyle = 'black'
       ctx.fillRect(0, 0, width, height)
 
-      const string = 'You Win!'
+      const string = 'Daily Challenge Complete!'
       ctx.save()
       ctx.textAlign = 'center'
       ctx.font = 'italic bold 64px Times New Roman'
@@ -94,8 +94,15 @@ function * LevelWinAnim (overlook=false, win=false) {
       ctx.textAlign = 'center'
       ctx.font = 'italic 32px Times New Roman'
       ctx.fillStyle = u.colorToString(1, 1, 1, u.map(i, 15, 30, 0, 0.75, true))
-      ctx.fillText('Thank you for playing!', 0, 0)
       ctx.fillText('Game created by Groverburger and ZungryWare', 0, 64)
+      ctx.restore()
+
+      ctx.save()
+      ctx.translate(width - 64, height - 64)
+      ctx.textAlign = 'right'
+      ctx.fillStyle = `rgba(255, 255, 255, ${u.map(i, 10, 30, 0, 0.5, true)})`
+      ctx.font = '32px Times New Roman'
+      ctx.fillText('Press space to return to menu', 0, 0)
       ctx.restore()
     }
     else {
