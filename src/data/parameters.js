@@ -8,18 +8,18 @@ export const data = {
   },
   width: {
     randomMode: 'bell',
-    bellCenter: 40,
+    bellCenter: 30,
     bellRadius: 10,
-    advanceAmount: 3,
-    max: 45,
+    advanceAmount: 1.4,
+    max: 40,
     round: true
   },
   length: {
     randomMode: 'bell',
     bellCenter: 70,
     bellRadius: 17,
-    advanceAmount: 3,
-    max: 90,
+    advanceAmount: 4.4,
+    max: 130,
     round: true
   },
   height: {
@@ -32,8 +32,8 @@ export const data = {
   pathLength: {
     randomMode: 'constant',
     value: 74,
-    advanceAmount: 2,
-    max: 100,
+    advanceAmount: 2.8,
+    max: 130,
     round: true
   },
   pathSmoothingLedgeMax: {
@@ -142,7 +142,7 @@ export const data = {
   },
   palaceMaxJumpDistance: {
     randomMode: 'constant',
-    value: 3,
+    value: 2,
     round: true
   },
 }

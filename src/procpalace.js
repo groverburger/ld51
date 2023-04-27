@@ -46,8 +46,6 @@ export function generatePalace (params, pathData) {
 }
 
 function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, tileData, pathData, flatDistance=0) {
-  // console.log("Started iteration at position " + pos)
-
   // Take an action
   const actionNumber = Math.floor(params.random() * 13)
   let action = 'turn' // move forward, turning at a chasm
@@ -55,7 +53,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
   if (actionNumber >= 9 && actionNumber <= 12) { action = 'stair' } // staircase upwards, stopping at chasm
 
   // Prioritize stairs if we've gone too long without going up
-  const extraStairChance = u.map(flatDistance, 4, 16, 0, 0.75, true)
+  const extraStairChance = u.map(flatDistance, 4, 16, 0, 0.7, true)
   if (params.random() < extraStairChance) {
     action = 'stair'
   }
@@ -70,6 +68,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
   const deltas = [[1, 0], [0, 1], [-1, 0], [0, -1]]
   let direction = deltas[Math.floor(params.random() * 4)]
   if (towards) {
+    console.log("TOWARDS")
     if (params.random() < TOWARDS_CHANCE && pos[0] > 0) {
       direction = [-1, 0]
     } else if (params.random() < TOWARDS_CHANCE && pos[0] < 0) {
@@ -85,18 +84,19 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
   if (depth === 0) {
     direction = [1, 0]
   }
+  console.log("Starting at " + pos + ": " + action + " for " + distance + " spaces in direction " + direction)
 
-  // console.log("Iteration: " + action + " for " + distance + " spaces in direction " + direction)
-
-  let curTowards = towards
   let curPos = pos
   let curHeight = height
+  let curTowards = towards
   for (let i = 0; i < distance; i++) {
     // Move perpendicular on the last space
     if (i === distance - 1) {
       direction = [direction[1], direction[0]]
     }
 
+    // Special rules for follow action.
+    // Determines direction based on adjacent tiles
     if (action === 'follow') {
       // Track which of the adjacent spaces is the most ledge-like (ledgy?)
       let bestScore = 0
@@ -106,12 +106,13 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
         const check = add(curPos, d1)
         let score = 0
 
-        // Do not attempt any space that's already carved
-        if (terrain[check]) {
+        // Do not attempt to build on an invalid space
+        if (!canBuild(check, terrain, pathData)) {
           continue
         }
 
         // Loop over spaces adjacent to candidate
+        // Score increases with each adjacent space that is lower in height.
         for (const d2 of deltas) {
           const next = add(check, d2)
 
@@ -127,97 +128,99 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
 
       // Move in chosen direction
       direction = bestDir
+      console.log("Follow, chose direction " + bestDir)
     }
 
     // Move
-    curPos = add(curPos, direction)
+    let nextPos = add(curPos, direction)
+    let nextHeight = curHeight
 
     // Move upwards
     if (action === 'stair') {
-      curHeight += 1
-
-      tileData[curPos] = { ...tileData[curPos], stair: true }
+      nextHeight += 1
     }
 
-    // Check if this space was already carved
-    if (!canBuild(curPos, terrain, pathData)) {
+    // If the space we're trying to build in is invalid...
+    if (!canBuild(nextPos, terrain, pathData)) {
       // If this is a ledge, start following
-      if (action === 'turn' && curHeight > terrain[curPos]) {
+      if (action === 'turn' && nextHeight > (terrain[nextPos] || 9999999)) {
         // Turn and follow the ledge
         action = 'follow'
-        distance += 3
-        curPos = subtract(curPos, direction)
-        curTowards = false
-      } else if (action === 'jump' && curHeight > terrain[curPos]) {
-        // Attempt to jump over the ledge
 
-        // Make sure there is a place we can go a certain distance ahead
-        const jumpPos = add(curPos, scale(direction, params.palaceMaxJumpDistance))
+        // Add extra distance for the follow action
+        distance += 4
 
-        // console.log("Jump!")
-
-        // No space to jump
-        if (canBuild(jumpPos, terrain, pathData)) {
+        // Check if we crossed back over ourselves
+        if (nextHeight - (terrain[nextPos] || 9999999) > 3) {
           curTowards = false
-          distance = i
+        }
 
-          // No retaining wall on space before either
-          const prev = subtract(curPos, direction)
-          tileData[prev] = { ...tileData[prev], noRetainingWall: true }
+        console.log("Switched to follow mode")
 
-          for (let j = 0; j < params.palaceMaxJumpDistance; j++) {
-            // Track distance
-            distance++
+      } else if (action === 'jump' && ((nextHeight - (terrain[nextPos] || 9999999) > 3) || params.random() < 0.3)) {
+        // Attempt to jump over the ledge
+        // Make sure there is a place we can go a certain distance ahead
+        // Check all forward spaces closest first
+        for (let j = 1; j <= params.palaceMaxJumpDistance; j ++) {
+          const jumpPos = add(nextPos, scale(direction, j))
 
-            // Make sure there is no retaining wall on this tile
-            tileData[curPos] = { ...tileData[curPos], noRetainingWall: true }
-
-            // Move forward
-            curPos = add(curPos, direction)
-
-            // Stop once we get to the other side
-            if (canBuild(curPos, terrain, pathData)) {
-              terrain[curPos] = curHeight
-              data.endPoint = curPos
+          // Check if this jump can be built
+          if (canBuild(jumpPos, terrain, pathData)) {
+            // Check if we crossed back over ourselves
+            if (nextHeight - (terrain[nextPos] || 9999999) > 3) {
+              curTowards = false
             }
+
+            // Build the jump
+            terrain[jumpPos] = nextHeight
+            data.endPoint = jumpPos
+
+            // No retaining wall on jump spaces
+            tileData[curPos] = { ...tileData[curPos], noRetainingWall: true }
+            tileData[jumpPos] = { ...tileData[jumpPos], noRetainingWall: true }
+
+            // Move into new space
+            curPos = jumpPos
+
+            // Track distance
+            i += j
+
+            // We succeeded, so don't check any more jumps
+            console.log("Jumped!")
+            break
           }
-
-          // End this step
-          break
-        } else { // Jump
-          // Backpedal by one space
-          curPos = subtract(curPos, direction)
-
-          // End action and set distance to the distance we actually traveled
-          distance = i
-          break
-        }
-      } else {
-        // End here
-        curTowards = false
-
-        // Backpedal by one space
-        curPos = subtract(curPos, direction)
-        if (action === 'stair') {
-          curHeight -= 1
         }
 
-        // End action and set distance to the distance we actually traveled
+        // End this step
+        console.log("Ended jump")
         distance = i
-        // console.log("End after distance " + i)
         break
       }
-    } else {
-      // Carve
-      terrain[curPos] = curHeight
-      // Move up endpoint
-      data.endPoint = curPos
+      else {
+        // End this step
+        console.log("Ended " + action + " due to invalid space")
+        distance = i
+        break
+      }
     }
-  }
+    // If the space is valid, build and move into it
+    else {
+      // Move tile
+      terrain[nextPos] = nextHeight
+      // Move up endpoint
+      data.endPoint = nextPos
 
-  // If we've gone back up, turn towards the start
-  if (action === 'stair') {
-    curTowards = true
+      // Mark tile as stair
+      if (action === 'stair') {
+        tileData[nextPos] = { ...tileData[nextPos], stair: true }
+      }
+
+      console.log("Move " + nextPos)
+
+      // Advance value
+      curPos = nextPos
+      curHeight = nextHeight
+    }
   }
 
   // Clocks are put into the palace at specific points
@@ -242,8 +245,13 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
     flatDistance = flatDistance + distance
   }
 
+  if (curHeight > height) {
+    curTowards = true
+  }
+
   // Prevent infinite recursion by having a chance to give one depth for free
   if (params.random() < 0.003) {
+    console.log("free space")
     distance += 1
   }
 
@@ -313,20 +321,23 @@ function canBuild (pos, terrain, pathData) {
   if (pos in terrain) {
     return false
   }
-  // Don't build over the path
+  // Don't build over the path or any tiles directly adjacent
+  const adjacent = [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]
   if (pathData) {
     for (const tile of pathData.path) {
-      // Get position of the tile relative to the tower
-      const newTile = subtract(tile, pathData.offset)
+      for (const adj of adjacent) {
+        // Get position of the tile relative to the tower
+        const newTile = subtract(add(tile, adj), pathData.offset)
 
-      // Divide tile position to get position after scaling
-      const nx = Math.floor(newTile[0] / PALACE_SCALE)
-      const ny = Math.floor(newTile[1] / PALACE_SCALE)
-      const divTile = [nx, ny]
+        // Divide tile position to get position after scaling
+        const nx = Math.floor(newTile[0] / PALACE_SCALE)
+        const ny = Math.floor(newTile[1] / PALACE_SCALE)
+        const divTile = [nx, ny]
 
-      // Check if they overlap
-      if (equals(pos, divTile)) {
-        return false
+        // Check if they overlap
+        if (equals(pos, divTile)) {
+          return false
+        }
       }
     }
   }

@@ -100,8 +100,8 @@ export const data = {
         "floor": "stoneFloor",
       },
       "wall2": {
-        "wall": "redBricks",
-        "floor": "stoneRed",
+        "wall": "tech2",
+        "floor": "tech2",
         "noCarve": true,
       },
     },
