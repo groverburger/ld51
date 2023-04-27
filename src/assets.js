@@ -231,6 +231,7 @@ const assets = {
     music7: 'music/Starshot7.mp3',
     music8: 'music/Starshot8.mp3',
     music14: 'music/Starshot14.mp3',
+    music16: 'music/Starshot16.mp3',
   },
 
   sceneSources: {
