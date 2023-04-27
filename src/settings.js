@@ -1,6 +1,7 @@
 import Thing from './core/thing.js'
 import * as u from './core/utils.js'
 import InputHandler from './core/inputs.js'
+import * as music from './music.js'
 import {
   ctx,
   globals,
@@ -16,11 +17,14 @@ export default class Settings extends Thing {
     this.setName('settings')
 
     // Initialize settings
-    if (!globals.mouseSensitivity) {
+    if (globals.mouseSensitivity === undefined) {
       globals.mouseSensitivity = 5
     }
-    if (!globals.showSpeed) {
+    if (globals.showSpeed === undefined) {
       globals.showSpeed = false
+    }
+    if (globals.playMusic === undefined) {
+      globals.playMusic = true
     }
 
     this.inputs = new InputHandler({
@@ -32,6 +36,9 @@ export default class Settings extends Thing {
       },
       toggleSpeed (keys, mouse, gamepad) {
         return keys.BracketRight
+      },
+      togglePlayMusic (keys, mouse, gamepad) {
+        return keys.KeyM
       },
     })
   }
@@ -57,6 +64,12 @@ export default class Settings extends Thing {
       globals.showSpeed = !globals.showSpeed
       this.settingChanged = "Show Speed: " + (globals.showSpeed ? "On" : "Off")
       this.displayTime = this.displayDuration
+    }
+    if (this.inputs.pressed('togglePlayMusic')) {
+      globals.playMusic = !globals.playMusic
+      this.settingChanged = "Music: " + (globals.playMusic ? "On" : "Off")
+      this.displayTime = this.displayDuration
+      music.setVolume(globals.playMusic ? 1 : 0)
     }
 
 
