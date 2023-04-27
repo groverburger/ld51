@@ -191,11 +191,11 @@ export default class LevelWin extends Thing {
     }
 
     // Save best attempt to records
-    records.beatLevel(game.globals.level)
+    records.beatLevel(game.globals.level, game.globals.date)
 
     // If we just beat the first level, count this as one attempt for the ironman challenge
     if (game.globals.level === 1) {
-      records.countAttempt()
+      records.countAttempt(game.globals.date)
     }
   }
 

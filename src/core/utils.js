@@ -246,9 +246,8 @@ export function shuffle (array, rand) {
 
 // Returns an integer representing a unique seed for the date
 export function getDateSeed(date) {
-  // If no date was specified, use current system time
   if (!date) {
-    date = new Date()
+    throw new Error('Must specify date')
   }
   return  date.getDate()*11 +
           date.getMonth()*11*31 +

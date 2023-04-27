@@ -689,13 +689,17 @@ export default class Terrain extends Thing {
   }
 
   generate () {
+    if (!globals.date) {
+      globals.date = new Date()
+    }
+
     // Make sure level is set
     if (!globals.level) {
       globals.level = 1
     }
 
     // Generate seed
-    let seed = u.getDateSeed()
+    let seed = u.getDateSeed(globals.date)
     // seed = Math.floor(Math.random() * 100000)
     // seed = 81492
 

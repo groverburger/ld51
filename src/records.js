@@ -1,8 +1,7 @@
 // Returns the date in the format used for localStorage entries
 export function getDateKey(date) {
-  // If no date was specified, use current system time
   if (!date) {
-    date = new Date()
+    throw new Error('Must specify date')
   }
   return `record_y${date.getFullYear()}_m${date.getMonth()}_d${date.getDate()}`
 }
