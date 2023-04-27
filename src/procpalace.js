@@ -68,7 +68,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
   const deltas = [[1, 0], [0, 1], [-1, 0], [0, -1]]
   let direction = deltas[Math.floor(params.random() * 4)]
   if (towards) {
-    console.log("TOWARDS")
+    // console.log("TOWARDS")
     if (params.random() < TOWARDS_CHANCE && pos[0] > 0) {
       direction = [-1, 0]
     } else if (params.random() < TOWARDS_CHANCE && pos[0] < 0) {
@@ -84,7 +84,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
   if (depth === 0) {
     direction = [1, 0]
   }
-  console.log("Starting at " + pos + ": " + action + " for " + distance + " spaces in direction " + direction)
+  // console.log("Starting at " + pos + ": " + action + " for " + distance + " spaces in direction " + direction)
 
   let curPos = pos
   let curHeight = height
@@ -128,7 +128,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
 
       // Move in chosen direction
       direction = bestDir
-      console.log("Follow, chose direction " + bestDir)
+      // console.log("Follow, chose direction " + bestDir)
     }
 
     // Move
@@ -155,7 +155,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
           curTowards = false
         }
 
-        console.log("Switched to follow mode")
+        // console.log("Switched to follow mode")
 
       } else if (action === 'jump' && ((nextHeight - (terrain[nextPos] || 9999999) > 3) || params.random() < 0.3)) {
         // Attempt to jump over the ledge
@@ -176,8 +176,10 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
             data.endPoint = jumpPos
 
             // No retaining wall on jump spaces
-            tileData[curPos] = { ...tileData[curPos], noRetainingWall: true }
-            tileData[jumpPos] = { ...tileData[jumpPos], noRetainingWall: true }
+            for (let k = -1; k <= j; k ++) {
+              const t = add(nextPos, scale(direction, k))
+              tileData[t] = { ...tileData[t], noRetainingWall: true }
+            }
 
             // Move into new space
             curPos = jumpPos
@@ -186,19 +188,19 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
             i += j
 
             // We succeeded, so don't check any more jumps
-            console.log("Jumped!")
+            // console.log("Jumped!")
             break
           }
         }
 
         // End this step
-        console.log("Ended jump")
+        // console.log("Ended jump")
         distance = i
         break
       }
       else {
         // End this step
-        console.log("Ended " + action + " due to invalid space")
+        // console.log("Ended " + action + " due to invalid space")
         distance = i
         break
       }
@@ -215,7 +217,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
         tileData[nextPos] = { ...tileData[nextPos], stair: true }
       }
 
-      console.log("Move " + nextPos)
+      // console.log("Move " + nextPos)
 
       // Advance value
       curPos = nextPos
@@ -251,7 +253,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
 
   // Prevent infinite recursion by having a chance to give one depth for free
   if (params.random() < 0.003) {
-    console.log("free space")
+    // console.log("free space")
     distance += 1
   }
 
