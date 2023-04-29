@@ -71,9 +71,8 @@ export default class Player extends Thing {
     //music.volume = 0.5
     music.play()
 
-    if (!globals.level) {
+    if (!globals.lives) {
       globals.lives = 3
-      globals.level = 1
       globals.powerup = 'none'
 
       // Reset all music tracks

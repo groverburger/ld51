@@ -29,7 +29,7 @@ export function generatePalace (params, pathData) {
     thirdClockPlaced: false
   }
   const tileData = {}
-  palaceAlgorithm(terrainSmall, params.palaceFloorHeight, [0, 0], params, false, 0, data, tileData, pathData)
+  palaceAlgorithm(terrainSmall, params.palaceFloorHeight, [1, 0], params, false, 0, data, tileData, pathData)
 
   // Scale up terrain by a factor of 2
   const types = {}
@@ -38,7 +38,7 @@ export function generatePalace (params, pathData) {
   const ret = new GeneratorResult()
   ret.terrain = terrain
   ret.types = types
-  ret.startPoint = [2, 0]
+  ret.startPoint = [1, 1]
   ret.endPoint = add(scale(data.endPoint, PALACE_SCALE), [1, 1])
   ret.presetClocks = [scale(data.firstClock, PALACE_SCALE), scale(data.secondClock, PALACE_SCALE), scale(data.thirdClock, PALACE_SCALE)]
   ret.startAngle = Math.PI
@@ -148,7 +148,7 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
         distance += 3
         curPos = subtract(curPos, direction)
         curTowards = false
-      } else if (action === 'jump' && (curHeight - terrain[curPos] >= 4 || params.random() < 0.2)) {
+      } else if (action === 'jump' && (curHeight - terrain[curPos] >= 4 || params.random() < 0.3)) {
         // Attempt to jump over the ledge
 
         // Make sure there is a place we can go a certain distance ahead
