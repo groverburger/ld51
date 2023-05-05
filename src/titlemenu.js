@@ -98,7 +98,7 @@ export default class TitleMenu extends Thing {
     }
 
     // Set month status
-    const dayThreshold = 20
+    const dayThreshold = 14
     if (goldDays >= dayThreshold) {
       ret.monthAward = 'gold'
     }
