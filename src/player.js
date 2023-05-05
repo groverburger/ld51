@@ -590,7 +590,7 @@ export default class Player extends Thing {
     if (knockback > 0) {
       this.walkFrames = 0
     }
-
+    
     // Animation
     if (globals.powerup === 'shotgun') {
       gfx.set('modelMatrix', mat.getTransformation({

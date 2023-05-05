@@ -1,4 +1,5 @@
 precision mediump float;
+// #extension GL_OES_standard_derivatives : enable
 
 varying vec2 uv;
 varying vec3 normal;

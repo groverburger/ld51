@@ -17,6 +17,8 @@ export default class TitleMenu extends Thing {
     game.getScene().addThing(new Terrain())
     game.getScene().addThing(new Settings())
     game.globals.tutorial = true
+
+    this.selectedDate = new Date(game.globals.date.getTime())
     this.calendarData = this.buildCalendarData()
 
     music.pauseAllTracks()
@@ -42,7 +44,7 @@ export default class TitleMenu extends Thing {
     }
 
     // Figure out how many days in the month
-    const date = game.globals.date
+    const date = this.selectedDate
     const monthDays = [31, (date.getFullYear() % 4 == 0 ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     const numDays = monthDays[date.getMonth()]
 
@@ -106,6 +108,15 @@ export default class TitleMenu extends Thing {
       delete game.globals.generated
       game.mouse.lock()
       game.setNextScene()
+    }
+
+    if ("ArrowRight" in game.keysPressed) {
+      this.selectedDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() + 1)
+      this.calendarData = this.buildCalendarData()
+    }
+    if ("ArrowLeft" in game.keysPressed) {
+      this.selectedDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() - 1)
+      this.calendarData = this.buildCalendarData()
     }
   }
 
@@ -176,11 +187,38 @@ export default class TitleMenu extends Thing {
       }
     }
 
+    
+    {
+      // Month Bar
+      let x = width - ((((w-1) * 7) + 0) * calendarScale) - margin
+      let y = height - ((((h-1) * 6) + 14) * calendarScale) - margin
+      ctx.drawImage(assets.images["calMonthTile_calendar"], x, y, 256*calendarScale, 16*calendarScale)
+
+      // Month text
+      x += 43 * calendarScale
+      ctx.drawImage(assets.images["calMonth_" + this.selectedDate.getMonth()], x, y, 32*calendarScale, 16*calendarScale)
+
+      // Year
+      x += 18 * calendarScale
+      for (let i = 4-1; i >= 0; i --) {
+        // Get the digit
+        const ub = Math.pow(10, i+1)
+        const lb = Math.pow(10, i)
+        const year = this.selectedDate.getFullYear()
+        const digit = Math.floor((year % ub) / lb)
+
+        // Render the digit
+        x += 6 * calendarScale
+        ctx.drawImage(assets.images["calYearDigit_" + digit], x, y, 16*calendarScale, 16*calendarScale)
+      }
+    }
+
     // Calendar Text
     ctx.save()
     ctx.font = 'bold 22px Courier New'
+    ctx.textAlign = 'center'
     ctx.fillStyle = u.colorToString(0.6, 0.6, 0.6, 1)
-    ctx.fillText('New Challenge Every Day', width - 320, height - 230)
+    ctx.fillText('New Challenge Every Day', width - (margin + ((w-1)*calendarScale*7*0.5)), height - 260)
     ctx.restore()
   }
 }
