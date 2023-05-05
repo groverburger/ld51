@@ -127,6 +127,7 @@ export default class TitleMenu extends Thing {
     cam.yaw = -a + Math.PI / 2
     // game.getScene().camera3D.pitch += 0.02
 
+    // Start game controls
     if (this.time > 30 && ("Space" in game.keysPressed)) {
       delete game.globals.level
       delete game.globals.lives
@@ -136,13 +137,20 @@ export default class TitleMenu extends Thing {
       game.setNextScene()
     }
 
+    // Month change controls
     if ("ArrowRight" in game.keysPressed) {
-      this.selectedDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() + 1)
-      this.calendarData = this.buildCalendarData()
+      // Don't allow going ahead to months in the future
+      if (this.selectedDate.getFullYear() < game.globals.date.getFullYear() || this.selectedDate.getMonth() < game.globals.date.getMonth()) {
+        this.selectedDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() + 1)
+        this.calendarData = this.buildCalendarData()
+      }
     }
     if ("ArrowLeft" in game.keysPressed) {
-      this.selectedDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() - 1)
-      this.calendarData = this.buildCalendarData()
+      // Don't allow going back before May 2023, the game's launch month
+      if (this.selectedDate.getFullYear() > 2023 || this.selectedDate.getMonth() > 4) {
+        this.selectedDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() - 1)
+        this.calendarData = this.buildCalendarData()
+      }
     }
   }
 
