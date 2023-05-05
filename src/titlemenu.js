@@ -26,11 +26,14 @@ export default class TitleMenu extends Thing {
 
   buildCalendarData () {
     // Create empty data
-    let ret = []
+    let ret = {
+      monthAward: 'calendar',
+      days: [],
+    }
     const daysOfTheWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
     for (let i = 0; i < 6; i ++) {
       for (let j = 0; j < 7; j ++) {
-        ret.push(
+        ret.days.push(
           {
             day: daysOfTheWeek[j],
             date: 0,
@@ -53,37 +56,60 @@ export default class TitleMenu extends Thing {
     let dataIndex = firstDay
 
     // Loop over days in the month
+    let goldDays = 0
+    let silverDays = 0
+    let bronzeDays = 0
+    let attemptedDays = 0
     for (let i = 0; i < numDays; i ++) {
-      ret[dataIndex].date = i + 1
-      ret[dataIndex].state = 'calendar'
+      ret.days[dataIndex].date = i + 1
+      ret.days[dataIndex].state = 'calendar'
 
       // Retrieve record data
       const thisDay = new Date(date.getFullYear(), date.getMonth(), i + 1)
       const best = records.getHighestLevel(thisDay)
       if (best == 0 || best > 0) {
-        ret[dataIndex].level = best
+        ret.days[dataIndex].level = best
       }
 
       // Determine additional awards
-      ret[dataIndex].firstTry = records.getFirstTry(thisDay)
-      ret[dataIndex].firstTryDeathless = records.getFirstTryDeathless(thisDay)
+      ret.days[dataIndex].firstTry = records.getFirstTry(thisDay)
+      ret.days[dataIndex].firstTryDeathless = records.getFirstTryDeathless(thisDay)
 
       // Determine what tier of plaque this achievement merits
-      if (ret[dataIndex].level >= 15) {
-        ret[dataIndex].state = 'gold'
+      if (ret.days[dataIndex].level >= 15) {
+        ret.days[dataIndex].state = 'gold'
+        goldDays ++
       }
-      else if (ret[dataIndex].level >= 10) {
-        ret[dataIndex].state = 'silver'
+      else if (ret.days[dataIndex].level >= 10) {
+        ret.days[dataIndex].state = 'silver'
+        silverDays ++
       }
-      else if (ret[dataIndex].level >= 5) {
-        ret[dataIndex].state = 'bronze'
+      else if (ret.days[dataIndex].level >= 5) {
+        ret.days[dataIndex].state = 'bronze'
+        bronzeDays ++
       }
-      else if (ret[dataIndex].level >= 0) {
-        ret[dataIndex].state = 'attempted'
+      else if (ret.days[dataIndex].level >= 0) {
+        ret.days[dataIndex].state = 'attempted'
+        attemptedDays ++
       }
 
       dataIndex ++
 
+    }
+
+    // Set month status
+    const dayThreshold = 20
+    if (goldDays >= dayThreshold) {
+      ret.monthAward = 'gold'
+    }
+    else if (silverDays + goldDays >= dayThreshold) {
+      ret.monthAward = 'silver'
+    }
+    else if (bronzeDays + silverDays + goldDays >= dayThreshold) {
+      ret.monthAward = 'bronze'
+    }
+    else if (attemptedDays + bronzeDays + silverDays + goldDays >= dayThreshold) {
+      ret.monthAward = 'attempted'
     }
 
     // Return
@@ -148,7 +174,7 @@ export default class TitleMenu extends Thing {
     const h = 17
     const calendarScale = 2
     const tileSize = 32 * calendarScale
-    for (const [i, entry] of this.calendarData.entries()) {
+    for (const [i, entry] of this.calendarData.days.entries()) {
       // Draw tile
       if (entry.state !== 'hidden') {
         ctx.save()
@@ -192,11 +218,12 @@ export default class TitleMenu extends Thing {
       // Month Bar
       let x = width - ((((w-1) * 7) + 0) * calendarScale) - margin
       let y = height - ((((h-1) * 6) + 14) * calendarScale) - margin
-      ctx.drawImage(assets.images["calMonthTile_calendar"], x, y, 256*calendarScale, 16*calendarScale)
+      ctx.drawImage(assets.images["calMonthTile_" + this.calendarData.monthAward], x, y, 256*calendarScale, 16*calendarScale)
 
       // Month text
       x += 43 * calendarScale
-      ctx.drawImage(assets.images["calMonth_" + this.selectedDate.getMonth()], x, y, 32*calendarScale, 16*calendarScale)
+      const tex = (this.calendarData.monthAward === 'calendar' ? "calMonth_" : "calMonthAward_") + this.selectedDate.getMonth()
+      ctx.drawImage(assets.images[tex], x, y, 32*calendarScale, 16*calendarScale)
 
       // Year
       x += 18 * calendarScale
@@ -209,7 +236,8 @@ export default class TitleMenu extends Thing {
 
         // Render the digit
         x += 6 * calendarScale
-        ctx.drawImage(assets.images["calYearDigit_" + digit], x, y, 16*calendarScale, 16*calendarScale)
+        const tex = (this.calendarData.monthAward === 'calendar' ? "calYearDigit_" : "calYearDigitAward_") + digit
+        ctx.drawImage(assets.images[tex], x, y, 16*calendarScale, 16*calendarScale)
       }
     }
 
