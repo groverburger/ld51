@@ -51,11 +51,11 @@ function palaceAlgorithm (terrain, height, pos, params, towards, depth, data, ti
   // Take an action
   const actionNumber = Math.floor(params.random() * 13)
   let action = 'turn' // move forward, turning at a chasm
-  if (actionNumber >= 5 && actionNumber <= 11) { action = 'jump' } // move forward, jumping over chasm
-  if (actionNumber >= 10 && actionNumber <= 12) { action = 'stair' } // staircase upwards, stopping at chasm
+  if (actionNumber >= 5 && actionNumber <= 10) { action = 'jump' } // move forward, jumping over chasm
+  if (actionNumber >= 9 && actionNumber <= 12) { action = 'stair' } // staircase upwards, stopping at chasm
 
   // Prioritize stairs if we've gone too long without going up
-  const extraStairChance = u.map(flatDistance, 3, 11, 0, 0.95, true)
+  const extraStairChance = u.map(flatDistance, 4, 16, 0, 0.95, true)
   if (params.random() < extraStairChance) {
     action = 'stair'
   }
