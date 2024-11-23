@@ -201,7 +201,7 @@ canvas2d.onmousemove = (e) => {
   )
   mouse.delta[0] += e.movementX
   mouse.delta[1] += e.movementY
-  mouse.button = !!e.buttons
+  // mouse.button = !!e.buttons
 }
 
 /********************************************************************************
